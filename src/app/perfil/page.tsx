@@ -33,7 +33,6 @@ export default function PerfilPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Profile form
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
@@ -42,7 +41,6 @@ export default function PerfilPage() {
     text: string;
   } | null>(null);
 
-  // Password form
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -55,7 +53,6 @@ export default function PerfilPage() {
     text: string;
   } | null>(null);
 
-  // Categories
   const {
     isLoading: isCategoriesLoading,
     fetchCategories,
@@ -71,7 +68,6 @@ export default function PerfilPage() {
   const [isSavingCategory, setIsSavingCategory] = useState(false);
   const [isDeletingCategory, setIsDeletingCategory] = useState(false);
 
-  // Password strength calculator
   const getPasswordStrength = (pass: string) => {
     let strength = 0;
     if (pass.length >= 6) strength++;
@@ -128,7 +124,6 @@ export default function PerfilPage() {
       setProfile(data);
       setProfileMessage({ type: "success", text: "Perfil atualizado com sucesso!" });
 
-      // Atualiza a sessão
       await updateSession({ name: data.name });
     } catch (err) {
       setProfileMessage({
@@ -186,7 +181,6 @@ export default function PerfilPage() {
     }
   };
 
-  // Category handlers
   const handleOpenCategoryModal = (category?: Category) => {
     setEditingCategory(category || null);
     setIsCategoryModalOpen(true);
@@ -241,15 +235,15 @@ export default function PerfilPage() {
       className="min-h-screen transition-colors duration-300"
       style={{ backgroundColor: "var(--bg-primary)", color: "var(--text-primary)" }}
     >
-      {/* Background */}
+      {}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-violet-600/20 rounded-full blur-3xl" />
         <div className="absolute top-1/2 -left-40 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl" />
       </div>
 
-      {/* Container */}
+      {}
       <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
+        {}
         <header className="mb-8">
           <h1 className="text-3xl font-bold" style={{ color: "var(--text-primary)" }}>
             Meu Perfil
@@ -259,7 +253,7 @@ export default function PerfilPage() {
           </p>
         </header>
 
-        {/* Profile Card */}
+        {}
         <div className="mb-6 bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)] p-6">
           <div className="flex items-center gap-4">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-3xl shadow-lg shadow-violet-500/25">
@@ -287,7 +281,7 @@ export default function PerfilPage() {
         </div>
 
         <div className="grid gap-6">
-          {/* Informações Pessoais */}
+          {}
           <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)] overflow-hidden">
             <div className="p-6 border-b border-[var(--border-color)]">
               <div className="flex items-center gap-3">
@@ -384,7 +378,7 @@ export default function PerfilPage() {
             </form>
           </div>
 
-          {/* Alterar Senha */}
+          {}
           <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)] overflow-hidden">
             <div className="p-6 border-b border-[var(--border-color)]">
               <div className="flex items-center gap-3">
@@ -483,7 +477,7 @@ export default function PerfilPage() {
                     )}
                   </button>
                 </div>
-                {/* Password Strength Indicator */}
+                {}
                 {newPassword && (
                   <div className="mt-3">
                     <div className="flex gap-1 mb-1">
@@ -533,7 +527,7 @@ export default function PerfilPage() {
                     )}
                   </button>
                 </div>
-                {/* Password match indicator */}
+                {}
                 {confirmPassword && (
                   <p
                     className="text-xs mt-2"
@@ -564,7 +558,7 @@ export default function PerfilPage() {
             </form>
           </div>
 
-          {/* Categorias Personalizadas */}
+          {}
           <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)] overflow-hidden">
             <div className="p-6 border-b border-[var(--border-color)]">
               <div className="flex items-center justify-between">
@@ -592,7 +586,7 @@ export default function PerfilPage() {
             </div>
 
             <div className="p-6">
-              {/* Tabs */}
+              {}
               <div className="flex gap-2 mb-4">
                 <button
                   onClick={() => setCategoryTab("expense")}
@@ -616,7 +610,7 @@ export default function PerfilPage() {
                 </button>
               </div>
 
-              {/* Lista de categorias */}
+              {}
               {isCategoriesLoading ? (
                 <div className="text-center py-8">
                   <RefreshCw className="w-6 h-6 text-violet-500 animate-spin mx-auto mb-2" />
@@ -635,7 +629,7 @@ export default function PerfilPage() {
         </div>
       </div>
 
-      {/* Modal de Categoria */}
+      {}
       <CategoryModal
         isOpen={isCategoryModalOpen}
         onClose={handleCloseCategoryModal}

@@ -25,24 +25,23 @@ export function InvestmentModal({
   onSave,
   isSubmitting,
 }: InvestmentModalProps) {
-  // Wizard step (3 é exclusivo para renda fixa - depósito inicial)
+
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
-  // Form state
   const [type, setType] = useState<InvestmentType>("stock");
   const [name, setName] = useState("");
   const [ticker, setTicker] = useState("");
   const [institution, setInstitution] = useState("");
   const [notes, setNotes] = useState("");
-  // Campos de renda fixa
+
   const [interestRate, setInterestRate] = useState("");
   const [indexer, setIndexer] = useState<IndexerType>("CDI");
   const [maturityDate, setMaturityDate] = useState("");
   const [noMaturity, setNoMaturity] = useState(false);
-  // Depósito inicial (obrigatório para renda fixa)
+
   const [initialDeposit, setInitialDeposit] = useState("");
   const [depositDate, setDepositDate] = useState(formatDateForInput(new Date()));
-  // Controle de saldo
+
   const [availableBalance, setAvailableBalance] = useState<number | null>(null);
   const [skipBalanceCheck, setSkipBalanceCheck] = useState(false);
   const [isLoadingBalance, setIsLoadingBalance] = useState(false);
@@ -51,7 +50,6 @@ export function InvestmentModal({
   const depositValue = parseFloat(initialDeposit) || 0;
   const hasInsufficientBalance = availableBalance !== null && depositValue > availableBalance && !skipBalanceCheck;
 
-  // Busca o saldo disponível quando abrir o modal
   useEffect(() => {
     if (isOpen) {
       setIsLoadingBalance(true);
@@ -83,13 +81,13 @@ export function InvestmentModal({
   };
 
   const handleAdvanceToDeposit = () => {
-    // Valida campos obrigatórios do step 2 antes de avançar
+
     if (!name) return;
     setStep(3);
   };
 
   const handleClose = () => {
-    // Reset everything
+
     setStep(1);
     setType("stock");
     setName("");
@@ -110,7 +108,6 @@ export function InvestmentModal({
     e.preventDefault();
     if (!name) return;
 
-    // Validação: renda fixa precisa de depósito inicial >= R$ 1,00
     if (showFixedIncomeFields) {
       const depositValue = parseFloat(initialDeposit);
       if (!depositValue || depositValue < 1) {
@@ -127,15 +124,14 @@ export function InvestmentModal({
       notes: notes || undefined,
     };
 
-    // Adiciona campos de renda fixa se aplicável
     if (showFixedIncomeFields) {
       if (interestRate) data.interestRate = parseFloat(interestRate);
       data.indexer = indexer;
       if (!noMaturity && maturityDate) data.maturityDate = new Date(maturityDate);
-      // Depósito inicial
+
       data.initialDeposit = parseFloat(initialDeposit);
       data.depositDate = new Date(depositDate);
-      // Controle de saldo
+
       data.skipBalanceCheck = skipBalanceCheck;
     }
 
@@ -163,7 +159,7 @@ export function InvestmentModal({
         }
       `}</style>
       <div className="bg-[var(--bg-secondary)] border border-[var(--border-color-strong)] rounded-2xl w-full max-w-md shadow-2xl animate-slideUp">
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between p-6 border-b border-[var(--border-color-strong)]">
           <div className="flex items-center gap-3">
             {(step === 2 || step === 3) && (
@@ -197,7 +193,7 @@ export function InvestmentModal({
           </button>
         </div>
 
-        {/* Step 1: Selecionar Tipo */}
+        {}
         {step === 1 && (
           <div className="p-6">
             <p className="text-sm text-[var(--text-muted)] mb-4">
@@ -230,10 +226,10 @@ export function InvestmentModal({
           </div>
         )}
 
-        {/* Step 2: Preencher Dados */}
+        {}
         {step === 2 && (
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
-            {/* Nome */}
+            {}
             <div>
               <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
                 Nome do Ativo *
@@ -253,7 +249,7 @@ export function InvestmentModal({
               />
             </div>
 
-            {/* Ticker (apenas para renda variável) */}
+            {}
             {!showFixedIncomeFields && (
               <div>
                 <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
@@ -269,7 +265,7 @@ export function InvestmentModal({
               </div>
             )}
 
-            {/* Instituição */}
+            {}
             <div>
               <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
                 {showFixedIncomeFields ? "Banco/Corretora" : "Corretora"}
@@ -283,10 +279,10 @@ export function InvestmentModal({
               />
             </div>
 
-            {/* Campos de Renda Fixa */}
+            {}
             {showFixedIncomeFields && (
               <>
-                {/* Indexador e Taxa */}
+                {}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
@@ -335,7 +331,7 @@ export function InvestmentModal({
                   </p>
                 )}
 
-                {/* Data de Vencimento */}
+                {}
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className="text-sm font-medium text-[var(--text-muted)]">
@@ -371,7 +367,7 @@ export function InvestmentModal({
               </>
             )}
 
-            {/* Notas (opcional) - apenas para renda variável no step 2 */}
+            {}
             {!showFixedIncomeFields && (
               <div>
                 <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
@@ -387,7 +383,7 @@ export function InvestmentModal({
               </div>
             )}
 
-            {/* Botões */}
+            {}
             <div className="flex gap-3 pt-2">
               <button
                 type="button"
@@ -421,10 +417,10 @@ export function InvestmentModal({
           </form>
         )}
 
-        {/* Step 3: Depósito Inicial (apenas para renda fixa) */}
+        {}
         {step === 3 && showFixedIncomeFields && (
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
-            {/* Saldo Disponível */}
+            {}
             <div className="bg-[var(--bg-hover)] rounded-xl p-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Wallet className="w-4 h-4 text-[var(--text-muted)]" />
@@ -435,7 +431,7 @@ export function InvestmentModal({
               </span>
             </div>
 
-            {/* Resumo do ativo */}
+            {}
             <div className="bg-[var(--bg-hover)] rounded-xl p-3 flex items-center gap-2">
               <span className="text-sm text-[var(--text-muted)]">Ativo:</span>
               <span className="text-[var(--text-primary)] font-medium">
@@ -443,7 +439,7 @@ export function InvestmentModal({
               </span>
             </div>
 
-            {/* Depósito Inicial */}
+            {}
             <div className={`bg-gradient-to-br ${hasInsufficientBalance ? 'from-red-500/10 to-orange-500/10 border-red-500/20' : 'from-emerald-500/10 to-teal-500/10 border-emerald-500/20'} border rounded-xl p-4 space-y-4`}>
               <div className="flex items-center gap-2">
                 <PiggyBank className={`w-4 h-4 ${hasInsufficientBalance ? 'text-red-400' : 'text-emerald-400'}`} />
@@ -467,7 +463,7 @@ export function InvestmentModal({
                 </div>
               </div>
 
-              {/* Aviso de saldo insuficiente */}
+              {}
               {hasInsufficientBalance && (
                 <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/20 rounded-lg p-3">
                   <AlertTriangle className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
@@ -499,7 +495,7 @@ export function InvestmentModal({
               </p>
             </div>
 
-            {/* Opção para ignorar verificação de saldo */}
+            {}
             <div className="bg-[var(--bg-hover)] rounded-xl p-3">
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
@@ -517,7 +513,7 @@ export function InvestmentModal({
               </label>
             </div>
 
-            {/* Observações */}
+            {}
             <div>
               <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
                 Observações
@@ -531,7 +527,7 @@ export function InvestmentModal({
               />
             </div>
 
-            {/* Botões */}
+            {}
             <div className="flex gap-3 pt-2">
               <button
                 type="button"

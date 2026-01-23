@@ -34,7 +34,6 @@ export function Navbar() {
   const { theme, toggleTheme, mounted } = useTheme();
   const { data: session } = useSession();
 
-  // Don't show navbar on auth pages
   if (
     pathname === "/login" ||
     pathname === "/register" ||
@@ -76,7 +75,7 @@ export function Navbar() {
       `}</style>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
+          {}
           <Link href="/" className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/25">
               <span className="text-lg">💰</span>
@@ -93,7 +92,7 @@ export function Navbar() {
             </span>
           </Link>
 
-          {/* Navigation Links */}
+          {}
           <div className="flex items-center gap-1">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
@@ -115,7 +114,7 @@ export function Navbar() {
               );
             })}
 
-            {/* Theme Toggle */}
+            {}
             <button
               onClick={toggleTheme}
               className="nav-button ml-2 p-2 rounded-xl transition-all"
@@ -132,7 +131,7 @@ export function Navbar() {
               )}
             </button>
 
-            {/* User Menu */}
+            {}
             {session?.user && (
               <div className="flex items-center gap-2 ml-2">
                 <Link

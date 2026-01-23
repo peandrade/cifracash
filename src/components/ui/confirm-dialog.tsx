@@ -43,7 +43,7 @@ export function ConfirmDialog({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
       <div className="bg-[var(--bg-secondary)] border border-[var(--border-color-strong)] rounded-2xl w-full max-w-sm shadow-2xl animate-slideUp">
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between p-6 pb-0">
           <div className={`p-3 rounded-xl ${styles.icon}`}>
             <AlertTriangle className="w-6 h-6" />
@@ -57,7 +57,7 @@ export function ConfirmDialog({
           </button>
         </div>
 
-        {/* Content */}
+        {}
         <div className="p-6">
           <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-2">
             {title}
@@ -67,7 +67,7 @@ export function ConfirmDialog({
           </p>
         </div>
 
-        {/* Actions */}
+        {}
         <div className="flex gap-3 p-6 pt-0">
           <button
             type="button"

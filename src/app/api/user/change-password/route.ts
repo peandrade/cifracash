@@ -3,10 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 
-/**
- * POST /api/user/change-password
- * Altera a senha do usuário
- */
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
@@ -31,7 +27,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Busca o usuário com a senha
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
     });
@@ -40,7 +35,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Usuário não encontrado" }, { status: 404 });
     }
 
-    // Verifica a senha atual
     const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
     if (!isPasswordValid) {
       return NextResponse.json(
@@ -49,10 +43,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hash da nova senha
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Atualiza a senha
     await prisma.user.update({
       where: { id: session.user.id },
       data: { password: hashedPassword },

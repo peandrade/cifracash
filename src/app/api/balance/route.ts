@@ -2,11 +2,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
-/**
- * GET /api/balance
- * Retorna o saldo disponível (dinheiro em conta)
- * Saldo = Receitas - Despesas
- */
 export async function GET() {
   try {
     const session = await auth();
@@ -14,7 +9,6 @@ export async function GET() {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
-    // Busca todas as transações
     const transactions = await prisma.transaction.findMany({
       where: { userId: session.user.id },
       select: {
@@ -23,7 +17,6 @@ export async function GET() {
       },
     });
 
-    // Calcula o saldo
     let balance = 0;
     transactions.forEach((t) => {
       if (t.type === "income") {

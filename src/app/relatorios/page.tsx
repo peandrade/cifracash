@@ -29,13 +29,11 @@ export default function RelatoriosPage() {
     fetchCategories();
   }, [fetchTransactions, fetchCategories]);
 
-  // Filtra transações do mês selecionado
   const filteredTransactions = transactions.filter((t) => {
     const date = new Date(t.date);
     return date.getMonth() + 1 === selectedMonth && date.getFullYear() === selectedYear;
   });
 
-  // Gera anos disponíveis (últimos 5 anos)
   const years = Array.from({ length: 5 }, (_, i) => currentDate.getFullYear() - i);
 
   const handleExportPDF = async () => {
@@ -77,16 +75,16 @@ export default function RelatoriosPage() {
       className="min-h-screen transition-colors duration-300"
       style={{ backgroundColor: "var(--bg-primary)", color: "var(--text-primary)" }}
     >
-      {/* Background */}
+      {}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-violet-600/20 rounded-full blur-3xl" />
         <div className="absolute top-1/2 -left-40 w-80 h-80 bg-indigo-600/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-40 right-1/3 w-80 h-80 bg-fuchsia-600/10 rounded-full blur-3xl" />
       </div>
 
-      {/* Container */}
+      {}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
+        {}
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold flex items-center gap-3" style={{ color: "var(--text-primary)" }}>
@@ -116,10 +114,10 @@ export default function RelatoriosPage() {
           </button>
         </header>
 
-        {/* Filtros */}
+        {}
         <div className="mb-8 p-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-color)]">
           <div className="flex flex-wrap items-center gap-4">
-            {/* Mês */}
+            {}
             <div className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-[var(--text-dimmed)]" />
               <select
@@ -135,7 +133,7 @@ export default function RelatoriosPage() {
               </select>
             </div>
 
-            {/* Ano */}
+            {}
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(parseInt(e.target.value))}
@@ -148,10 +146,10 @@ export default function RelatoriosPage() {
               ))}
             </select>
 
-            {/* Divisor */}
+            {}
             <div className="hidden sm:block w-px h-8 bg-[var(--border-color)]" />
 
-            {/* Tipo */}
+            {}
             <div className="flex items-center gap-2">
               <Filter className="w-5 h-5 text-[var(--text-dimmed)]" />
               <div className="flex gap-1">
@@ -190,9 +188,9 @@ export default function RelatoriosPage() {
           </div>
         </div>
 
-        {/* Conteúdo do Relatório */}
+        {}
         <div ref={reportRef} className="space-y-6">
-          {/* Relatório por Categoria */}
+          {}
           <div className="p-6 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-color)]">
             <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-6">
               Relatório por Categoria - {MONTHS[selectedMonth - 1]} {selectedYear}
@@ -204,7 +202,7 @@ export default function RelatoriosPage() {
             />
           </div>
 
-          {/* Comparativo Mensal */}
+          {}
           <div className="p-6 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-color)]">
             <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-6">
               Comparativo Mensal

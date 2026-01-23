@@ -161,7 +161,7 @@ export function QuickStats() {
 
   return (
     <div className="mb-8">
-      {/* Patrimônio Total */}
+      {}
       <div className="bg-gradient-to-br from-violet-600/20 to-indigo-600/20 backdrop-blur rounded-2xl border border-violet-500/20 p-6 mb-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
@@ -207,7 +207,7 @@ export function QuickStats() {
         </div>
       </div>
 
-      {/* Cards de Resumo */}
+      {}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => {
           const Icon = stat.icon;
@@ -271,7 +271,7 @@ export function QuickStats() {
         })}
       </div>
 
-      {/* Próxima Fatura */}
+      {}
       {data.cards.nextInvoice && (
         <Link
           href={`/cartoes?card=${data.cards.nextInvoice.cardId}`}

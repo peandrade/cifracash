@@ -22,7 +22,7 @@ export function QuickActionButtons({ onQuickAdd }: QuickActionButtonsProps) {
 
   return (
     <div className="fixed bottom-6 right-6 z-40">
-      {/* Botões de ação expandidos */}
+      {}
       <div
         className={`absolute bottom-16 right-0 flex flex-col gap-3 transition-all duration-300 ${
           isExpanded
@@ -30,7 +30,7 @@ export function QuickActionButtons({ onQuickAdd }: QuickActionButtonsProps) {
             : "opacity-0 translate-y-4 pointer-events-none"
         }`}
       >
-        {/* Botão Receita */}
+        {}
         <button
           onClick={() => handleQuickAdd("income")}
           className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all hover:scale-105"
@@ -39,7 +39,7 @@ export function QuickActionButtons({ onQuickAdd }: QuickActionButtonsProps) {
           <span className="font-medium whitespace-nowrap">Nova Receita</span>
         </button>
 
-        {/* Botão Despesa */}
+        {}
         <button
           onClick={() => handleQuickAdd("expense")}
           className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-xl shadow-lg shadow-red-500/25 hover:shadow-red-500/40 transition-all hover:scale-105"
@@ -49,7 +49,7 @@ export function QuickActionButtons({ onQuickAdd }: QuickActionButtonsProps) {
         </button>
       </div>
 
-      {/* FAB principal */}
+      {}
       <button
         onClick={handleToggle}
         className={`w-14 h-14 flex items-center justify-center rounded-full shadow-lg transition-all duration-300 ${

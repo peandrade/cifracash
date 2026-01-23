@@ -17,7 +17,6 @@ interface CardStore {
   isLoading: boolean;
   error: string | null;
 
-  // Ações
   fetchCards: () => Promise<void>;
   addCard: (data: CreateCardInput) => Promise<void>;
   updateCard: (id: string, data: Partial<CreditCard>) => Promise<void>;
@@ -28,7 +27,6 @@ interface CardStore {
   deletePurchase: (purchaseId: string) => Promise<void>;
   updateInvoiceStatus: (cardId: string, invoiceId: string, status: InvoiceStatus) => Promise<void>;
 
-  // Seletores
   getCardSummary: (cardId?: string) => CardSummary;
   getInvoicePreview: (cardId: string, months?: number) => InvoicePreview[];
   getAllCardsInvoicePreview: (months?: number) => InvoicePreview[];
@@ -49,17 +47,16 @@ export const useCardStore = create<CardStore>((set, get) => ({
       const response = await fetch("/api/cards");
       if (!response.ok) throw new Error("Erro ao buscar cartões");
       const data = await response.json();
-      
-      // Atualiza selectedCard se existir
+
       const { selectedCard } = get();
-      const updatedSelectedCard = selectedCard 
+      const updatedSelectedCard = selectedCard
         ? data.find((c: CreditCard) => c.id === selectedCard.id) || null
         : null;
-      
-      set({ 
-        cards: data, 
+
+      set({
+        cards: data,
         selectedCard: updatedSelectedCard,
-        isLoading: false 
+        isLoading: false
       });
     } catch (error) {
       set({
@@ -136,7 +133,7 @@ export const useCardStore = create<CardStore>((set, get) => ({
   },
 
   selectCard: (card) => {
-    // Busca o card atualizado da lista para garantir dados frescos
+
     const { cards } = get();
     const updatedCard = card ? cards.find(c => c.id === card.id) || card : null;
     set({ selectedCard: updatedCard });
@@ -219,8 +216,7 @@ export const useCardStore = create<CardStore>((set, get) => ({
     let nextInvoice = 0;
 
     targetCards.forEach((card) => {
-      // Calcula mês da fatura atual baseado no mês do VENCIMENTO
-      // Primeiro, determina o mês do ciclo de fechamento
+
       let closingMonth = now.getMonth() + 1;
       let closingYear = now.getFullYear();
 
@@ -232,7 +228,6 @@ export const useCardStore = create<CardStore>((set, get) => ({
         }
       }
 
-      // Agora calcula o mês do VENCIMENTO (que identifica a fatura)
       let currentMonth = closingMonth;
       let currentYear = closingYear;
       if (card.dueDay <= card.closingDay) {
@@ -243,7 +238,6 @@ export const useCardStore = create<CardStore>((set, get) => ({
         }
       }
 
-      // Próximo mês
       let nextMonth = currentMonth + 1;
       let nextYear = currentYear;
       if (nextMonth > 12) {
@@ -282,8 +276,6 @@ export const useCardStore = create<CardStore>((set, get) => ({
     const now = new Date();
     const currentDay = now.getDate();
 
-    // Determina o mês inicial baseado no mês do VENCIMENTO
-    // Primeiro, calcula o mês do ciclo de fechamento
     let closingMonth = now.getMonth();
     let closingYear = now.getFullYear();
 
@@ -295,7 +287,6 @@ export const useCardStore = create<CardStore>((set, get) => ({
       }
     }
 
-    // Depois calcula o mês do vencimento (que identifica a fatura)
     let startMonth = closingMonth;
     let startYear = closingYear;
     if (card.dueDay <= card.closingDay) {
@@ -315,7 +306,6 @@ export const useCardStore = create<CardStore>((set, get) => ({
         (inv) => inv.month === month && inv.year === year
       );
 
-      // Calcula valor pendente (total - pago)
       const pendingAmount = invoice ? invoice.total - (invoice.paidAmount || 0) : 0;
 
       previews.push({
@@ -331,7 +321,6 @@ export const useCardStore = create<CardStore>((set, get) => ({
     return previews;
   },
 
-  // Nova função: previsão consolidada de TODOS os cartões
   getAllCardsInvoicePreview: (months: number = 6): InvoicePreview[] => {
     const { cards } = get();
     if (cards.length === 0) return [];
@@ -341,8 +330,6 @@ export const useCardStore = create<CardStore>((set, get) => ({
     const currentMonth = now.getMonth() + 1;
     const currentYear = now.getFullYear();
 
-    // Para visão consolidada, começa no mês atual
-    // As faturas agora são identificadas pelo mês do VENCIMENTO
     const startMonth = currentMonth;
     const startYear = currentYear;
 
@@ -354,7 +341,6 @@ export const useCardStore = create<CardStore>((set, get) => ({
         year += 1;
       }
 
-      // Soma de todas as faturas de todos os cartões para esse mês
       let totalAmount = 0;
       let hasAnyInvoice = false;
 
@@ -363,8 +349,7 @@ export const useCardStore = create<CardStore>((set, get) => ({
           (inv) => inv.month === month && inv.year === year
         );
         if (invoice) {
-          // Só soma o valor pendente (total - valor já pago)
-          // Faturas pagas (status === "paid") terão paidAmount === total, então pendingAmount será 0
+
           const pendingAmount = invoice.total - (invoice.paidAmount || 0);
           if (pendingAmount > 0) {
             totalAmount += pendingAmount;
@@ -394,7 +379,6 @@ export const useCardStore = create<CardStore>((set, get) => ({
     const now = new Date();
     const currentDay = now.getDate();
 
-    // Determina o mês do ciclo de fechamento atual
     let closingMonth = now.getMonth() + 1;
     let closingYear = now.getFullYear();
 
@@ -406,7 +390,6 @@ export const useCardStore = create<CardStore>((set, get) => ({
       }
     }
 
-    // Calcula o mês do VENCIMENTO (que identifica a fatura)
     let month = closingMonth;
     let year = closingYear;
     if (card.dueDay <= card.closingDay) {
@@ -417,17 +400,14 @@ export const useCardStore = create<CardStore>((set, get) => ({
       }
     }
 
-    // Procura a fatura do mês calculado
     const targetInvoice = card.invoices?.find(
       (inv) => inv.month === month && inv.year === year
     );
 
-    // Se não encontrar, retorna a primeira fatura aberta ou a mais recente
     if (!targetInvoice) {
       const openInvoice = card.invoices?.find((inv) => inv.status === "open");
       if (openInvoice) return openInvoice;
 
-      // Retorna a mais recente
       return card.invoices?.[0] || null;
     }
 
@@ -438,8 +418,7 @@ export const useCardStore = create<CardStore>((set, get) => ({
     const { cards } = get();
     const card = cards.find((c) => c.id === cardId);
     if (!card || !card.invoices) return [];
-    
-    // Retorna todas as faturas ordenadas por data
+
     return [...card.invoices].sort((a, b) => {
       if (a.year !== b.year) return a.year - b.year;
       return a.month - b.month;

@@ -31,13 +31,6 @@ export interface YieldsResponse {
   lastUpdate: string;
 }
 
-/**
- * GET /api/investments/yields
- * Calcula os rendimentos de todos os investimentos de renda fixa
- *
- * IMPORTANTE: Calcula o rendimento de CADA aporte individualmente,
- * pois cada depósito tem sua própria data de início e período de rendimento.
- */
 export async function GET() {
   try {
     const session = await auth();
@@ -45,8 +38,7 @@ export async function GET() {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
-    // Busca histórico do CDI (mais dias para cobrir investimentos antigos)
-    const cdiHistory = await fetchCDIHistory(1500); // ~4 anos
+    const cdiHistory = await fetchCDIHistory(1500);
 
     if (!cdiHistory) {
       return NextResponse.json(
@@ -55,7 +47,6 @@ export async function GET() {
       );
     }
 
-    // Busca investimentos de renda fixa com operações
     const investments = await prisma.investment.findMany({
       where: {
         userId: session.user.id,
@@ -73,7 +64,7 @@ export async function GET() {
     const yields: InvestmentYield[] = [];
 
     for (const inv of investments) {
-      // Pula se não tiver indexador ou for N/A
+
       if (!inv.indexer || inv.indexer === "NA") {
         yields.push({
           investmentId: inv.id,
@@ -88,7 +79,6 @@ export async function GET() {
         continue;
       }
 
-      // Pula se não tiver operações (sem aportes)
       if (inv.operations.length === 0) {
         yields.push({
           investmentId: inv.id,
@@ -103,7 +93,6 @@ export async function GET() {
         continue;
       }
 
-      // Filtra operações de depósito e resgate
       const deposits = inv.operations.filter(op => op.type === "deposit" || op.type === "buy");
       const withdrawals = inv.operations.filter(op => op.type === "sell" || op.type === "withdraw");
 
@@ -121,7 +110,6 @@ export async function GET() {
         continue;
       }
 
-      // Calcula rendimento de CADA aporte individualmente
       let totalGrossValue = 0;
       let totalGrossYield = 0;
       let totalPrincipal = 0;
@@ -161,21 +149,17 @@ export async function GET() {
         }
       }
 
-      // Subtrai resgates
       let totalWithdrawals = 0;
       for (const withdrawal of withdrawals) {
         totalWithdrawals += withdrawal.price;
       }
 
-      // Valor líquido final
       const totalNetValue = totalGrossValue - totalIofAmount - totalIrAmount - totalWithdrawals;
 
-      // Calcula percentuais consolidados
       const effectivePrincipal = totalPrincipal - totalWithdrawals;
       const grossYieldPercent = effectivePrincipal > 0 ? (totalGrossYield / effectivePrincipal) * 100 : 0;
       const netYieldPercent = effectivePrincipal > 0 ? (totalNetYield / effectivePrincipal) * 100 : 0;
 
-      // Alíquotas médias
       const avgIofPercent = totalGrossYield > 0 ? (totalIofAmount / totalGrossYield) * 100 : calculateIOF(maxCalendarDays);
       const avgIrPercent = calculateIR(maxCalendarDays);
 
@@ -207,7 +191,6 @@ export async function GET() {
       });
     }
 
-    // Atualiza os valores no banco de dados
     for (const yieldData of yields) {
       if (yieldData.calculation) {
         await prisma.investment.update({

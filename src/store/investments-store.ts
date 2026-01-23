@@ -177,7 +177,6 @@ export const useInvestmentStore = create<InvestmentStore>((set, get) => ({
 
       const result = await response.json();
 
-      // Recarrega os investimentos para ter os valores atualizados
       if (result.updated > 0) {
         const investmentsResponse = await fetch("/api/investments");
         if (investmentsResponse.ok) {
@@ -217,7 +216,6 @@ export const useInvestmentStore = create<InvestmentStore>((set, get) => ({
 
       const result = await response.json();
 
-      // Recarrega os investimentos para ter os valores atualizados
       const investmentsResponse = await fetch("/api/investments");
       if (investmentsResponse.ok) {
         const investments = await investmentsResponse.json();

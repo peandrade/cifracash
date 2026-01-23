@@ -24,7 +24,7 @@ interface FormState {
   totalInvested: string;
   goalValue: string;
   notes: string;
-  // Renda fixa
+
   interestRate: string;
   indexer: IndexerType;
   maturityDate: string;
@@ -46,7 +46,6 @@ interface YieldDetails {
   calendarDays: number;
 }
 
-// Componente interno que recebe investment garantido (não null)
 function EditInvestmentForm({
   investment,
   onClose,
@@ -58,14 +57,14 @@ function EditInvestmentForm({
   onSave: (id: string, data: UpdateInvestmentInput) => Promise<void>;
   isSubmitting: boolean;
 }) {
-  // Estado inicial derivado diretamente da prop
+
   const [form, setForm] = useState<FormState>({
     currentPrice: investment.currentPrice?.toString() || "",
     currentValue: investment.currentValue?.toString() || "",
     totalInvested: investment.totalInvested?.toString() || "",
     goalValue: investment.goalValue?.toString() || "",
     notes: investment.notes || "",
-    // Renda fixa
+
     interestRate: investment.interestRate?.toString() || "",
     indexer: (investment.indexer as IndexerType) || "CDI",
     maturityDate: investment.maturityDate
@@ -74,16 +73,13 @@ function EditInvestmentForm({
     noMaturity: !investment.maturityDate,
   });
 
-  // Estado para detalhes de rendimento (renda fixa)
   const [yieldDetails, setYieldDetails] = useState<YieldDetails | null>(null);
   const [isLoadingYield, setIsLoadingYield] = useState(false);
 
-  // Estado para modal de histórico
   const [showHistory, setShowHistory] = useState(false);
 
   const isFixed = isFixedIncome(investment.type);
 
-  // Busca detalhes de rendimento para renda fixa
   useEffect(() => {
     if (isFixed && investment.indexer && investment.indexer !== "NA") {
       setIsLoadingYield(true);
@@ -119,13 +115,12 @@ function EditInvestmentForm({
       if (form.currentValue) {
         data.currentValue = parseFloat(form.currentValue);
       }
-      // Permite editar total investido para renda fixa
+
       if (form.totalInvested) {
         data.totalInvested = parseFloat(form.totalInvested);
       }
     }
 
-    // Campos de renda fixa
     if (isFixed) {
       data.interestRate = form.interestRate ? parseFloat(form.interestRate) : null;
       data.indexer = form.indexer;
@@ -139,12 +134,10 @@ function EditInvestmentForm({
 
   const isVariable = isVariableIncome(investment.type);
 
-  // Preview do novo valor
   const previewValue = isVariable && form.currentPrice
     ? investment.quantity * parseFloat(form.currentPrice)
     : parseFloat(form.currentValue) || investment.currentValue;
 
-  // Para renda fixa, usa o totalInvested editável
   const previewTotalInvested = isFixed && form.totalInvested
     ? parseFloat(form.totalInvested)
     : investment.totalInvested;
@@ -154,7 +147,6 @@ function EditInvestmentForm({
     ? (previewProfit / previewTotalInvested) * 100
     : 0;
 
-  // Progresso da meta
   const targetProgress = form.goalValue && parseFloat(form.goalValue) > 0
     ? (previewValue / parseFloat(form.goalValue)) * 100
     : 0;
@@ -177,7 +169,7 @@ function EditInvestmentForm({
         }
       `}</style>
       <div className="bg-[var(--bg-secondary)] border border-[var(--border-color-strong)] rounded-2xl w-full max-w-md shadow-2xl animate-slideUp max-h-[90vh] flex flex-col">
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between p-6 border-b border-[var(--border-color-strong)] flex-shrink-0">
           <div className="flex items-center gap-3">
             <span className="text-2xl">{getInvestmentTypeIcon(investment.type)}</span>
@@ -208,16 +200,16 @@ function EditInvestmentForm({
           </div>
         </div>
 
-        {/* Modal de Histórico */}
+        {}
         <TransactionHistoryModal
           isOpen={showHistory}
           onClose={() => setShowHistory(false)}
           investment={investment}
         />
 
-        {/* Form */}
+        {}
         <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto flex-1">
-          {/* Info atual */}
+          {}
           <div className="bg-[var(--bg-hover)] rounded-xl p-4 space-y-2">
             {isVariable && (
               <>
@@ -259,7 +251,7 @@ function EditInvestmentForm({
             )}
           </div>
 
-          {/* Detalhes de rendimento para renda fixa */}
+          {}
           {isFixed && investment.indexer && investment.indexer !== "NA" && (
             <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-3">
@@ -311,7 +303,7 @@ function EditInvestmentForm({
             </div>
           )}
 
-          {/* Total investido editável para renda fixa */}
+          {}
           {isFixed && (
             <div>
               <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
@@ -332,7 +324,7 @@ function EditInvestmentForm({
             </div>
           )}
 
-          {/* Campo de atualização */}
+          {}
           {isVariable ? (
             <div>
               <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
@@ -373,7 +365,7 @@ function EditInvestmentForm({
             </div>
           )}
 
-          {/* Campos de Renda Fixa - Taxa e Indexador */}
+          {}
           {isFixed && (
             <>
               <div className="grid grid-cols-2 gap-3">
@@ -424,7 +416,7 @@ function EditInvestmentForm({
                 </div>
               )}
 
-              {/* Data de Vencimento */}
+              {}
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-sm font-medium text-[var(--text-muted)]">
@@ -458,7 +450,7 @@ function EditInvestmentForm({
             </>
           )}
 
-          {/* Preview da rentabilidade */}
+          {}
           {(form.currentPrice || form.currentValue || (isFixed && form.totalInvested)) && (
             <div className="bg-[var(--bg-hover)] rounded-xl p-4">
               {isFixed && form.totalInvested && (
@@ -480,7 +472,7 @@ function EditInvestmentForm({
             </div>
           )}
 
-          {/* Meta */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               <Target className="w-4 h-4 inline mr-1" />
@@ -497,7 +489,7 @@ function EditInvestmentForm({
             </div>
           </div>
 
-          {/* Barra de progresso */}
+          {}
           {form.goalValue && parseFloat(form.goalValue) > 0 && (
             <div className="bg-[var(--bg-hover)] rounded-xl p-4">
               <div className="flex justify-between items-center mb-2">
@@ -526,7 +518,7 @@ function EditInvestmentForm({
             </div>
           )}
 
-          {/* Notas */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Observações (opcional)
@@ -540,7 +532,7 @@ function EditInvestmentForm({
             />
           </div>
 
-          {/* Botões */}
+          {}
           <div className="flex gap-3 pt-2">
             <button
               type="button"
@@ -563,7 +555,6 @@ function EditInvestmentForm({
   );
 }
 
-// Componente exportado que faz a verificação e usa key para resetar o form
 export function EditInvestmentModal({
   isOpen,
   onClose,
@@ -571,11 +562,9 @@ export function EditInvestmentModal({
   onSave,
   isSubmitting,
 }: EditInvestmentModalProps) {
-  // Não renderiza se fechado ou sem investment
+
   if (!isOpen || !investment) return null;
 
-  // Usa key para forçar remontagem quando investment muda
-  // Isso reseta o estado do form automaticamente
   return (
     <EditInvestmentForm
       key={investment.id}

@@ -13,9 +13,6 @@ const ModalPortal = DialogPrimitive.Portal;
 
 const ModalClose = DialogPrimitive.Close;
 
-/**
- * Overlay - fundo escuro
- */
 const ModalOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
@@ -33,9 +30,6 @@ const ModalOverlay = React.forwardRef<
 ));
 ModalOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
-/**
- * Content - container do modal
- */
 const ModalContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
@@ -45,13 +39,13 @@ const ModalContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        // Posicionamento centralizado
+
         "fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2",
-        // Tamanho com margem
+
         "w-[calc(100%-2rem)] max-w-md max-h-[calc(100vh-2rem)] overflow-y-auto",
-        // Visual
+
         "bg-[#1a1a2e] border border-white/10 rounded-2xl shadow-2xl",
-        // Animações
+
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -61,7 +55,7 @@ const ModalContent = React.forwardRef<
       {...props}
     >
       {children}
-      {/* Botão de fechar */}
+      {}
       <DialogPrimitive.Close
         className={cn(
           "absolute right-4 top-4 p-2 rounded-lg",
@@ -77,9 +71,6 @@ const ModalContent = React.forwardRef<
 ));
 ModalContent.displayName = DialogPrimitive.Content.displayName;
 
-/**
- * Header
- */
 const ModalHeader = ({
   className,
   ...props
@@ -91,9 +82,6 @@ const ModalHeader = ({
 );
 ModalHeader.displayName = "ModalHeader";
 
-/**
- * Footer
- */
 const ModalFooter = ({
   className,
   ...props
@@ -105,9 +93,6 @@ const ModalFooter = ({
 );
 ModalFooter.displayName = "ModalFooter";
 
-/**
- * Title
- */
 const ModalTitle = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Title>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
@@ -120,9 +105,6 @@ const ModalTitle = React.forwardRef<
 ));
 ModalTitle.displayName = DialogPrimitive.Title.displayName;
 
-/**
- * Description
- */
 const ModalDescription = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
@@ -135,9 +117,6 @@ const ModalDescription = React.forwardRef<
 ));
 ModalDescription.displayName = DialogPrimitive.Description.displayName;
 
-/**
- * Body
- */
 const ModalBody = ({
   className,
   ...props

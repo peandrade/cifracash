@@ -19,7 +19,6 @@ export default function DashboardPage() {
   const [evolutionPeriod, setEvolutionPeriod] = useState<EvolutionPeriod>("6m");
   const [budgetRefreshTrigger, setBudgetRefreshTrigger] = useState(0);
 
-  // Estados para templates
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<TransactionTemplate | null>(null);
   const [isTemplateSubmitting, setIsTemplateSubmitting] = useState(false);
@@ -54,10 +53,9 @@ export default function DashboardPage() {
     setIsSubmitting(true);
     try {
       await addTransaction(data);
-      // Atualiza o orçamento após adicionar transação
+
       setBudgetRefreshTrigger((prev) => prev + 1);
 
-      // Salva como template se solicitado
       if (saveAsTemplate) {
         await addTemplate({
           name: saveAsTemplate.name,
@@ -68,7 +66,6 @@ export default function DashboardPage() {
         });
       }
 
-      // Limpa o template selecionado
       setSelectedTemplate(null);
       setInitialTransactionType(undefined);
     } finally {
@@ -76,33 +73,28 @@ export default function DashboardPage() {
     }
   };
 
-  // Handler para ação rápida do FAB
   const handleQuickAdd = (type: TransactionType) => {
     setInitialTransactionType(type);
     setSelectedTemplate(null);
     setIsModalOpen(true);
   };
 
-  // Handler para usar um template
   const handleUseTemplate = (template: TransactionTemplate) => {
     setSelectedTemplate(template);
     setInitialTransactionType(undefined);
     setIsModalOpen(true);
   };
 
-  // Handler para editar template
   const handleEditTemplate = (template: TransactionTemplate) => {
     setEditingTemplate(template);
     setIsTemplateModalOpen(true);
   };
 
-  // Handler para criar template
   const handleCreateTemplate = () => {
     setEditingTemplate(null);
     setIsTemplateModalOpen(true);
   };
 
-  // Handler para salvar template
   const handleSaveTemplate = async (data: {
     name: string;
     description?: string;
@@ -124,7 +116,6 @@ export default function DashboardPage() {
     }
   };
 
-  // Fecha o modal de transação
   const handleCloseTransactionModal = () => {
     setIsModalOpen(false);
     setSelectedTemplate(null);
@@ -135,7 +126,7 @@ export default function DashboardPage() {
     setDeletingId(id);
     try {
       await deleteTransaction(id);
-      // Atualiza o orçamento após deletar transação
+
       setBudgetRefreshTrigger((prev) => prev + 1);
     } finally {
       setDeletingId(null);
@@ -158,7 +149,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen transition-colors duration-300" style={{ backgroundColor: "var(--bg-primary)", color: "var(--text-primary)" }}>
-      {/* Estilos para animações */}
+      {}
       <style>{`
         @keyframes slideUp {
           from { opacity: 0; transform: translateY(20px); }
@@ -175,16 +166,16 @@ export default function DashboardPage() {
         }
       `}</style>
 
-      {/* Background decorativo */}
+      {}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-violet-600/20 rounded-full blur-3xl" />
         <div className="absolute top-1/2 -left-40 w-80 h-80 bg-indigo-600/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-40 right-1/3 w-80 h-80 bg-fuchsia-600/10 rounded-full blur-3xl" />
       </div>
 
-      {/* Container principal */}
+      {}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
+        {}
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold" style={{ color: "var(--text-primary)" }}>
@@ -208,13 +199,13 @@ export default function DashboardPage() {
           </button>
         </header>
 
-        {/* Resumo Consolidado */}
+        {}
         <QuickStats />
 
-        {/* Cards de Resumo do Mês */}
+        {}
         <SummaryCards summary={summary} />
 
-        {/* Gráficos */}
+        {}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <div className="lg:col-span-2">
             <MonthlyChart
@@ -228,15 +219,15 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Evolução Patrimonial */}
+        {}
         <div className="mb-8">
           <WealthEvolutionChart />
         </div>
 
-        {/* Orçamento, Atalhos, Despesas Fixas e Lista de Transações */}
+        {}
         <div className="flex flex-col lg:flex-row gap-6 mb-8">
           <div className="lg:w-1/3 space-y-6">
-            {/* Atalhos (Templates) */}
+            {}
             <TemplateSection
               onUseTemplate={handleUseTemplate}
               onEditTemplate={handleEditTemplate}
@@ -262,10 +253,10 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* FAB para ações rápidas */}
+      {}
       <QuickActionButtons onQuickAdd={handleQuickAdd} />
 
-      {/* Modal de transação */}
+      {}
       <TransactionModal
         isOpen={isModalOpen}
         onClose={handleCloseTransactionModal}
@@ -275,7 +266,7 @@ export default function DashboardPage() {
         template={selectedTemplate}
       />
 
-      {/* Modal de template */}
+      {}
       <TemplateModal
         isOpen={isTemplateModalOpen}
         onClose={() => {

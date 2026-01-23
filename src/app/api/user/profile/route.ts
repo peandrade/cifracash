@@ -2,10 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
-/**
- * GET /api/user/profile
- * Retorna dados do perfil do usuário
- */
 export async function GET() {
   try {
     const session = await auth();
@@ -38,10 +34,6 @@ export async function GET() {
   }
 }
 
-/**
- * PUT /api/user/profile
- * Atualiza dados do perfil
- */
 export async function PUT(request: NextRequest) {
   try {
     const session = await auth();
@@ -52,9 +44,8 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const { name, email } = body;
 
-    // Valida email se fornecido
     if (email) {
-      // Verifica se email já existe (para outro usuário)
+
       const existingUser = await prisma.user.findFirst({
         where: {
           email: email.toLowerCase().trim(),

@@ -18,12 +18,10 @@ export function TransactionFilters({ className }: TransactionFiltersProps) {
   const { filters, setFilters, clearFilters, hasActiveFilters } = useTransactionStore();
   const { categories, fetchCategories } = useCategoryStore();
 
-  // Carrega categorias
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
 
-  // Debounce para busca
   useEffect(() => {
     const timer = setTimeout(() => {
       setFilters({ search: localSearch });
@@ -32,7 +30,6 @@ export function TransactionFilters({ className }: TransactionFiltersProps) {
     return () => clearTimeout(timer);
   }, [localSearch, setFilters]);
 
-  // Sincroniza busca local com store
   useEffect(() => {
     setLocalSearch(filters.search);
   }, [filters.search]);
@@ -64,12 +61,11 @@ export function TransactionFilters({ className }: TransactionFiltersProps) {
     filters.maxValue !== null,
   ].filter(Boolean).length;
 
-  // Lista única de categorias
   const uniqueCategories = [...new Set(categories.map((c) => c.name))];
 
   return (
     <div className={className}>
-      {/* Barra de busca principal */}
+      {}
       <div className="flex gap-3 items-center">
         <div className="relative flex-1">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-dimmed)]" />
@@ -90,7 +86,7 @@ export function TransactionFilters({ className }: TransactionFiltersProps) {
           )}
         </div>
 
-        {/* Botão de filtros avançados */}
+        {}
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className={`flex items-center gap-2 px-4 py-3 rounded-xl font-medium transition-all ${
@@ -114,10 +110,10 @@ export function TransactionFilters({ className }: TransactionFiltersProps) {
         </button>
       </div>
 
-      {/* Filtros expandidos */}
+      {}
       {isExpanded && (
         <div className="mt-4 p-4 bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl space-y-4 animate-slideUp">
-          {/* Tipo de transação */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Tipo
@@ -147,7 +143,7 @@ export function TransactionFilters({ className }: TransactionFiltersProps) {
             </div>
           </div>
 
-          {/* Período */}
+          {}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
@@ -173,7 +169,7 @@ export function TransactionFilters({ className }: TransactionFiltersProps) {
             </div>
           </div>
 
-          {/* Faixa de valor */}
+          {}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
@@ -209,7 +205,7 @@ export function TransactionFilters({ className }: TransactionFiltersProps) {
             </div>
           </div>
 
-          {/* Categorias */}
+          {}
           {uniqueCategories.length > 0 && (
             <div>
               <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
@@ -233,7 +229,7 @@ export function TransactionFilters({ className }: TransactionFiltersProps) {
             </div>
           )}
 
-          {/* Botão limpar filtros */}
+          {}
           {hasActiveFilters() && (
             <div className="pt-2 border-t border-[var(--border-color)]">
               <button

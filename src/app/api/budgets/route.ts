@@ -6,17 +6,13 @@ export interface BudgetWithSpent {
   id: string;
   category: string;
   limit: number;
-  month: number; // 0 = orçamento fixo
-  year: number;  // 0 = orçamento fixo
+  month: number;
+  year: number;
   spent: number;
   percentage: number;
   remaining: number;
 }
 
-/**
- * GET /api/budgets
- * Lista todos os orçamentos com os gastos do mês atual
- */
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
@@ -28,20 +24,17 @@ export async function GET(request: NextRequest) {
     const month = parseInt(searchParams.get("month") || String(new Date().getMonth() + 1));
     const year = parseInt(searchParams.get("year") || String(new Date().getFullYear()));
 
-    // Busca orçamentos (fixos month=0/year=0 e do mês específico)
     const budgets = await prisma.budget.findMany({
       where: {
         userId: session.user.id,
         OR: [
-          { month: 0, year: 0 }, // Orçamentos fixos
-          { month, year }, // Orçamentos do mês específico
+          { month: 0, year: 0 },
+          { month, year },
         ],
       },
       orderBy: { category: "asc" },
     });
 
-    // Busca gastos do mês por categoria (transações)
-    // Exclui "Fatura Cartão" pois as compras já são contadas separadamente
     const startOfMonth = new Date(year, month - 1, 1);
     const endOfMonth = new Date(year, month, 0, 23, 59, 59);
 
@@ -51,7 +44,7 @@ export async function GET(request: NextRequest) {
         userId: session.user.id,
         type: "expense",
         category: {
-          not: "Fatura Cartão", // Evita contagem dupla com compras do cartão
+          not: "Fatura Cartão",
         },
         date: {
           gte: startOfMonth,
@@ -63,7 +56,6 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Busca gastos do cartão de crédito do mês
     const cardPurchases = await prisma.purchase.groupBy({
       by: ["category"],
       where: {
@@ -82,7 +74,6 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Combina os gastos por categoria
     const spentByCategory: Record<string, number> = {};
 
     for (const expense of expenses) {
@@ -93,7 +84,6 @@ export async function GET(request: NextRequest) {
       spentByCategory[purchase.category] = (spentByCategory[purchase.category] || 0) + (purchase._sum.value || 0);
     }
 
-    // Monta resposta com gastos
     const budgetsWithSpent: BudgetWithSpent[] = budgets.map((budget) => {
       const spent = spentByCategory[budget.category] || 0;
       const percentage = budget.limit > 0 ? (spent / budget.limit) * 100 : 0;
@@ -111,7 +101,6 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    // Calcula totais
     const totalLimit = budgetsWithSpent.reduce((sum, b) => sum + b.limit, 0);
     const totalSpent = budgetsWithSpent.reduce((sum, b) => sum + b.spent, 0);
 
@@ -135,12 +124,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/**
- * POST /api/budgets
- * Cria ou atualiza um orçamento
- *
- * Nota: month=0 e year=0 representam orçamento fixo (todos os meses)
- */
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
@@ -158,11 +141,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Se isFixed, usa 0 para representar "todos os meses"
     const budgetMonth = isFixed ? 0 : (month || new Date().getMonth() + 1);
     const budgetYear = isFixed ? 0 : (year || new Date().getFullYear());
 
-    // Upsert: cria ou atualiza
     const budget = await prisma.budget.upsert({
       where: {
         category_month_year_userId: {

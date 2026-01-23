@@ -6,9 +6,6 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-/**
- * GET /api/cards/[id]
- */
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -53,9 +50,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-/**
- * PUT /api/cards/[id]
- */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -66,7 +60,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const { id } = await params;
     const body = await request.json();
 
-    // Verifica se o cartão pertence ao usuário
     const existing = await prisma.creditCard.findUnique({
       where: { id },
     });
@@ -103,9 +96,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-/**
- * DELETE /api/cards/[id]
- */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -115,7 +105,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
     const { id } = await params;
 
-    // Verifica se o cartão pertence ao usuário
     const existing = await prisma.creditCard.findUnique({
       where: { id },
     });

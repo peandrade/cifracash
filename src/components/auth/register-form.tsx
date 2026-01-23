@@ -18,7 +18,6 @@ export function RegisterForm() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Password strength calculator
   const getPasswordStrength = (pass: string) => {
     let strength = 0;
     if (pass.length >= 6) strength++;
@@ -37,13 +36,11 @@ export function RegisterForm() {
     e.preventDefault();
     setError("");
 
-    // Validate password match
     if (password !== confirmPassword) {
       setError("As senhas não coincidem");
       return;
     }
 
-    // Validate password length
     if (password.length < 6) {
       setError("A senha deve ter pelo menos 6 caracteres");
       return;
@@ -52,7 +49,7 @@ export function RegisterForm() {
     setIsLoading(true);
 
     try {
-      // Register the user
+
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -66,7 +63,6 @@ export function RegisterForm() {
         return;
       }
 
-      // Auto-login after registration
       const result = await signIn("credentials", {
         email,
         password,
@@ -95,7 +91,7 @@ export function RegisterForm() {
         borderWidth: "1px",
       }}
     >
-      {/* Logo */}
+      {}
       <div className="text-center mb-8">
         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center mx-auto shadow-lg shadow-violet-500/25 mb-4">
           <span className="text-3xl">💰</span>
@@ -111,7 +107,7 @@ export function RegisterForm() {
         </p>
       </div>
 
-      {/* Error Message */}
+      {}
       {error && (
         <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-3">
           <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
@@ -119,7 +115,7 @@ export function RegisterForm() {
         </div>
       )}
 
-      {/* Form */}
+      {}
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label
@@ -221,7 +217,7 @@ export function RegisterForm() {
               )}
             </button>
           </div>
-          {/* Password Strength Indicator */}
+          {}
           {password && (
             <div className="mt-3">
               <div className="flex gap-1 mb-1">
@@ -286,7 +282,7 @@ export function RegisterForm() {
               )}
             </button>
           </div>
-          {/* Password match indicator */}
+          {}
           {confirmPassword && (
             <p
               className="text-xs mt-2"
@@ -316,7 +312,7 @@ export function RegisterForm() {
         </button>
       </form>
 
-      {/* Login Link */}
+      {}
       <p
         className="mt-6 text-center text-sm"
         style={{ color: "var(--text-muted)" }}

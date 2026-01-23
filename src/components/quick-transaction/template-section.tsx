@@ -168,7 +168,7 @@ export function TemplateSection({
                   </div>
                 </div>
 
-                {/* Menu de ações */}
+                {}
                 <div className="relative">
                   <button
                     onClick={(e) => {
@@ -212,7 +212,7 @@ export function TemplateSection({
                 </div>
               </div>
 
-              {/* Valor (se definido) */}
+              {}
               {template.value && (
                 <p
                   className={`mt-2 text-sm font-medium ${
@@ -227,7 +227,7 @@ export function TemplateSection({
         </div>
       )}
 
-      {/* Confirmação de exclusão */}
+      {}
       <ConfirmDialog
         isOpen={!!deleteConfirm}
         onClose={() => setDeleteConfirm(null)}

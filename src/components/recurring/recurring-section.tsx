@@ -23,7 +23,7 @@ interface RecurringData {
 }
 
 interface RecurringSectionProps {
-  onExpenseLaunched?: () => void; // Callback para atualizar transações e orçamento
+  onExpenseLaunched?: () => void;
 }
 
 export function RecurringSection({ onExpenseLaunched }: RecurringSectionProps) {
@@ -163,7 +163,7 @@ export function RecurringSection({ onExpenseLaunched }: RecurringSectionProps) {
   return (
     <>
       <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)] overflow-hidden">
-        {/* Header */}
+        {}
         <div className="p-6 border-b border-[var(--border-color)]">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -190,7 +190,7 @@ export function RecurringSection({ onExpenseLaunched }: RecurringSectionProps) {
             </button>
           </div>
 
-          {/* Resumo */}
+          {}
           {data && data.expenses.length > 0 && (
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-[var(--bg-hover)] rounded-xl p-3 text-center">
@@ -209,7 +209,7 @@ export function RecurringSection({ onExpenseLaunched }: RecurringSectionProps) {
           )}
         </div>
 
-        {/* Lista */}
+        {}
         <div className="p-4 space-y-3 max-h-[400px] overflow-y-auto">
           {data?.expenses.length === 0 ? (
             <div className="text-center py-6">
@@ -221,7 +221,7 @@ export function RecurringSection({ onExpenseLaunched }: RecurringSectionProps) {
             </div>
           ) : (
             <>
-              {/* Pendentes */}
+              {}
               {pendingExpenses.length > 0 && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -251,7 +251,7 @@ export function RecurringSection({ onExpenseLaunched }: RecurringSectionProps) {
                 </div>
               )}
 
-              {/* Lançadas */}
+              {}
               {launchedExpenses.length > 0 && (
                 <div className="space-y-2">
                   <span className="text-xs font-medium text-emerald-400 uppercase tracking-wide">

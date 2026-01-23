@@ -1,6 +1,4 @@
-// ============================================
-// TRANSAÇÕES
-// ============================================
+
 
 export type TransactionType = "income" | "expense";
 
@@ -22,10 +20,6 @@ export interface CreateTransactionInput {
   description?: string;
   date: Date;
 }
-
-// ============================================
-// TEMPLATES DE TRANSAÇÃO
-// ============================================
 
 export interface TransactionTemplate {
   id: string;
@@ -72,14 +66,10 @@ export interface CategoryData {
 export type EvolutionPeriod = "1w" | "15d" | "1m" | "6m" | "1y";
 
 export interface MonthlyEvolution {
-  month: string; // Can be day label or month name depending on period
+  month: string;
   income: number;
   expense: number;
 }
-
-// ============================================
-// INVESTIMENTOS
-// ============================================
 
 export type InvestmentType =
   | "stock"
@@ -94,12 +84,10 @@ export type InvestmentType =
 
 export type OperationType = "buy" | "sell" | "deposit" | "withdraw";
 
-// Tipos que usam quantidade x preço
 export const VARIABLE_INCOME_TYPES: InvestmentType[] = [
   "stock", "fii", "etf", "crypto"
 ];
 
-// Tipos que usam saldo direto
 export const FIXED_INCOME_TYPES: InvestmentType[] = [
   "cdb", "treasury", "lci_lca", "savings", "other"
 ];
@@ -112,7 +100,6 @@ export function isFixedIncome(type: InvestmentType): boolean {
   return FIXED_INCOME_TYPES.includes(type);
 }
 
-// Tipos de indexador para renda fixa
 export type IndexerType = "CDI" | "IPCA" | "SELIC" | "PREFIXADO" | "NA";
 
 export const INDEXER_TYPES: { value: IndexerType; label: string }[] = [
@@ -130,23 +117,19 @@ export interface Investment {
   ticker?: string | null;
   institution?: string | null;
 
-  // Renda Variável
   quantity: number;
   averagePrice: number;
   currentPrice: number;
 
-  // Valores
   totalInvested: number;
   currentValue: number;
   profitLoss: number;
   profitLossPercent: number;
 
-  // Renda Fixa
-  interestRate?: number | null;    // Taxa (ex: 100 para 100% CDI, 5 para IPCA+5%)
-  indexer?: IndexerType | null;    // CDI, IPCA, SELIC, PREFIXADO
-  maturityDate?: Date | string | null; // Data de vencimento
+  interestRate?: number | null;
+  indexer?: IndexerType | null;
+  maturityDate?: Date | string | null;
 
-  // Meta
   goalValue?: number | null;
 
   notes?: string | null;
@@ -175,15 +158,15 @@ export interface CreateInvestmentInput {
   institution?: string;
   goalValue?: number;
   notes?: string;
-  // Renda Fixa
+
   interestRate?: number;
   indexer?: IndexerType;
   maturityDate?: Date;
-  // Depósito inicial (obrigatório para renda fixa)
+
   initialDeposit?: number;
   depositDate?: Date;
-  // Controle de saldo
-  skipBalanceCheck?: boolean; // Ignora verificação de saldo (para investimentos antigos)
+
+  skipBalanceCheck?: boolean;
 }
 
 export interface UpdateInvestmentInput {
@@ -195,7 +178,7 @@ export interface UpdateInvestmentInput {
   totalInvested?: number;
   goalValue?: number | null;
   notes?: string;
-  // Renda Fixa
+
   interestRate?: number | null;
   indexer?: IndexerType | null;
   maturityDate?: Date | null;
@@ -211,8 +194,8 @@ export interface CreateOperationInput {
   date: Date;
   fees?: number;
   notes?: string;
-  // Controle de saldo (apenas para compra/depósito)
-  skipBalanceCheck?: boolean; // Ignora verificação de saldo
+
+  skipBalanceCheck?: boolean;
 }
 
 export interface InvestmentSummary {

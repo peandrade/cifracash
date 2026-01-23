@@ -21,7 +21,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Verifica preferência salva ou do sistema
+
     const savedTheme = localStorage.getItem("fincontrol-theme") as Theme | null;
     if (savedTheme) {
       setTheme(savedTheme);
@@ -34,12 +34,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!mounted) return;
 
-    // Atualiza classe no documento
     const root = document.documentElement;
     root.classList.remove("light", "dark");
     root.classList.add(theme);
 
-    // Salva preferência
     localStorage.setItem("fincontrol-theme", theme);
   }, [theme, mounted]);
 

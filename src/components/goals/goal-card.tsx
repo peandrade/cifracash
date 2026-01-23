@@ -81,7 +81,7 @@ export function GoalCard({ goal, onContribute, onDelete }: GoalCardProps) {
         </div>
       </div>
 
-      {/* Valores */}
+      {}
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm text-[var(--text-muted)]">
           {formatCurrency(goal.currentValue)}
@@ -91,7 +91,7 @@ export function GoalCard({ goal, onContribute, onDelete }: GoalCardProps) {
         </span>
       </div>
 
-      {/* Progress bar */}
+      {}
       <div className="h-2 bg-[var(--bg-primary)] rounded-full overflow-hidden mb-2">
         <div
           className="h-full rounded-full transition-all duration-500"
@@ -102,7 +102,7 @@ export function GoalCard({ goal, onContribute, onDelete }: GoalCardProps) {
         />
       </div>
 
-      {/* Informações adicionais */}
+      {}
       <div className="flex items-center justify-between text-xs text-[var(--text-dimmed)]">
         <div className="flex items-center gap-3">
           <span

@@ -9,8 +9,8 @@ interface SummaryCardsProps {
 }
 
 export function SummaryCards({ summary }: SummaryCardsProps) {
-  const usagePercent = summary.totalLimit > 0 
-    ? (summary.usedLimit / summary.totalLimit) * 100 
+  const usagePercent = summary.totalLimit > 0
+    ? (summary.usedLimit / summary.totalLimit) * 100
     : 0;
 
   const cardStyle = {
@@ -22,7 +22,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      {/* Limite Total */}
+      {}
       <div className="backdrop-blur rounded-2xl p-5 transition-colors duration-300" style={cardStyle}>
         <div className="flex items-center gap-3 mb-3">
           <div className="p-2 rounded-xl bg-violet-500/20">
@@ -49,7 +49,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
         </div>
       </div>
 
-      {/* Limite Disponível */}
+      {}
       <div className="backdrop-blur rounded-2xl p-5 transition-colors duration-300" style={cardStyle}>
         <div className="flex items-center gap-3 mb-3">
           <div className="p-2 rounded-xl bg-emerald-500/20">
@@ -65,7 +65,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
         </p>
       </div>
 
-      {/* Fatura Atual */}
+      {}
       <div className="backdrop-blur rounded-2xl p-5 transition-colors duration-300" style={cardStyle}>
         <div className="flex items-center gap-3 mb-3">
           <div className="p-2 rounded-xl bg-blue-500/20">
@@ -79,7 +79,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
         <p className="text-sm mt-1" style={{ color: "var(--text-dimmed)" }}>Este mês</p>
       </div>
 
-      {/* Próxima Fatura */}
+      {}
       <div className="backdrop-blur rounded-2xl p-5 transition-colors duration-300" style={cardStyle}>
         <div className="flex items-center gap-3 mb-3">
           <div className="p-2 rounded-xl bg-orange-500/20">

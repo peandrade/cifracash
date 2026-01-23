@@ -17,7 +17,6 @@ export function InvoiceSelector({
 }: InvoiceSelectorProps) {
   if (invoices.length === 0) return null;
 
-  // Ordena por ano e mês (mais recente primeiro)
   const sortedInvoices = [...invoices].sort((a, b) => {
     if (a.year !== b.year) return a.year - b.year;
     return a.month - b.month;

@@ -25,9 +25,6 @@ import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/constants";
 import { formatDateForInput } from "@/lib/utils";
 import type { TransactionType, CreateTransactionInput } from "@/types";
 
-/**
- * Schema de validação com Zod
- */
 const transactionSchema = z.object({
   type: z.enum(["income", "expense"]),
   value: z
@@ -47,9 +44,6 @@ interface TransactionFormProps {
   isSubmitting?: boolean;
 }
 
-/**
- * TransactionForm - Modal com formulário para criar transações
- */
 export function TransactionForm({
   open,
   onOpenChange,
@@ -105,7 +99,7 @@ export function TransactionForm({
 
         <form onSubmit={handleSubmit(handleFormSubmit)}>
           <ModalBody className="p-6 space-y-6">
-            {/* Tipo de transação */}
+            {}
             <div className="flex gap-3">
               <button
                 type="button"
@@ -137,7 +131,7 @@ export function TransactionForm({
               </button>
             </div>
 
-            {/* Valor */}
+            {}
             <Input
               type="number"
               step="0.01"
@@ -148,7 +142,7 @@ export function TransactionForm({
               {...register("value", { valueAsNumber: true })}
             />
 
-            {/* Categoria */}
+            {}
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-2">
                 Categoria
@@ -175,7 +169,7 @@ export function TransactionForm({
               )}
             </div>
 
-            {/* Data */}
+            {}
             <Input
               type="date"
               label="Data"
@@ -183,7 +177,7 @@ export function TransactionForm({
               {...register("date")}
             />
 
-            {/* Descrição */}
+            {}
             <Input
               type="text"
               label="Descrição (opcional)"

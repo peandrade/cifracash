@@ -6,14 +6,6 @@ interface RouteParams {
   params: Promise<{ id: string; invoiceId: string }>;
 }
 
-/**
- * PUT /api/cards/[id]/invoices/[invoiceId]
- * Atualiza status da fatura (pagar, fechar)
- *
- * Quando a fatura é paga:
- * - Cria uma transação de saída para registrar o pagamento
- * - Isso garante que a evolução patrimonial seja correta
- */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -24,7 +16,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const { id: cardId, invoiceId } = await params;
     const body = await request.json();
 
-    // Verifica se o cartão pertence ao usuário
     const card = await prisma.creditCard.findUnique({
       where: { id: cardId },
     });
@@ -37,7 +28,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
     }
 
-    // Busca a fatura atual
     const currentInvoice = await prisma.invoice.findUnique({
       where: { id: invoiceId },
       include: { creditCard: true },
@@ -53,20 +43,17 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     if (body.status) {
       updateData.status = body.status;
 
-      // Se pagou, marca paidAmount igual ao total
       if (body.status === "paid") {
         paymentAmount = currentInvoice.total - currentInvoice.paidAmount;
         updateData.paidAmount = currentInvoice.total;
       }
     }
 
-    // Pagamento parcial
     if (body.paidAmount !== undefined && body.paidAmount > currentInvoice.paidAmount) {
       paymentAmount = body.paidAmount - currentInvoice.paidAmount;
       updateData.paidAmount = body.paidAmount;
     }
 
-    // Atualiza a fatura
     const invoice = await prisma.invoice.update({
       where: { id: invoiceId },
       data: updateData,
@@ -77,7 +64,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       },
     });
 
-    // Se houve pagamento, cria transação para registrar saída de dinheiro
     if (paymentAmount > 0) {
       const cardName = currentInvoice.creditCard?.name || "Cartão";
       const monthName = new Date(currentInvoice.year, currentInvoice.month - 1)

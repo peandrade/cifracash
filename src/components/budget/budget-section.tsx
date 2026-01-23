@@ -20,7 +20,7 @@ interface BudgetData {
 }
 
 interface BudgetSectionProps {
-  refreshTrigger?: number; // Incrementar para forçar refresh
+  refreshTrigger?: number;
 }
 
 export function BudgetSection({ refreshTrigger = 0 }: BudgetSectionProps) {
@@ -120,7 +120,7 @@ export function BudgetSection({ refreshTrigger = 0 }: BudgetSectionProps) {
   return (
     <>
       <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)] overflow-hidden">
-        {/* Header */}
+        {}
         <div className="p-6 border-b border-[var(--border-color)]">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -148,7 +148,7 @@ export function BudgetSection({ refreshTrigger = 0 }: BudgetSectionProps) {
             </button>
           </div>
 
-          {/* Resumo Total */}
+          {}
           {data && data.budgets.length > 0 && (
             <div className="bg-[var(--bg-hover)] rounded-xl p-4">
               <div className="flex items-center justify-between mb-3">
@@ -199,7 +199,7 @@ export function BudgetSection({ refreshTrigger = 0 }: BudgetSectionProps) {
           )}
         </div>
 
-        {/* Lista */}
+        {}
         <div className="p-6">
           <BudgetList
             budgets={data?.budgets || []}

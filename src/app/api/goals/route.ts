@@ -17,17 +17,13 @@ export interface GoalWithProgress {
   completedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
-  // Campos calculados
+
   progress: number;
   remaining: number;
-  monthlyNeeded: number | null; // Quanto precisa guardar por mês para atingir
+  monthlyNeeded: number | null;
   contributionsCount: number;
 }
 
-/**
- * GET /api/goals
- * Lista todas as metas financeiras com progresso calculado
- */
 export async function GET() {
   try {
     const session = await auth();
@@ -45,14 +41,12 @@ export async function GET() {
       orderBy: [{ isCompleted: "asc" }, { targetDate: "asc" }],
     });
 
-    // Calcula progresso e valores adicionais
     const goalsWithProgress: GoalWithProgress[] = goals.map((goal) => {
       const progress = goal.targetValue > 0
         ? Math.min((goal.currentValue / goal.targetValue) * 100, 100)
         : 0;
       const remaining = Math.max(goal.targetValue - goal.currentValue, 0);
 
-      // Calcula quanto precisa guardar por mês
       let monthlyNeeded: number | null = null;
       if (goal.targetDate && remaining > 0) {
         const now = new Date();
@@ -75,7 +69,6 @@ export async function GET() {
       };
     });
 
-    // Calcula resumo
     const summary = {
       totalGoals: goals.length,
       completedGoals: goals.filter((g) => g.isCompleted).length,
@@ -94,10 +87,6 @@ export async function GET() {
   }
 }
 
-/**
- * POST /api/goals
- * Cria uma nova meta financeira
- */
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
@@ -129,7 +118,6 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Se já tem valor inicial, cria contribuição
     if (currentValue && currentValue > 0) {
       await prisma.goalContribution.create({
         data: {

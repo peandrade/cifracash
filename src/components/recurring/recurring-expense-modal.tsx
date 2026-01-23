@@ -50,7 +50,6 @@ export function RecurringExpenseModal({
       notes: notes || undefined,
     });
 
-    // Reset
     setDescription("");
     setValue("");
     setCategory("");
@@ -64,7 +63,7 @@ export function RecurringExpenseModal({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-[var(--bg-secondary)] border border-[var(--border-color-strong)] rounded-2xl w-full max-w-md shadow-2xl animate-slideUp max-h-[90vh] flex flex-col">
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between p-6 border-b border-[var(--border-color-strong)] flex-shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-amber-500/10 rounded-lg">
@@ -87,9 +86,9 @@ export function RecurringExpenseModal({
           </button>
         </div>
 
-        {/* Form */}
+        {}
         <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto flex-1">
-          {/* Descrição */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Descrição
@@ -104,7 +103,7 @@ export function RecurringExpenseModal({
             />
           </div>
 
-          {/* Valor */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Valor Mensal
@@ -123,7 +122,7 @@ export function RecurringExpenseModal({
             </div>
           </div>
 
-          {/* Categoria */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Categoria
@@ -149,7 +148,7 @@ export function RecurringExpenseModal({
             </select>
           </div>
 
-          {/* Dia de vencimento */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               <Calendar className="w-4 h-4 inline mr-1" />
@@ -175,7 +174,7 @@ export function RecurringExpenseModal({
             </p>
           </div>
 
-          {/* Observações */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Observações (opcional)
@@ -189,7 +188,7 @@ export function RecurringExpenseModal({
             />
           </div>
 
-          {/* Botões */}
+          {}
           <div className="flex gap-3 pt-2">
             <button
               type="button"

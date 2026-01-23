@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { fetchQuotes } from "@/lib/quotes-service";
 import { InvestmentType } from "@prisma/client";
 
-// Tipos que suportam atualização automática de cotação
 const QUOTABLE_TYPES: InvestmentType[] = [
   InvestmentType.stock,
   InvestmentType.fii,
@@ -11,15 +10,10 @@ const QUOTABLE_TYPES: InvestmentType[] = [
   InvestmentType.crypto,
 ];
 
-/**
- * POST /api/investments/quotes
- * Atualiza as cotações de todos os investimentos com ticker
- */
 export async function POST() {
   try {
     console.log("[Quotes API] Iniciando busca de investimentos...");
 
-    // Busca investimentos que têm ticker e são de tipos suportados
     const investments = await prisma.investment.findMany({
       where: {
         ticker: { not: null },
@@ -47,7 +41,6 @@ export async function POST() {
 
     console.log("[Quotes API] Buscando cotações...");
 
-    // Busca cotações
     const quotes = await fetchQuotes(
       investments.map((inv) => ({ ticker: inv.ticker!, type: inv.type }))
     );
@@ -57,7 +50,6 @@ export async function POST() {
     const updated: string[] = [];
     const errors: Array<{ ticker: string; error: string }> = [];
 
-    // Atualiza cada investimento
     for (const investment of investments) {
       const ticker = investment.ticker!.toUpperCase();
       const quote = quotes.get(ticker);
@@ -70,7 +62,6 @@ export async function POST() {
         continue;
       }
 
-      // Calcula novo valor
       const currentPrice = quote.price;
       const currentValue = investment.quantity * currentPrice;
       const profitLoss = currentValue - investment.totalInvested;
@@ -79,7 +70,6 @@ export async function POST() {
           ? (profitLoss / investment.totalInvested) * 100
           : 0;
 
-      // Atualiza no banco
       await prisma.investment.update({
         where: { id: investment.id },
         data: {
@@ -113,11 +103,6 @@ export async function POST() {
   }
 }
 
-/**
- * GET /api/investments/quotes
- * Retorna as cotações atuais sem atualizar o banco
- * (útil para preview)
- */
 export async function GET() {
   try {
     const investments = await prisma.investment.findMany({

@@ -2,16 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
-// Tipos que usam quantidade x preço
 const VARIABLE_INCOME_TYPES = ["stock", "fii", "etf", "crypto"];
 
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-/**
- * GET /api/investments/[id]
- */
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -49,12 +45,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-/**
- * PUT /api/investments/[id]
- *
- * Renda Variável: atualiza currentPrice -> recalcula currentValue
- * Renda Fixa: atualiza currentValue diretamente (saldo atual)
- */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -83,14 +73,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const isVariable = VARIABLE_INCOME_TYPES.includes(existing.type);
     const updateData: Record<string, unknown> = {};
 
-    // Campos básicos
     if (body.name !== undefined) updateData.name = body.name;
     if (body.ticker !== undefined) updateData.ticker = body.ticker;
     if (body.institution !== undefined) updateData.institution = body.institution;
     if (body.notes !== undefined) updateData.notes = body.notes;
     if (body.goalValue !== undefined) updateData.goalValue = body.goalValue;
 
-    // Campos de renda fixa
     if (body.interestRate !== undefined) updateData.interestRate = body.interestRate;
     if (body.indexer !== undefined) updateData.indexer = body.indexer;
     if (body.maturityDate !== undefined) {
@@ -98,7 +86,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     }
 
     if (isVariable) {
-      // RENDA VARIÁVEL: Atualiza preço atual
+
       if (body.currentPrice !== undefined) {
         const currentPrice = Number(body.currentPrice);
         const currentValue = existing.quantity * currentPrice;
@@ -113,7 +101,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         updateData.profitLossPercent = profitLossPercent;
       }
     } else {
-      // RENDA FIXA: Pode atualizar saldo atual e/ou total investido
+
       const newTotalInvested = body.totalInvested !== undefined
         ? Number(body.totalInvested)
         : existing.totalInvested;
@@ -121,17 +109,14 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         ? Number(body.currentValue)
         : existing.currentValue;
 
-      // Atualiza totalInvested se fornecido
       if (body.totalInvested !== undefined) {
         updateData.totalInvested = newTotalInvested;
       }
 
-      // Atualiza currentValue se fornecido
       if (body.currentValue !== undefined) {
         updateData.currentValue = newCurrentValue;
       }
 
-      // Recalcula profit/loss sempre que um dos dois muda
       if (body.totalInvested !== undefined || body.currentValue !== undefined) {
         const profitLoss = newCurrentValue - newTotalInvested;
         const profitLossPercent = newTotalInvested > 0
@@ -161,9 +146,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-/**
- * DELETE /api/investments/[id]
- */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();

@@ -52,7 +52,6 @@ function CartoesContent() {
     fetchCards();
   }, [fetchCards]);
 
-  // Seleciona cartão da URL quando carrega
   useEffect(() => {
     if (cardIdFromUrl && cards.length > 0) {
       const cardFromUrl = cards.find((c) => c.id === cardIdFromUrl);
@@ -63,16 +62,15 @@ function CartoesContent() {
     }
   }, [cardIdFromUrl, cards, selectCard]);
 
-  // Quando muda o cartão selecionado, seleciona a fatura com valor ou a mais recente
   useEffect(() => {
     if (selectedCard) {
       const invoices = getCardInvoices(selectedCard.id);
-      // Prioriza faturas com valor
+
       const invoiceWithValue = invoices.find((inv) => inv.total > 0);
       if (invoiceWithValue) {
         setSelectedInvoice(invoiceWithValue);
       } else if (invoices.length > 0) {
-        setSelectedInvoice(invoices[invoices.length - 1]); // Mais recente
+        setSelectedInvoice(invoices[invoices.length - 1]);
       } else {
         setSelectedInvoice(null);
       }
@@ -83,14 +81,12 @@ function CartoesContent() {
 
   const summary = getCardSummary();
 
-  // Previsão: todos os cartões ou cartão individual
   const invoicePreview = viewMode === "all"
     ? getAllCardsInvoicePreview()
     : selectedCard
       ? getInvoicePreview(selectedCard.id)
       : [];
 
-  // Faturas do cartão selecionado
   const cardInvoices = selectedCard ? getCardInvoices(selectedCard.id) : [];
 
   const handleAddCard = async (data: CreateCardInput) => {
@@ -138,10 +134,9 @@ function CartoesContent() {
     setSelectedInvoice(invoice);
   };
 
-  // Calcula a próxima fatura com valor para cada cartão
   const getNextInvoiceWithValue = (card: CardType) => {
     const invoices = card.invoices || [];
-    // Ordena por data e pega a primeira com valor
+
     const sorted = [...invoices].sort((a, b) => {
       if (a.year !== b.year) return a.year - b.year;
       return a.month - b.month;
@@ -173,16 +168,16 @@ function CartoesContent() {
         .animate-slideUp { animation: slideUp 0.3s ease-out; }
       `}</style>
 
-      {/* Background */}
+      {}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-violet-600/20 rounded-full blur-3xl" />
         <div className="absolute top-1/2 -left-40 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-40 right-1/3 w-80 h-80 bg-pink-600/10 rounded-full blur-3xl" />
       </div>
 
-      {/* Container */}
+      {}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
+        {}
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold" style={{ color: "var(--text-primary)" }}>
@@ -217,10 +212,10 @@ function CartoesContent() {
           </div>
         </header>
 
-        {/* Cards de Resumo */}
+        {}
         <SummaryCards summary={summary} />
 
-        {/* Toggle: Todos vs Individual */}
+        {}
         <div className="flex items-center gap-2 mb-6">
           <button
             onClick={() => setViewMode("all")}
@@ -251,9 +246,9 @@ function CartoesContent() {
           )}
         </div>
 
-        {/* Grid Principal */}
+        {}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Lista de Cartões */}
+          {}
           <CardList
             cards={cards}
             selectedCardId={viewMode === "single" ? selectedCard?.id : null}
@@ -262,7 +257,7 @@ function CartoesContent() {
             deletingId={deletingId}
           />
 
-          {/* Previsão de Faturas */}
+          {}
           <InvoicePreviewChart
             data={invoicePreview}
             cardColor={viewMode === "single" ? selectedCard?.color : "#8B5CF6"}
@@ -270,7 +265,7 @@ function CartoesContent() {
           />
         </div>
 
-        {/* Detalhes da Fatura - modo individual */}
+        {}
         {viewMode === "single" && (
           <InvoiceDetail
             invoices={cardInvoices}
@@ -284,7 +279,7 @@ function CartoesContent() {
           />
         )}
 
-        {/* Resumo consolidado quando "Todos" */}
+        {}
         {viewMode === "all" && (
           <div
             className="backdrop-blur rounded-2xl p-6 transition-colors duration-300"
@@ -300,7 +295,7 @@ function CartoesContent() {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {cards.map((card) => {
-                // Pega a próxima fatura com valor
+
                 const nextInvoice = getNextInvoiceWithValue(card);
                 const invoiceTotal = nextInvoice?.total || 0;
                 const usagePercent = card.limit > 0 ? (invoiceTotal / card.limit) * 100 : 0;
@@ -344,7 +339,7 @@ function CartoesContent() {
                       </p>
                     </div>
 
-                    {/* Barra de uso do limite */}
+                    {}
                     {card.limit > 0 && (
                       <div className="mt-2">
                         <div className="flex justify-between text-xs mb-1" style={{ color: "var(--text-dimmed)" }}>
@@ -374,7 +369,7 @@ function CartoesContent() {
         )}
       </div>
 
-      {/* Modais */}
+      {}
       <CardModal
         isOpen={isCardModalOpen}
         onClose={() => setIsCardModalOpen(false)}

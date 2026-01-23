@@ -11,16 +11,12 @@ export interface RecurringExpenseWithStatus {
   isActive: boolean;
   lastLaunchedAt: string | null;
   notes: string | null;
-  // Status do mês atual
+
   isLaunchedThisMonth: boolean;
-  dueDate: string; // Data de vencimento no mês atual
-  isPastDue: boolean; // Se já passou a data de vencimento
+  dueDate: string;
+  isPastDue: boolean;
 }
 
-/**
- * GET /api/recurring-expenses
- * Lista todas as despesas recorrentes com status do mês atual
- */
 export async function GET() {
   try {
     const session = await auth();
@@ -42,7 +38,7 @@ export async function GET() {
     const today = now.getDate();
 
     const expensesWithStatus: RecurringExpenseWithStatus[] = expenses.map((expense) => {
-      // Verifica se já foi lançada este mês
+
       const lastLaunched = expense.lastLaunchedAt
         ? new Date(expense.lastLaunchedAt)
         : null;
@@ -51,7 +47,6 @@ export async function GET() {
           lastLaunched.getFullYear() === currentYear
         : false;
 
-      // Data de vencimento no mês atual
       const dueDate = new Date(currentYear, currentMonth, expense.dueDay);
       const isPastDue = today > expense.dueDay && !isLaunchedThisMonth;
 
@@ -70,7 +65,6 @@ export async function GET() {
       };
     });
 
-    // Calcula totais
     const activeExpenses = expensesWithStatus.filter((e) => e.isActive);
     const totalMonthly = activeExpenses.reduce((sum, e) => sum + e.value, 0);
     const totalLaunched = activeExpenses
@@ -103,10 +97,6 @@ export async function GET() {
   }
 }
 
-/**
- * POST /api/recurring-expenses
- * Cria uma nova despesa recorrente
- */
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();

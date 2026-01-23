@@ -33,7 +33,7 @@ export function TransactionList({
       setDeleteConfirm(null);
     }
   };
-  // Usa transações filtradas se houver filtros ativos
+
   const filteredTransactions = hasActiveFilters() ? getFilteredTransactions() : transactions;
 
   const sortedTransactions = [...filteredTransactions].sort(
@@ -64,7 +64,7 @@ export function TransactionList({
         </div>
       </div>
 
-      {/* Filtros */}
+      {}
       <TransactionFilters className="mb-4" />
 
       {sortedTransactions.length === 0 ? (
@@ -146,7 +146,7 @@ export function TransactionList({
         </div>
       )}
 
-      {/* Modal de confirmação de exclusão */}
+      {}
       <ConfirmDialog
         isOpen={!!deleteConfirm}
         onClose={() => setDeleteConfirm(null)}

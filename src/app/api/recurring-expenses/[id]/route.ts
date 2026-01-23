@@ -6,10 +6,6 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-/**
- * DELETE /api/recurring-expenses/[id]
- * Remove uma despesa recorrente
- */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -19,7 +15,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
     const { id } = await params;
 
-    // Verifica se a despesa pertence ao usuário
     const existing = await prisma.recurringExpense.findUnique({
       where: { id },
     });
@@ -49,10 +44,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-/**
- * PUT /api/recurring-expenses/[id]
- * Atualiza uma despesa recorrente
- */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -64,7 +55,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const body = await request.json();
     const { description, value, category, dueDay, isActive, notes } = body;
 
-    // Verifica se a despesa pertence ao usuário
     const existing = await prisma.recurringExpense.findUnique({
       where: { id },
     });

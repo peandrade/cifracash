@@ -46,24 +46,21 @@ export async function generateReportPDF({
   const margin = 15;
   let yPosition = margin;
 
-  // Cores do tema
   const colors = {
-    primary: [139, 92, 246] as [number, number, number], // Violet
-    success: [16, 185, 129] as [number, number, number], // Emerald
-    danger: [239, 68, 68] as [number, number, number], // Red
-    info: [59, 130, 246] as [number, number, number], // Blue
-    text: [30, 41, 59] as [number, number, number], // Slate 800
-    muted: [100, 116, 139] as [number, number, number], // Slate 500
-    light: [241, 245, 249] as [number, number, number], // Slate 100
+    primary: [139, 92, 246] as [number, number, number],
+    success: [16, 185, 129] as [number, number, number],
+    danger: [239, 68, 68] as [number, number, number],
+    info: [59, 130, 246] as [number, number, number],
+    text: [30, 41, 59] as [number, number, number],
+    muted: [100, 116, 139] as [number, number, number],
+    light: [241, 245, 249] as [number, number, number],
   };
 
-  // Filtra transações
   const filtered = transactions.filter((t) => {
     if (filterType === "all") return true;
     return t.type === filterType;
   });
 
-  // Calcula totais
   const totalIncome = transactions
     .filter((t) => t.type === "income")
     .reduce((sum, t) => sum + t.value, 0);
@@ -74,7 +71,6 @@ export async function generateReportPDF({
 
   const balance = totalIncome - totalExpense;
 
-  // Agrupa por categoria
   const categorySummary: CategorySummary[] = (() => {
     const grouped = filtered.reduce((acc, t) => {
       if (!acc[t.category]) {
@@ -101,23 +97,18 @@ export async function generateReportPDF({
       .sort((a, b) => b.total - a.total);
   })();
 
-  // ========== CABEÇALHO ==========
-  // Fundo do cabeçalho
   pdf.setFillColor(...colors.primary);
   pdf.rect(0, 0, pageWidth, 40, "F");
 
-  // Logo/Nome
   pdf.setTextColor(255, 255, 255);
   pdf.setFontSize(24);
   pdf.setFont("helvetica", "bold");
   pdf.text("FinControl", margin, 20);
 
-  // Título do relatório
   pdf.setFontSize(12);
   pdf.setFont("helvetica", "normal");
   pdf.text(`Relatório Financeiro - ${MONTHS[month - 1]} ${year}`, margin, 30);
 
-  // Data de geração
   const now = new Date();
   pdf.setFontSize(10);
   pdf.text(
@@ -129,11 +120,9 @@ export async function generateReportPDF({
 
   yPosition = 55;
 
-  // ========== CARDS DE RESUMO ==========
   const cardWidth = (pageWidth - margin * 2 - 10) / 3;
   const cardHeight = 25;
 
-  // Card Receitas
   pdf.setFillColor(...colors.success);
   pdf.roundedRect(margin, yPosition, cardWidth, cardHeight, 3, 3, "F");
   pdf.setTextColor(255, 255, 255);
@@ -143,7 +132,6 @@ export async function generateReportPDF({
   pdf.setFont("helvetica", "bold");
   pdf.text(formatCurrency(totalIncome), margin + 5, yPosition + 18);
 
-  // Card Despesas
   pdf.setFillColor(...colors.danger);
   pdf.roundedRect(margin + cardWidth + 5, yPosition, cardWidth, cardHeight, 3, 3, "F");
   pdf.setTextColor(255, 255, 255);
@@ -154,7 +142,6 @@ export async function generateReportPDF({
   pdf.setFont("helvetica", "bold");
   pdf.text(formatCurrency(totalExpense), margin + cardWidth + 10, yPosition + 18);
 
-  // Card Saldo
   pdf.setFillColor(balance >= 0 ? colors.info[0] : 249, balance >= 0 ? colors.info[1] : 115, balance >= 0 ? colors.info[2] : 22);
   pdf.roundedRect(margin + (cardWidth + 5) * 2, yPosition, cardWidth, cardHeight, 3, 3, "F");
   pdf.setTextColor(255, 255, 255);
@@ -167,7 +154,6 @@ export async function generateReportPDF({
 
   yPosition += cardHeight + 15;
 
-  // ========== CAPTURA DO GRÁFICO ==========
   if (reportRef.current) {
     try {
       const chartElement = reportRef.current.querySelector(".recharts-wrapper");
@@ -180,7 +166,6 @@ export async function generateReportPDF({
         const imgWidth = 80;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-        // Centraliza o gráfico
         const imgX = (pageWidth - imgWidth) / 2;
         pdf.addImage(imgData, "PNG", imgX, yPosition, imgWidth, imgHeight);
         yPosition += imgHeight + 10;
@@ -190,15 +175,12 @@ export async function generateReportPDF({
     }
   }
 
-  // ========== TABELA DE CATEGORIAS ==========
-  // Título da seção
   pdf.setTextColor(...colors.text);
   pdf.setFontSize(14);
   pdf.setFont("helvetica", "bold");
   pdf.text("Detalhamento por Categoria", margin, yPosition);
   yPosition += 10;
 
-  // Cabeçalho da tabela
   pdf.setFillColor(...colors.light);
   pdf.rect(margin, yPosition - 4, pageWidth - margin * 2, 8, "F");
 
@@ -212,22 +194,19 @@ export async function generateReportPDF({
   pdf.text("%", margin + 145, yPosition);
   yPosition += 8;
 
-  // Linhas da tabela
   pdf.setFont("helvetica", "normal");
   categorySummary.forEach((item, index) => {
-    // Verifica se precisa de nova página
+
     if (yPosition > pageHeight - 30) {
       pdf.addPage();
       yPosition = margin;
     }
 
-    // Fundo alternado
     if (index % 2 === 0) {
       pdf.setFillColor(248, 250, 252);
       pdf.rect(margin, yPosition - 4, pageWidth - margin * 2, 8, "F");
     }
 
-    // Indicador de cor
     const colorHex = item.color.replace("#", "");
     const r = parseInt(colorHex.substring(0, 2), 16);
     const g = parseInt(colorHex.substring(2, 4), 16);
@@ -245,7 +224,6 @@ export async function generateReportPDF({
     yPosition += 8;
   });
 
-  // Total
   yPosition += 4;
   pdf.setFillColor(...colors.primary);
   pdf.rect(margin, yPosition - 4, pageWidth - margin * 2, 8, "F");
@@ -257,7 +235,6 @@ export async function generateReportPDF({
   pdf.text(formatCurrency(totalFiltered), margin + 105, yPosition);
   pdf.text("100%", margin + 145, yPosition);
 
-  // ========== RODAPÉ ==========
   pdf.setTextColor(...colors.muted);
   pdf.setFontSize(8);
   pdf.setFont("helvetica", "normal");
@@ -268,7 +245,6 @@ export async function generateReportPDF({
     { align: "center" }
   );
 
-  // Salva o PDF
   const fileName = `relatorio-financeiro-${MONTHS[month - 1].toLowerCase()}-${year}.pdf`;
   pdf.save(fileName);
 }

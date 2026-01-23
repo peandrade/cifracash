@@ -35,7 +35,6 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
       color,
     });
 
-    // Reset form
     setName("");
     setLastDigits("");
     setLimit("");
@@ -50,7 +49,7 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-[var(--bg-secondary)] border border-[var(--border-color-strong)] rounded-2xl w-full max-w-md shadow-2xl animate-slideUp">
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between p-6 border-b border-[var(--border-color-strong)]">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl" style={{ backgroundColor: `${color}30` }}>
@@ -66,9 +65,9 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
           </button>
         </div>
 
-        {/* Form */}
+        {}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {/* Nome do cartão */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Nome do Cartão *
@@ -83,7 +82,7 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
             />
           </div>
 
-          {/* Últimos 4 dígitos */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Últimos 4 dígitos (opcional)
@@ -98,7 +97,7 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
             />
           </div>
 
-          {/* Limite */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Limite (opcional)
@@ -114,7 +113,7 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
             </div>
           </div>
 
-          {/* Datas */}
+          {}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
@@ -152,7 +151,7 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
             </div>
           </div>
 
-          {/* Cor do cartão */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Cor do Cartão
@@ -172,7 +171,7 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
             </div>
           </div>
 
-          {/* Preview */}
+          {}
           <div
             className="p-4 rounded-xl"
             style={{ backgroundColor: `${color}20` }}
@@ -193,7 +192,7 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
             </div>
           </div>
 
-          {/* Botões */}
+          {}
           <div className="flex gap-3 pt-2">
             <button
               type="button"

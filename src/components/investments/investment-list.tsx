@@ -77,7 +77,7 @@ export function InvestmentList({
           const isPositive = investment.profitLoss >= 0;
           const color = getInvestmentTypeColor(investment.type);
           const isVariable = isVariableIncome(investment.type);
-          
+
           const hasGoal = investment.goalValue && investment.goalValue > 0;
           const goalProgress = hasGoal
             ? (investment.currentValue / investment.goalValue!) * 100
@@ -91,7 +91,7 @@ export function InvestmentList({
               onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--bg-hover-strong)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "var(--bg-hover)"; }}
             >
-              {/* Linha principal */}
+              {}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div
@@ -166,7 +166,7 @@ export function InvestmentList({
                     </div>
                   </div>
 
-                  {/* Ações */}
+                  {}
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
                     <button
                       onClick={() => onEdit(investment)}
@@ -198,7 +198,7 @@ export function InvestmentList({
                 </div>
               </div>
 
-              {/* Barra de progresso da meta */}
+              {}
               {hasGoal && (
                 <div className="mt-4 pt-3" style={{ borderTop: "1px solid var(--border-color)" }}>
                   <div className="flex items-center justify-between mb-2">
@@ -237,7 +237,7 @@ export function InvestmentList({
         })}
       </div>
 
-      {/* Modal de confirmação de exclusão */}
+      {}
       <ConfirmDialog
         isOpen={!!deleteConfirm}
         onClose={() => setDeleteConfirm(null)}

@@ -63,7 +63,6 @@ export function CardList({
         {cards.map((card) => {
           const isSelected = selectedCardId === card.id;
 
-          // Calcula limite usado (soma de todas faturas não pagas)
           const usedLimit = card.invoices?.reduce((sum, inv) => {
             if (inv.status !== "paid") {
               return sum + (inv.total - (inv.paidAmount || 0));
@@ -71,7 +70,6 @@ export function CardList({
             return sum;
           }, 0) || 0;
 
-          // Pega a próxima fatura com valor (ordenada por data)
           const sortedInvoices = [...(card.invoices || [])].sort((a, b) => {
             if (a.year !== b.year) return a.year - b.year;
             return a.month - b.month;
@@ -84,7 +82,6 @@ export function CardList({
           const displayInvoice = nextInvoiceWithValue || sortedInvoices[0];
           const displayTotal = displayInvoice?.total || 0;
 
-          // Calcula porcentagem de uso
           const usagePercent = card.limit > 0 ? (usedLimit / card.limit) * 100 : 0;
 
           return (
@@ -107,7 +104,7 @@ export function CardList({
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  {/* Ícone colorido do cartão */}
+                  {}
                   <div
                     className="w-12 h-8 rounded-md flex items-center justify-center"
                     style={{ backgroundColor: card.color }}
@@ -167,7 +164,7 @@ export function CardList({
                 </div>
               </div>
 
-              {/* Barra de limite */}
+              {}
               {card.limit > 0 && (
                 <div className="mt-3 pt-3" style={{ borderTop: "1px solid var(--border-color)" }}>
                   <div className="flex justify-between text-xs mb-1" style={{ color: "var(--text-dimmed)" }}>
@@ -196,7 +193,7 @@ export function CardList({
         })}
       </div>
 
-      {/* Modal de confirmação de exclusão */}
+      {}
       <ConfirmDialog
         isOpen={!!deleteConfirm}
         onClose={() => setDeleteConfirm(null)}

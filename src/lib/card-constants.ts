@@ -1,20 +1,18 @@
 import type { InvoiceStatus } from "@/types/credit-card";
 
-// Cores para cartões
 export const CARD_COLORS = [
-  "#8B5CF6", // Roxo (Nubank)
-  "#F97316", // Laranja (Inter)
-  "#000000", // Preto
-  "#1E40AF", // Azul escuro
-  "#059669", // Verde
-  "#DC2626", // Vermelho
-  "#0891B2", // Ciano
-  "#CA8A04", // Dourado
-  "#7C3AED", // Violeta
-  "#64748B", // Cinza
+  "#8B5CF6",
+  "#F97316",
+  "#000000",
+  "#1E40AF",
+  "#059669",
+  "#DC2626",
+  "#0891B2",
+  "#CA8A04",
+  "#7C3AED",
+  "#64748B",
 ];
 
-// Status da fatura
 export const INVOICE_STATUS_LABELS: Record<InvoiceStatus, string> = {
   open: "Aberta",
   closed: "Fechada",
@@ -29,7 +27,6 @@ export const INVOICE_STATUS_COLORS: Record<InvoiceStatus, string> = {
   overdue: "#EF4444",
 };
 
-// Categorias de gastos
 export const PURCHASE_CATEGORIES = [
   "Alimentação",
   "Supermercado",
@@ -76,7 +73,6 @@ export const CATEGORY_COLORS: Record<string, string> = {
   Outros: "#64748B",
 };
 
-// Helpers de data
 export const MONTH_NAMES = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"

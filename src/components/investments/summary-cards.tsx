@@ -21,7 +21,7 @@ export function InvestmentSummaryCards({ summary }: InvestmentSummaryCardsProps)
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      {/* Total Investido */}
+      {}
       <div className="backdrop-blur rounded-2xl p-6 transition-colors duration-300" style={cardStyle}>
         <div className="flex items-start justify-between">
           <div>
@@ -41,7 +41,7 @@ export function InvestmentSummaryCards({ summary }: InvestmentSummaryCardsProps)
         </p>
       </div>
 
-      {/* Valor Atual */}
+      {}
       <div className="backdrop-blur rounded-2xl p-6 transition-colors duration-300" style={cardStyle}>
         <div className="flex items-start justify-between">
           <div>
@@ -61,7 +61,7 @@ export function InvestmentSummaryCards({ summary }: InvestmentSummaryCardsProps)
         </p>
       </div>
 
-      {/* Rentabilidade R$ */}
+      {}
       <div className="backdrop-blur rounded-2xl p-6 transition-colors duration-300" style={cardStyle}>
         <div className="flex items-start justify-between">
           <div>
@@ -85,11 +85,11 @@ export function InvestmentSummaryCards({ summary }: InvestmentSummaryCardsProps)
         </p>
       </div>
 
-      {/* Rentabilidade % */}
-      <div 
+      {}
+      <div
         className={`rounded-2xl p-6 ${
-          isPositive 
-            ? "bg-gradient-to-br from-emerald-500/90 to-teal-600/90" 
+          isPositive
+            ? "bg-gradient-to-br from-emerald-500/90 to-teal-600/90"
             : "bg-gradient-to-br from-red-500/90 to-orange-600/90"
         }`}
       >

@@ -52,12 +52,10 @@ export function TransactionHistoryModal({
   const isFixed = isFixedIncome(investment.type as InvestmentType);
   const operations = investment.operations || [];
 
-  // Ordena por data decrescente (mais recente primeiro)
   const sortedOperations = [...operations].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
-  // Calcula totais
   const totalDeposits = operations
     .filter((op) => op.type === "buy" || op.type === "deposit")
     .reduce((sum, op) => sum + op.total, 0);
@@ -69,7 +67,7 @@ export function TransactionHistoryModal({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-[var(--bg-secondary)] border border-[var(--border-color-strong)] rounded-2xl w-full max-w-lg shadow-2xl animate-slideUp max-h-[90vh] flex flex-col">
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between p-6 border-b border-[var(--border-color-strong)] flex-shrink-0">
           <div>
             <h2 className="text-xl font-semibold text-[var(--text-primary)]">
@@ -87,7 +85,7 @@ export function TransactionHistoryModal({
           </button>
         </div>
 
-        {/* Resumo */}
+        {}
         <div className="p-4 border-b border-[var(--border-color-strong)] flex-shrink-0">
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center">
@@ -115,7 +113,7 @@ export function TransactionHistoryModal({
           </div>
         </div>
 
-        {/* Lista de transações */}
+        {}
         <div className="flex-1 overflow-y-auto p-4">
           {sortedOperations.length === 0 ? (
             <div className="text-center py-8">
@@ -137,7 +135,7 @@ export function TransactionHistoryModal({
           )}
         </div>
 
-        {/* Footer */}
+        {}
         <div className="p-4 border-t border-[var(--border-color-strong)] flex-shrink-0">
           <button
             onClick={onClose}
@@ -165,7 +163,7 @@ function TransactionItem({
   return (
     <div className="bg-[var(--bg-hover)] rounded-xl p-4">
       <div className="flex items-start justify-between gap-3">
-        {/* Ícone e info */}
+        {}
         <div className="flex items-start gap-3">
           <div className={`p-2 rounded-lg ${bgClass}`}>
             <span className={colorClass}>
@@ -197,7 +195,7 @@ function TransactionItem({
           </div>
         </div>
 
-        {/* Valor */}
+        {}
         <div className="text-right">
           <p className={`font-semibold ${colorClass}`}>
             {isDeposit ? "+" : "-"}
@@ -206,7 +204,7 @@ function TransactionItem({
         </div>
       </div>
 
-      {/* Observação */}
+      {}
       {operation.notes && (
         <div className="mt-3 pt-3 border-t border-[var(--border-color)]">
           <p className="text-sm text-[var(--text-muted)] flex items-start gap-2">

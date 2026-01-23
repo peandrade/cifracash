@@ -74,7 +74,6 @@ export function MonthlyChart({ data, period, onPeriodChange }: MonthlyChartProps
   const { theme } = useTheme();
   const currentPeriodLabel = PERIOD_OPTIONS.find(p => p.value === period)?.label || "6 Meses";
 
-  // Cor dos textos dos eixos baseado no tema
   const axisTickColor = theme === "dark" ? "#9CA3AF" : "#4B5563";
 
   return (

@@ -54,7 +54,7 @@ export function InvoiceDetail({
       setDeleteConfirm(null);
     }
   };
-  // Se não tem cartão selecionado
+
   if (!cardName) {
     return (
       <div className="backdrop-blur rounded-2xl p-6 transition-colors duration-300" style={cardStyle}>
@@ -67,13 +67,11 @@ export function InvoiceDetail({
     );
   }
 
-  // Ordena faturas por data
   const sortedInvoices = [...invoices].sort((a, b) => {
     if (a.year !== b.year) return a.year - b.year;
     return a.month - b.month;
   });
 
-  // Índice atual para navegação
   const currentIndex = selectedInvoice
     ? sortedInvoices.findIndex((inv) => inv.id === selectedInvoice.id)
     : -1;
@@ -81,7 +79,6 @@ export function InvoiceDetail({
   const canGoPrevious = currentIndex > 0;
   const canGoNext = currentIndex < sortedInvoices.length - 1;
 
-  // Se não tem fatura selecionada, mostra estado vazio
   if (!selectedInvoice) {
     const now = new Date();
     return (
@@ -119,7 +116,7 @@ export function InvoiceDetail({
 
   return (
     <div className="backdrop-blur rounded-2xl p-6 transition-colors duration-300" style={cardStyle}>
-      {/* Header com navegação */}
+      {}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
           <div>
@@ -130,7 +127,7 @@ export function InvoiceDetail({
           </div>
         </div>
 
-        {/* Navegação entre faturas */}
+        {}
         <div className="flex items-center gap-2">
           <button
             onClick={() => canGoPrevious && onSelectInvoice(sortedInvoices[currentIndex - 1])}
@@ -191,10 +188,10 @@ export function InvoiceDetail({
         </div>
       </div>
 
-      {/* Mês/Ano selecionado */}
+      {}
       <p className="mb-4" style={{ color: "var(--text-muted)" }}>{formatMonthYear(selectedInvoice.month, selectedInvoice.year)}</p>
 
-      {/* Resumo */}
+      {}
       <div className="rounded-xl p-4 mb-6" style={{ backgroundColor: "var(--bg-hover)" }}>
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -229,7 +226,7 @@ export function InvoiceDetail({
         </div>
       </div>
 
-      {/* Lista de compras */}
+      {}
       <div>
         <h4 className="font-medium mb-4" style={{ color: "var(--text-primary)" }}>
           Lançamentos ({selectedInvoice.purchases?.length || 0})
@@ -294,7 +291,7 @@ export function InvoiceDetail({
         )}
       </div>
 
-      {/* Modal de confirmação de exclusão */}
+      {}
       <ConfirmDialog
         isOpen={!!deleteConfirm}
         onClose={() => setDeleteConfirm(null)}

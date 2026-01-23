@@ -4,7 +4,6 @@ const prisma = new PrismaClient();
 
 const USER_ID = "cmkqcday50002qewcd7yriqx2";
 
-// Helper para gerar datas
 function getDate(daysAgo: number): Date {
   const date = new Date();
   date.setDate(date.getDate() - daysAgo);
@@ -19,7 +18,6 @@ function getDateInMonth(year: number, month: number, day: number): Date {
 async function main() {
   console.log("🌱 Iniciando seed para o usuário:", USER_ID);
 
-  // Verificar se o usuário existe
   const user = await prisma.user.findUnique({ where: { id: USER_ID } });
   if (!user) {
     console.error("❌ Usuário não encontrado:", USER_ID);
@@ -28,7 +26,6 @@ async function main() {
 
   console.log("✅ Usuário encontrado:", user.name || user.email);
 
-  // Limpar dados existentes do usuário
   console.log("🧹 Limpando dados existentes...");
   await prisma.goalContribution.deleteMany({ where: { goal: { userId: USER_ID } } });
   await prisma.financialGoal.deleteMany({ where: { userId: USER_ID } });
@@ -43,9 +40,6 @@ async function main() {
   await prisma.transaction.deleteMany({ where: { userId: USER_ID } });
   await prisma.category.deleteMany({ where: { userId: USER_ID } });
 
-  // ============================================
-  // CATEGORIAS
-  // ============================================
   console.log("📁 Criando categorias...");
 
   const expenseCategories = [
@@ -86,22 +80,17 @@ async function main() {
     });
   }
 
-  // ============================================
-  // TRANSAÇÕES (6 meses de histórico)
-  // ============================================
   console.log("💰 Criando transações...");
 
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth();
 
-  // Gerar transações para os últimos 6 meses
   for (let monthOffset = 0; monthOffset < 6; monthOffset++) {
     const month = currentMonth - monthOffset;
     const year = month < 0 ? currentYear - 1 : currentYear;
     const actualMonth = month < 0 ? month + 12 : month;
 
-    // Salário (dia 5)
     await prisma.transaction.create({
       data: {
         type: "income",
@@ -113,7 +102,6 @@ async function main() {
       },
     });
 
-    // Freelance ocasional (alguns meses)
     if (Math.random() > 0.5) {
       await prisma.transaction.create({
         data: {
@@ -127,7 +115,6 @@ async function main() {
       });
     }
 
-    // Dividendos (alguns meses)
     if (Math.random() > 0.3) {
       await prisma.transaction.create({
         data: {
@@ -141,7 +128,6 @@ async function main() {
       });
     }
 
-    // Aluguel (dia 10)
     await prisma.transaction.create({
       data: {
         type: "expense",
@@ -153,7 +139,6 @@ async function main() {
       },
     });
 
-    // Condomínio (dia 15)
     await prisma.transaction.create({
       data: {
         type: "expense",
@@ -165,7 +150,6 @@ async function main() {
       },
     });
 
-    // Internet (dia 20)
     await prisma.transaction.create({
       data: {
         type: "expense",
@@ -177,7 +161,6 @@ async function main() {
       },
     });
 
-    // Celular (dia 12)
     await prisma.transaction.create({
       data: {
         type: "expense",
@@ -189,7 +172,6 @@ async function main() {
       },
     });
 
-    // Energia (dia 18)
     await prisma.transaction.create({
       data: {
         type: "expense",
@@ -201,7 +183,6 @@ async function main() {
       },
     });
 
-    // Água (dia 22)
     await prisma.transaction.create({
       data: {
         type: "expense",
@@ -213,7 +194,6 @@ async function main() {
       },
     });
 
-    // Streaming (Netflix, Spotify, etc)
     await prisma.transaction.create({
       data: {
         type: "expense",
@@ -247,7 +227,6 @@ async function main() {
       },
     });
 
-    // Academia
     await prisma.transaction.create({
       data: {
         type: "expense",
@@ -259,7 +238,6 @@ async function main() {
       },
     });
 
-    // Supermercado (várias vezes por mês)
     const supermarketCount = 4 + Math.floor(Math.random() * 3);
     for (let i = 0; i < supermarketCount; i++) {
       await prisma.transaction.create({
@@ -274,7 +252,6 @@ async function main() {
       });
     }
 
-    // iFood / Delivery (várias vezes por mês)
     const deliveryCount = 6 + Math.floor(Math.random() * 6);
     for (let i = 0; i < deliveryCount; i++) {
       await prisma.transaction.create({
@@ -289,7 +266,6 @@ async function main() {
       });
     }
 
-    // Restaurantes
     const restaurantCount = 2 + Math.floor(Math.random() * 3);
     for (let i = 0; i < restaurantCount; i++) {
       await prisma.transaction.create({
@@ -304,7 +280,6 @@ async function main() {
       });
     }
 
-    // Transporte (Uber, Combustível)
     const transportCount = 8 + Math.floor(Math.random() * 8);
     for (let i = 0; i < transportCount; i++) {
       const isUber = Math.random() > 0.4;
@@ -320,7 +295,6 @@ async function main() {
       });
     }
 
-    // Farmácia
     if (Math.random() > 0.3) {
       await prisma.transaction.create({
         data: {
@@ -334,7 +308,6 @@ async function main() {
       });
     }
 
-    // Lazer
     const leisureCount = 2 + Math.floor(Math.random() * 3);
     for (let i = 0; i < leisureCount; i++) {
       await prisma.transaction.create({
@@ -349,7 +322,6 @@ async function main() {
       });
     }
 
-    // Compras diversas
     if (Math.random() > 0.4) {
       await prisma.transaction.create({
         data: {
@@ -363,7 +335,6 @@ async function main() {
       });
     }
 
-    // Pet
     if (Math.random() > 0.5) {
       await prisma.transaction.create({
         data: {
@@ -378,9 +349,6 @@ async function main() {
     }
   }
 
-  // ============================================
-  // TEMPLATES DE TRANSAÇÃO
-  // ============================================
   console.log("📋 Criando templates...");
 
   const templates = [
@@ -403,9 +371,6 @@ async function main() {
     });
   }
 
-  // ============================================
-  // ORÇAMENTOS
-  // ============================================
   console.log("📊 Criando orçamentos...");
 
   const budgets = [
@@ -428,9 +393,6 @@ async function main() {
     });
   }
 
-  // ============================================
-  // DESPESAS RECORRENTES
-  // ============================================
   console.log("🔄 Criando despesas recorrentes...");
 
   const recurringExpenses = [
@@ -455,12 +417,8 @@ async function main() {
     });
   }
 
-  // ============================================
-  // INVESTIMENTOS
-  // ============================================
   console.log("📈 Criando investimentos...");
 
-  // Ações
   const stocks = [
     { name: "Petrobras", ticker: "PETR4", quantity: 200, averagePrice: 35.50, currentPrice: 38.20 },
     { name: "Vale", ticker: "VALE3", quantity: 100, averagePrice: 68.00, currentPrice: 62.50 },
@@ -492,7 +450,6 @@ async function main() {
       },
     });
 
-    // Operações de compra
     await prisma.operation.create({
       data: {
         investmentId: investment.id,
@@ -506,7 +463,6 @@ async function main() {
     });
   }
 
-  // FIIs
   const fiis = [
     { name: "HGLG11", ticker: "HGLG11", quantity: 30, averagePrice: 165.00, currentPrice: 158.50 },
     { name: "XPLG11", ticker: "XPLG11", quantity: 50, averagePrice: 98.00, currentPrice: 102.30 },
@@ -551,7 +507,6 @@ async function main() {
     });
   }
 
-  // CDBs
   const cdbs = [
     { name: "CDB Banco Inter 110% CDI", institution: "Banco Inter", totalInvested: 10000, interestRate: 110, indexer: "CDI", maturityMonths: 24 },
     { name: "CDB Nubank 100% CDI", institution: "Nubank", totalInvested: 5000, interestRate: 100, indexer: "CDI", maturityMonths: 12 },
@@ -562,9 +517,8 @@ async function main() {
     const maturityDate = new Date();
     maturityDate.setMonth(maturityDate.getMonth() + cdb.maturityMonths);
 
-    // Simula rendimento
     const monthsHeld = Math.floor(Math.random() * 12) + 1;
-    const monthlyRate = cdb.indexer === "CDI" ? 0.01 : 0.008; // ~12% a.a. CDI, ~9.6% IPCA
+    const monthlyRate = cdb.indexer === "CDI" ? 0.01 : 0.008;
     const currentValue = cdb.totalInvested * Math.pow(1 + monthlyRate * (cdb.interestRate / 100), monthsHeld);
     const profitLoss = currentValue - cdb.totalInvested;
     const profitLossPercent = (profitLoss / cdb.totalInvested) * 100;
@@ -598,7 +552,6 @@ async function main() {
     });
   }
 
-  // Tesouro Direto
   const treasuryInvestment = await prisma.investment.create({
     data: {
       type: "treasury",
@@ -627,7 +580,6 @@ async function main() {
     },
   });
 
-  // Cripto
   const cryptos = [
     { name: "Bitcoin", ticker: "BTC", quantity: 0.05, averagePrice: 180000, currentPrice: 195000 },
     { name: "Ethereum", ticker: "ETH", quantity: 0.5, averagePrice: 12000, currentPrice: 13500 },
@@ -669,12 +621,8 @@ async function main() {
     });
   }
 
-  // ============================================
-  // CARTÕES DE CRÉDITO
-  // ============================================
   console.log("💳 Criando cartões de crédito...");
 
-  // Nubank
   const nubank = await prisma.creditCard.create({
     data: {
       name: "Nubank",
@@ -688,7 +636,6 @@ async function main() {
     },
   });
 
-  // Inter
   const inter = await prisma.creditCard.create({
     data: {
       name: "Banco Inter",
@@ -702,7 +649,6 @@ async function main() {
     },
   });
 
-  // C6 Bank
   const c6 = await prisma.creditCard.create({
     data: {
       name: "C6 Bank",
@@ -716,7 +662,6 @@ async function main() {
     },
   });
 
-  // Criar faturas e compras para os últimos 3 meses
   const cards = [
     { card: nubank, avgSpend: 3500 },
     { card: inter, avgSpend: 1500 },
@@ -745,7 +690,6 @@ async function main() {
         },
       });
 
-      // Compras variadas
       const purchaseCategories = [
         { category: "Alimentação", descriptions: ["iFood", "Rappi", "Restaurante", "Supermercado"], minValue: 30, maxValue: 300 },
         { category: "Compras", descriptions: ["Amazon", "Mercado Livre", "Magazine Luiza", "AliExpress"], minValue: 50, maxValue: 500 },
@@ -762,7 +706,6 @@ async function main() {
         const description = catInfo.descriptions[Math.floor(Math.random() * catInfo.descriptions.length)];
         const value = catInfo.minValue + Math.random() * (catInfo.maxValue - catInfo.minValue);
 
-        // Algumas compras parceladas
         const isInstallment = Math.random() > 0.7;
         const installments = isInstallment ? [2, 3, 4, 6, 10, 12][Math.floor(Math.random() * 6)] : 1;
         const installmentValue = value / installments;
@@ -783,7 +726,6 @@ async function main() {
         invoiceTotal += installmentValue;
       }
 
-      // Atualiza total da fatura
       await prisma.invoice.update({
         where: { id: invoice.id },
         data: { total: invoiceTotal },
@@ -791,12 +733,8 @@ async function main() {
     }
   }
 
-  // ============================================
-  // METAS FINANCEIRAS
-  // ============================================
   console.log("🎯 Criando metas financeiras...");
 
-  // Reserva de Emergência
   const emergencyGoal = await prisma.financialGoal.create({
     data: {
       name: "Reserva de Emergência",
@@ -810,7 +748,6 @@ async function main() {
     },
   });
 
-  // Contribuições para reserva
   for (let i = 0; i < 8; i++) {
     await prisma.goalContribution.create({
       data: {
@@ -822,7 +759,6 @@ async function main() {
     });
   }
 
-  // Viagem
   const travelGoal = await prisma.financialGoal.create({
     data: {
       name: "Viagem Europa",
@@ -846,7 +782,6 @@ async function main() {
     });
   }
 
-  // Carro
   const carGoal = await prisma.financialGoal.create({
     data: {
       name: "Troca do Carro",
@@ -870,7 +805,6 @@ async function main() {
     });
   }
 
-  // Curso/Educação
   const educationGoal = await prisma.financialGoal.create({
     data: {
       name: "MBA",
@@ -894,7 +828,6 @@ async function main() {
     });
   }
 
-  // Casa própria (meta de longo prazo)
   const houseGoal = await prisma.financialGoal.create({
     data: {
       name: "Entrada Apartamento",

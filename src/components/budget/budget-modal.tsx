@@ -24,7 +24,6 @@ export function BudgetModal({
   const [limit, setLimit] = useState("");
   const [isFixed, setIsFixed] = useState(true);
 
-  // Filtra categorias que já têm orçamento
   const availableCategories = EXPENSE_CATEGORIES.filter(
     (cat) => !existingCategories.includes(cat)
   );
@@ -39,7 +38,6 @@ export function BudgetModal({
       isFixed,
     });
 
-    // Reset
     setCategory("");
     setLimit("");
     setIsFixed(true);
@@ -51,7 +49,7 @@ export function BudgetModal({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-[var(--bg-secondary)] border border-[var(--border-color-strong)] rounded-2xl w-full max-w-md shadow-2xl animate-slideUp">
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between p-6 border-b border-[var(--border-color-strong)]">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-violet-500/10 rounded-lg">
@@ -74,9 +72,9 @@ export function BudgetModal({
           </button>
         </div>
 
-        {/* Form */}
+        {}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {/* Categoria */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Categoria
@@ -108,7 +106,7 @@ export function BudgetModal({
             )}
           </div>
 
-          {/* Limite */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Limite Mensal
@@ -127,7 +125,7 @@ export function BudgetModal({
             </div>
           </div>
 
-          {/* Tipo */}
+          {}
           <div>
             <label className="flex items-center gap-3 cursor-pointer">
               <input
@@ -147,7 +145,7 @@ export function BudgetModal({
             </label>
           </div>
 
-          {/* Botões */}
+          {}
           <div className="flex gap-3 pt-2">
             <button
               type="button"

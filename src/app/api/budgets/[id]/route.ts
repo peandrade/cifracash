@@ -6,10 +6,6 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-/**
- * DELETE /api/budgets/[id]
- * Remove um orçamento
- */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -19,7 +15,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
     const { id } = await params;
 
-    // Verifica se o orçamento pertence ao usuário
     const existing = await prisma.budget.findUnique({
       where: { id },
     });
@@ -49,10 +44,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-/**
- * PUT /api/budgets/[id]
- * Atualiza um orçamento
- */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -71,7 +62,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Verifica se o orçamento pertence ao usuário
     const existing = await prisma.budget.findUnique({
       where: { id },
     });

@@ -2,11 +2,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
-/**
- * GET /api/transactions
- *
- * Retorna todas as transações ordenadas por data (mais recente primeiro)
- */
 export async function GET() {
   try {
     const session = await auth();
@@ -29,20 +24,6 @@ export async function GET() {
   }
 }
 
-/**
- * POST /api/transactions
- *
- * Cria uma nova transação
- *
- * Body esperado:
- * {
- *   type: "income" | "expense",
- *   value: number,
- *   category: string,
- *   description?: string,
- *   date: string (ISO)
- * }
- */
 export async function POST(request: Request) {
   try {
     const session = await auth();
@@ -52,7 +33,6 @@ export async function POST(request: Request) {
 
     const body = await request.json();
 
-    // Validação básica
     if (!body.type || !body.value || !body.category || !body.date) {
       return NextResponse.json(
         { error: "Campos obrigatórios: type, value, category, date" },
@@ -60,7 +40,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Valida o tipo
     if (!["income", "expense"].includes(body.type)) {
       return NextResponse.json(
         { error: "Tipo deve ser 'income' ou 'expense'" },
@@ -68,7 +47,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Valida o valor
     if (typeof body.value !== "number" || body.value <= 0) {
       return NextResponse.json(
         { error: "Valor deve ser um número positivo" },
@@ -76,17 +54,14 @@ export async function POST(request: Request) {
       );
     }
 
-    // Corrige o fuso horário: parseia a data manualmente para evitar mudança de dia
-    // Formato esperado: "YYYY-MM-DD" ou ISO string
     const dateParts = body.date.split("T")[0].split("-");
     const dateValue = new Date(
-      parseInt(dateParts[0]),      // ano
-      parseInt(dateParts[1]) - 1,  // mês (0-indexed)
-      parseInt(dateParts[2]),      // dia
-      12, 0, 0, 0                  // meio-dia para evitar problemas de timezone
+      parseInt(dateParts[0]),
+      parseInt(dateParts[1]) - 1,
+      parseInt(dateParts[2]),
+      12, 0, 0, 0
     );
 
-    // Cria a transação
     const transaction = await prisma.transaction.create({
       data: {
         type: body.type,

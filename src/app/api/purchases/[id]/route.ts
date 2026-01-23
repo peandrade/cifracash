@@ -6,10 +6,6 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-/**
- * DELETE /api/purchases/[id]
- * Remove uma compra e atualiza o total da fatura
- */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -19,7 +15,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
     const { id } = await params;
 
-    // Busca a compra
     const purchase = await prisma.purchase.findUnique({
       where: { id },
       include: {
@@ -38,19 +33,17 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Verifica se o cartão pertence ao usuário
     if (purchase.invoice.creditCard.userId !== session.user.id) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
     }
 
-    // Se for parcelada, remove todas as parcelas
     if (purchase.parentPurchaseId) {
       const allInstallments = await prisma.purchase.findMany({
         where: { parentPurchaseId: purchase.parentPurchaseId },
       });
 
       for (const installment of allInstallments) {
-        // Atualiza o total da fatura
+
         await prisma.invoice.update({
           where: { id: installment.invoiceId },
           data: {
@@ -58,13 +51,12 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
           },
         });
 
-        // Remove a parcela
         await prisma.purchase.delete({
           where: { id: installment.id },
         });
       }
     } else {
-      // Remove compra única
+
       await prisma.invoice.update({
         where: { id: purchase.invoiceId },
         data: {

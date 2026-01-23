@@ -38,7 +38,6 @@ export function TransactionModal({
     fetchCategories();
   }, [fetchCategories]);
 
-  // Preenche com dados do template ou tipo inicial
   useEffect(() => {
     if (isOpen) {
       if (template) {
@@ -97,7 +96,7 @@ export function TransactionModal({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-[var(--bg-secondary)] border border-[var(--border-color-strong)] rounded-2xl w-full max-w-md shadow-2xl animate-slideUp">
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between p-6 border-b border-[var(--border-color-strong)]">
           <h2 className="text-xl font-semibold text-[var(--text-primary)]">Nova Transação</h2>
           <button
@@ -108,9 +107,9 @@ export function TransactionModal({
           </button>
         </div>
 
-        {/* Form */}
+        {}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {/* Tipo */}
+          {}
           <div className="flex gap-3">
             <button
               type="button"
@@ -136,7 +135,7 @@ export function TransactionModal({
             </button>
           </div>
 
-          {/* Valor */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Valor
@@ -155,7 +154,7 @@ export function TransactionModal({
             </div>
           </div>
 
-          {/* Categoria */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Categoria
@@ -177,7 +176,7 @@ export function TransactionModal({
             </select>
           </div>
 
-          {/* Data */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Data
@@ -191,7 +190,7 @@ export function TransactionModal({
             />
           </div>
 
-          {/* Descrição */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Descrição (opcional)
@@ -205,7 +204,7 @@ export function TransactionModal({
             />
           </div>
 
-          {/* Salvar como atalho */}
+          {}
           {!template && (
             <div className="border-t border-[var(--border-color)] pt-4">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -236,7 +235,7 @@ export function TransactionModal({
             </div>
           )}
 
-          {/* Botões */}
+          {}
           <div className="flex gap-3 pt-2">
             <button
               type="button"

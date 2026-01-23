@@ -24,13 +24,12 @@ interface CategoryData {
 
 export function CategoryReport({ transactions, categories, type }: CategoryReportProps) {
   const categoryData = useMemo(() => {
-    // Filtra transações pelo tipo
+
     const filtered = transactions.filter((t) => {
       if (type === "all") return true;
       return t.type === type;
     });
 
-    // Agrupa por categoria
     const grouped = filtered.reduce((acc, t) => {
       const key = t.category;
       if (!acc[key]) {
@@ -41,10 +40,8 @@ export function CategoryReport({ transactions, categories, type }: CategoryRepor
       return acc;
     }, {} as Record<string, { total: number; count: number }>);
 
-    // Calcula o total
     const total = Object.values(grouped).reduce((sum, { total }) => sum + total, 0);
 
-    // Monta os dados com informações da categoria
     const data: CategoryData[] = Object.entries(grouped)
       .map(([name, { total: value, count }]) => {
         const category = categories.find((c) => c.name === name);
@@ -104,7 +101,7 @@ export function CategoryReport({ transactions, categories, type }: CategoryRepor
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Gráfico de Pizza */}
+      {}
       <div className="flex flex-col items-center">
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
@@ -134,7 +131,7 @@ export function CategoryReport({ transactions, categories, type }: CategoryRepor
         </div>
       </div>
 
-      {/* Tabela de Categorias */}
+      {}
       <div className="space-y-2 max-h-80 overflow-y-auto pr-2">
         {categoryData.data.map((item, index) => (
           <div

@@ -31,7 +31,6 @@ export function ContributeModal({
 
     await onSave(parseFloat(value), notes || undefined);
 
-    // Reset
     setValue("");
     setNotes("");
   };
@@ -45,7 +44,7 @@ export function ContributeModal({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-[var(--bg-secondary)] border border-[var(--border-color-strong)] rounded-2xl w-full max-w-sm shadow-2xl animate-slideUp">
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between p-6 border-b border-[var(--border-color-strong)]">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-emerald-500/10 rounded-lg">
@@ -68,9 +67,9 @@ export function ContributeModal({
           </button>
         </div>
 
-        {/* Form */}
+        {}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Info */}
+          {}
           <div className="bg-[var(--bg-hover)] rounded-xl p-3 text-center">
             <p className="text-xs text-[var(--text-dimmed)] mb-1">Faltam</p>
             <p className="text-lg font-bold text-emerald-400">
@@ -78,7 +77,7 @@ export function ContributeModal({
             </p>
           </div>
 
-          {/* Valor */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Valor a guardar
@@ -107,7 +106,7 @@ export function ContributeModal({
             </div>
           </div>
 
-          {/* Observação */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Observação (opcional)
@@ -121,7 +120,7 @@ export function ContributeModal({
             />
           </div>
 
-          {/* Botões */}
+          {}
           <div className="flex gap-3 pt-2">
             <button
               type="button"

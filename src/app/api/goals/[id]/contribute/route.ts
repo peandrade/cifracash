@@ -6,10 +6,6 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-/**
- * POST /api/goals/[id]/contribute
- * Adiciona uma contribuição à meta
- */
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -28,7 +24,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Busca a meta
     const goal = await prisma.financialGoal.findUnique({
       where: { id },
     });
@@ -41,7 +36,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
     }
 
-    // Cria a contribuição
     const contribution = await prisma.goalContribution.create({
       data: {
         goalId: id,
@@ -51,7 +45,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       },
     });
 
-    // Atualiza o valor atual da meta
     const newCurrentValue = goal.currentValue + value;
     const isCompleted = newCurrentValue >= goal.targetValue;
 
@@ -78,10 +71,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-/**
- * DELETE /api/goals/[id]/contribute
- * Remove uma contribuição (body: { contributionId })
- */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -100,7 +89,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Busca a meta para verificar propriedade
     const goal = await prisma.financialGoal.findUnique({
       where: { id },
     });
@@ -113,7 +101,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
     }
 
-    // Busca a contribuição
     const contribution = await prisma.goalContribution.findUnique({
       where: { id: contributionId },
     });
@@ -125,12 +112,10 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Remove a contribuição
     await prisma.goalContribution.delete({
       where: { id: contributionId },
     });
 
-    // Atualiza o valor da meta
     const newCurrentValue = Math.max(goal.currentValue - contribution.value, 0);
     await prisma.financialGoal.update({
       where: { id },

@@ -3,10 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { sendEmail, generatePasswordResetEmail } from "@/lib/email";
 import crypto from "crypto";
 
-/**
- * POST /api/auth/forgot-password
- * Solicita recuperação de senha
- */
 export async function POST(request: NextRequest) {
   try {
     const { email } = await request.json();
@@ -18,35 +14,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Busca o usuário pelo email
     const user = await prisma.user.findUnique({
       where: { email: email.toLowerCase().trim() },
     });
 
-    // Por segurança, sempre retorna sucesso mesmo se email não existir
-    // Isso evita enumerar emails válidos
     if (!user) {
       return NextResponse.json({
         message: "Se o email existir, você receberá instruções para redefinir sua senha.",
       });
     }
 
-    // Invalida tokens anteriores não utilizados
     await prisma.passwordResetToken.updateMany({
       where: {
         userId: user.id,
         usedAt: null,
       },
       data: {
-        usedAt: new Date(), // Marca como usado para invalidar
+        usedAt: new Date(),
       },
     });
 
-    // Gera novo token
     const token = crypto.randomBytes(32).toString("hex");
-    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
-    // Salva o token
     await prisma.passwordResetToken.create({
       data: {
         token,
@@ -55,11 +45,9 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Monta URL de reset
     const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
     const resetUrl = `${baseUrl}/reset-password?token=${token}`;
 
-    // Envia email
     const emailHtml = generatePasswordResetEmail(resetUrl, user.name || undefined);
     await sendEmail({
       to: user.email,

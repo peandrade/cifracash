@@ -2,18 +2,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
-/**
- * PUT /api/categories/[id]
- *
- * Atualiza uma categoria personalizada
- *
- * Body esperado:
- * {
- *   name?: string,
- *   icon?: string,
- *   color?: string
- * }
- */
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -26,7 +14,6 @@ export async function PUT(
 
     const { id } = await params;
 
-    // Verifica se a categoria existe e pertence ao usuário
     const category = await prisma.category.findUnique({
       where: { id },
     });
@@ -54,7 +41,6 @@ export async function PUT(
 
     const body = await request.json();
 
-    // Atualiza a categoria
     const updatedCategory = await prisma.category.update({
       where: { id },
       data: {
@@ -74,11 +60,6 @@ export async function PUT(
   }
 }
 
-/**
- * DELETE /api/categories/[id]
- *
- * Exclui uma categoria personalizada
- */
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -91,7 +72,6 @@ export async function DELETE(
 
     const { id } = await params;
 
-    // Verifica se a categoria existe e pertence ao usuário
     const category = await prisma.category.findUnique({
       where: { id },
     });
@@ -117,7 +97,6 @@ export async function DELETE(
       );
     }
 
-    // Verifica se há transações usando esta categoria
     const transactionsCount = await prisma.transaction.count({
       where: {
         category: category.name,
@@ -135,7 +114,6 @@ export async function DELETE(
       );
     }
 
-    // Exclui a categoria
     await prisma.category.delete({
       where: { id },
     });

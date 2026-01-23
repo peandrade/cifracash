@@ -3,21 +3,15 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
 interface WealthDataPoint {
-  month: string; // "2024-01"
-  label: string; // "Jan/24"
-  transactionBalance: number; // Saldo de transações (receitas - despesas)
-  investmentValue: number; // Valor investido
-  cardDebt: number; // Dívida no cartão
-  totalWealth: number; // Patrimônio líquido
-  goalsSaved: number; // Valor guardado em metas
+  month: string;
+  label: string;
+  transactionBalance: number;
+  investmentValue: number;
+  cardDebt: number;
+  totalWealth: number;
+  goalsSaved: number;
 }
 
-/**
- * GET /api/wealth-evolution
- * Retorna evolução patrimonial ao longo do tempo
- * Query params:
- * - period: "6m" | "1y" | "2y" | "all" (default: "1y")
- */
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
@@ -28,7 +22,6 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const period = searchParams.get("period") || "1y";
 
-    // Calcula data inicial baseado no período
     const now = new Date();
     let startDate: Date;
 
@@ -43,13 +36,12 @@ export async function GET(request: NextRequest) {
         startDate = new Date(now.getFullYear() - 2, now.getMonth(), 1);
         break;
       case "all":
-        startDate = new Date(2020, 0, 1); // Começa de 2020
+        startDate = new Date(2020, 0, 1);
         break;
       default:
         startDate = new Date(now.getFullYear() - 1, now.getMonth(), 1);
     }
 
-    // Busca todos os dados necessários
     const [transactions, operations, invoices, goals] = await Promise.all([
       prisma.transaction.findMany({
         where: {
@@ -89,7 +81,6 @@ export async function GET(request: NextRequest) {
       }),
     ]);
 
-    // Busca saldo inicial (antes do período)
     const initialTransactions = await prisma.transaction.findMany({
       where: {
         userId: session.user.id,
@@ -106,7 +97,6 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Calcula saldos iniciais
     let initialTransactionBalance = 0;
     for (const t of initialTransactions) {
       if (t.type === "income") {
@@ -125,7 +115,6 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Gera lista de meses no período
     const months: string[] = [];
     const current = new Date(startDate);
     while (current <= now) {
@@ -133,10 +122,8 @@ export async function GET(request: NextRequest) {
       current.setMonth(current.getMonth() + 1);
     }
 
-    // Agrupa dados por mês
     const dataByMonth: Record<string, WealthDataPoint> = {};
 
-    // Inicializa todos os meses
     let runningTransactionBalance = initialTransactionBalance;
     let runningInvestmentValue = initialInvestmentValue;
 
@@ -158,7 +145,6 @@ export async function GET(request: NextRequest) {
       };
     }
 
-    // Processa transações
     runningTransactionBalance = initialTransactionBalance;
     for (const month of months) {
       const [year, monthNum] = month.split("-").map(Number);
@@ -179,7 +165,6 @@ export async function GET(request: NextRequest) {
       dataByMonth[month].transactionBalance = runningTransactionBalance;
     }
 
-    // Processa operações de investimento
     runningInvestmentValue = initialInvestmentValue;
     for (const month of months) {
       const [year, monthNum] = month.split("-").map(Number);
@@ -200,11 +185,10 @@ export async function GET(request: NextRequest) {
       dataByMonth[month].investmentValue = runningInvestmentValue;
     }
 
-    // Processa dívidas de cartão (faturas não pagas)
     for (const invoice of invoices) {
       const month = `${invoice.year}-${String(invoice.month).padStart(2, "0")}`;
       if (dataByMonth[month]) {
-        // Soma valor não pago da fatura
+
         const unpaid = invoice.total - invoice.paidAmount;
         if (unpaid > 0) {
           dataByMonth[month].cardDebt += unpaid;
@@ -212,9 +196,8 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Propaga dívida do cartão para meses seguintes (se não paga)
     for (const month of months) {
-      // A dívida acumulada é a soma das faturas não pagas até o momento
+
       const [year, monthNum] = month.split("-").map(Number);
 
       const relevantInvoices = invoices.filter((inv) => {
@@ -229,24 +212,20 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Adiciona valor das metas (guardado)
     const totalGoalsSaved = goals.reduce((sum, g) => sum + g.currentValue, 0);
-    // Distribui proporcionalmente (simplificação - na realidade seria por contribuição)
+
     for (const month of months) {
       dataByMonth[month].goalsSaved = totalGoalsSaved;
     }
 
-    // Calcula patrimônio total
     for (const month of months) {
       const d = dataByMonth[month];
-      // Patrimônio = Saldo + Investimentos + Metas - Dívidas
+
       d.totalWealth = d.transactionBalance + d.investmentValue + d.goalsSaved - d.cardDebt;
     }
 
-    // Converte para array e ordena
     const evolution = months.map((m) => dataByMonth[m]);
 
-    // Calcula resumo atual
     const current_data = evolution[evolution.length - 1] || {
       transactionBalance: 0,
       investmentValue: 0,

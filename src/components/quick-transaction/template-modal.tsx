@@ -40,7 +40,6 @@ export function TemplateModal({
     fetchCategories();
   }, [fetchCategories]);
 
-  // Preenche os campos se estiver editando
   useEffect(() => {
     if (template) {
       setName(template.name);
@@ -55,7 +54,7 @@ export function TemplateModal({
         setIncludeValue(false);
       }
     } else {
-      // Reset para novo template
+
       setName("");
       setDescription("");
       setType("expense");
@@ -79,7 +78,6 @@ export function TemplateModal({
       value: includeValue && value ? parseFloat(value) : undefined,
     });
 
-    // Reset form
     setName("");
     setDescription("");
     setType("expense");
@@ -99,7 +97,7 @@ export function TemplateModal({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-[var(--bg-secondary)] border border-[var(--border-color-strong)] rounded-2xl w-full max-w-md shadow-2xl animate-slideUp">
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between p-6 border-b border-[var(--border-color-strong)]">
           <h2 className="text-xl font-semibold text-[var(--text-primary)]">
             {template ? "Editar Atalho" : "Novo Atalho"}
@@ -112,9 +110,9 @@ export function TemplateModal({
           </button>
         </div>
 
-        {/* Form */}
+        {}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {/* Nome do atalho */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Nome do atalho
@@ -129,7 +127,7 @@ export function TemplateModal({
             />
           </div>
 
-          {/* Tipo */}
+          {}
           <div className="flex gap-3">
             <button
               type="button"
@@ -155,7 +153,7 @@ export function TemplateModal({
             </button>
           </div>
 
-          {/* Categoria */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Categoria
@@ -181,7 +179,7 @@ export function TemplateModal({
             </select>
           </div>
 
-          {/* Descrição */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Descrição (opcional)
@@ -195,7 +193,7 @@ export function TemplateModal({
             />
           </div>
 
-          {/* Valor fixo */}
+          {}
           <div>
             <label className="flex items-center gap-2 cursor-pointer mb-2">
               <input
@@ -224,7 +222,7 @@ export function TemplateModal({
             )}
           </div>
 
-          {/* Botões */}
+          {}
           <div className="flex gap-3 pt-2">
             <button
               type="button"

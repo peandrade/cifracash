@@ -11,7 +11,7 @@ interface CategoryModalProps {
   onClose: () => void;
   onSave: (data: CreateCategoryInput | UpdateCategoryInput) => Promise<void>;
   isSubmitting: boolean;
-  category?: Category | null; // Se fornecido, é modo de edição
+  category?: Category | null;
 }
 
 export function CategoryModal({
@@ -29,7 +29,6 @@ export function CategoryModal({
 
   const isEditing = !!category;
 
-  // Preenche os campos ao editar
   useEffect(() => {
     if (category) {
       setName(category.name);
@@ -71,7 +70,7 @@ export function CategoryModal({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-[var(--bg-secondary)] border border-[var(--border-color-strong)] rounded-2xl w-full max-w-md shadow-2xl animate-slideUp">
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between p-6 border-b border-[var(--border-color-strong)]">
           <h2 className="text-xl font-semibold text-[var(--text-primary)]">
             {isEditing ? "Editar Categoria" : "Nova Categoria"}
@@ -84,16 +83,16 @@ export function CategoryModal({
           </button>
         </div>
 
-        {/* Form */}
+        {}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {/* Erro */}
+          {}
           {error && (
             <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
               {error}
             </div>
           )}
 
-          {/* Preview */}
+          {}
           <div className="flex items-center justify-center p-4 rounded-xl bg-[var(--bg-hover)]">
             <div
               className="w-12 h-12 rounded-xl flex items-center justify-center"
@@ -106,7 +105,7 @@ export function CategoryModal({
             </span>
           </div>
 
-          {/* Tipo (apenas no modo criação) */}
+          {}
           {!isEditing && (
             <div>
               <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
@@ -139,7 +138,7 @@ export function CategoryModal({
             </div>
           )}
 
-          {/* Nome */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Nome
@@ -154,7 +153,7 @@ export function CategoryModal({
             />
           </div>
 
-          {/* Cor */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Cor
@@ -162,7 +161,7 @@ export function CategoryModal({
             <ColorPicker value={color} onChange={setColor} />
           </div>
 
-          {/* Ícone */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Ícone
@@ -170,7 +169,7 @@ export function CategoryModal({
             <IconPicker value={icon} onChange={setIcon} color={color} />
           </div>
 
-          {/* Botões */}
+          {}
           <div className="flex gap-3 pt-2">
             <button
               type="button"

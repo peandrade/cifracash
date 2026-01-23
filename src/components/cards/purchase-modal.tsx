@@ -29,11 +29,9 @@ export function PurchaseModal({
   const [isRecurring, setIsRecurring] = useState(false);
   const [notes, setNotes] = useState("");
 
-  // Calcula limite usado e disponível
   const { usedLimit, availableLimit } = useMemo(() => {
     if (!card) return { usedLimit: 0, availableLimit: 0 };
 
-    // Soma das faturas não pagas (open ou closed)
     const used = (card.invoices || [])
       .filter((inv) => inv.status === "open" || inv.status === "closed")
       .reduce((sum, inv) => sum + (inv.total - inv.paidAmount), 0);
@@ -44,7 +42,6 @@ export function PurchaseModal({
     };
   }, [card]);
 
-  // Verifica se valor excede limite
   const purchaseValue = value ? parseFloat(value) : 0;
   const exceedsLimit = purchaseValue > availableLimit;
 
@@ -63,7 +60,6 @@ export function PurchaseModal({
       notes: notes || undefined,
     });
 
-    // Reset
     setDescription("");
     setValue("");
     setCategory(PURCHASE_CATEGORIES[0] as string);
@@ -86,7 +82,7 @@ export function PurchaseModal({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-[var(--bg-secondary)] border border-[var(--border-color-strong)] rounded-2xl w-full max-w-md shadow-2xl animate-slideUp max-h-[90vh] overflow-y-auto">
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between p-6 border-b border-[var(--border-color-strong)] sticky top-0 bg-[var(--bg-secondary)] z-10">
           <div className="flex items-center gap-3">
             <div
@@ -111,7 +107,7 @@ export function PurchaseModal({
           </button>
         </div>
 
-        {/* Saldo Disponível */}
+        {}
         <div className="px-6 pt-4">
           <div
             className="p-4 rounded-xl"
@@ -134,7 +130,7 @@ export function PurchaseModal({
                 </p>
               </div>
             </div>
-            {/* Barra de uso */}
+            {}
             <div className="mt-3">
               <div className="w-full rounded-full h-2 bg-[var(--bg-hover)]">
                 <div
@@ -152,9 +148,9 @@ export function PurchaseModal({
           </div>
         </div>
 
-        {/* Form */}
+        {}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {/* Descrição */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Descrição *
@@ -169,7 +165,7 @@ export function PurchaseModal({
             />
           </div>
 
-          {/* Valor e Data */}
+          {}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
@@ -200,7 +196,7 @@ export function PurchaseModal({
             </div>
           </div>
 
-          {/* Categoria */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Categoria *
@@ -219,7 +215,7 @@ export function PurchaseModal({
             </select>
           </div>
 
-          {/* Parcelas */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Parcelas
@@ -246,7 +242,7 @@ export function PurchaseModal({
             )}
           </div>
 
-          {/* Recorrente */}
+          {}
           <div
             onClick={() => setIsRecurring(!isRecurring)}
             className={`flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all ${
@@ -281,7 +277,7 @@ export function PurchaseModal({
             </div>
           </div>
 
-          {/* Notas */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Observações (opcional)
@@ -295,7 +291,7 @@ export function PurchaseModal({
             />
           </div>
 
-          {/* Alerta de limite excedido */}
+          {}
           {exceedsLimit && purchaseValue > 0 && (
             <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/30">
               <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
@@ -310,7 +306,7 @@ export function PurchaseModal({
             </div>
           )}
 
-          {/* Botões */}
+          {}
           <div className="flex gap-3 pt-2">
             <button
               type="button"

@@ -15,7 +15,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return NextResponse.json(
@@ -24,7 +23,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check minimum password length
     if (password.length < 6) {
       return NextResponse.json(
         { error: "A senha deve ter pelo menos 6 caracteres" },
@@ -32,7 +30,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if user already exists
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
@@ -44,10 +41,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create the user
     const user = await prisma.user.create({
       data: {
         name: name || null,

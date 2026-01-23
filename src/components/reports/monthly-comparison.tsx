@@ -26,7 +26,7 @@ const MONTH_NAMES = [
 
 export function MonthlyComparison({ transactions, currentMonth, currentYear }: MonthlyComparisonProps) {
   const { chartData, comparison } = useMemo(() => {
-    // Pega os últimos 3 meses
+
     const months: { month: number; year: number; label: string }[] = [];
     for (let i = 2; i >= 0; i--) {
       let m = currentMonth - i;
@@ -42,7 +42,6 @@ export function MonthlyComparison({ transactions, currentMonth, currentYear }: M
       });
     }
 
-    // Agrupa transações por mês
     const data: MonthData[] = months.map(({ month, year, label }) => {
       const monthTransactions = transactions.filter((t) => {
         const date = new Date(t.date);
@@ -65,7 +64,6 @@ export function MonthlyComparison({ transactions, currentMonth, currentYear }: M
       };
     });
 
-    // Calcula comparação entre mês atual e anterior
     const current = data[2];
     const previous = data[1];
 
@@ -158,9 +156,9 @@ export function MonthlyComparison({ transactions, currentMonth, currentYear }: M
 
   return (
     <div className="space-y-6">
-      {/* Cards de Comparação */}
+      {}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Receitas */}
+        {}
         <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-emerald-400">Receitas</span>
@@ -174,7 +172,7 @@ export function MonthlyComparison({ transactions, currentMonth, currentYear }: M
           </p>
         </div>
 
-        {/* Despesas */}
+        {}
         <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-red-400">Despesas</span>
@@ -188,7 +186,7 @@ export function MonthlyComparison({ transactions, currentMonth, currentYear }: M
           </p>
         </div>
 
-        {/* Saldo */}
+        {}
         <div
           className={`p-4 rounded-xl border ${
             comparison.saldo.current >= 0
@@ -219,7 +217,7 @@ export function MonthlyComparison({ transactions, currentMonth, currentYear }: M
         </div>
       </div>
 
-      {/* Gráfico de Barras */}
+      {}
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData} barGap={8}>

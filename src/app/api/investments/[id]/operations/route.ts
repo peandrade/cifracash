@@ -12,9 +12,6 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-/**
- * Calcula o saldo disponível (receitas - despesas)
- */
 async function getAvailableBalance(userId: string): Promise<number> {
   const transactions = await prisma.transaction.findMany({
     where: { userId },
@@ -33,10 +30,6 @@ async function getAvailableBalance(userId: string): Promise<number> {
   return balance;
 }
 
-/**
- * POST /api/investments/[id]/operations
- * Registra uma nova operação (compra ou venda)
- */
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -47,7 +40,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const { id: investmentId } = await params;
     const body: Omit<CreateOperationInput, "investmentId"> = await request.json();
 
-    // Validação básica
     if (!body.type || !body.date) {
       return NextResponse.json(
         { error: "Tipo e data são obrigatórios" },
@@ -55,8 +47,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Para renda fixa, precisa apenas do preço (valor total)
-    // Para renda variável, precisa de quantidade e preço
     if (!body.price) {
       return NextResponse.json(
         { error: "Valor é obrigatório" },
@@ -64,7 +54,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Busca o investimento atual com a última operação
     const investment = await prisma.investment.findUnique({
       where: { id: investmentId },
       include: {
@@ -88,20 +77,18 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     const isFixed = isFixedIncome(investment.type as InvestmentType);
 
-    // Corrige o fuso horário: parseia a data manualmente para evitar mudança de dia
     const dateStr = typeof body.date === "string" ? body.date : body.date.toISOString();
     const dateParts = dateStr.split("T")[0].split("-");
     const operationDate = new Date(
-      parseInt(dateParts[0]),      // ano
-      parseInt(dateParts[1]) - 1,  // mês (0-indexed)
-      parseInt(dateParts[2]),      // dia
-      12, 0, 0, 0                  // meio-dia para evitar problemas de timezone
+      parseInt(dateParts[0]),
+      parseInt(dateParts[1]) - 1,
+      parseInt(dateParts[2]),
+      12, 0, 0, 0
     );
 
     const today = new Date();
     today.setHours(23, 59, 59, 999);
 
-    // Não permite datas futuras
     if (operationDate > today) {
       return NextResponse.json(
         { error: "A data da operação não pode ser futura" },
@@ -109,7 +96,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Não permite datas anteriores à última operação
     const lastOperation = investment.operations[0];
 
     if (lastOperation) {
@@ -131,10 +117,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const fees = Number(body.fees) || 0;
     const total = quantity * price + fees;
 
-    // Validação de limites para venda/resgate
     if (body.type === "sell") {
       if (isFixed) {
-        // Renda fixa: valor do resgate não pode exceder o saldo atual
+
         if (price > investment.currentValue) {
           return NextResponse.json(
             { error: `Valor do resgate (R$ ${price.toFixed(2)}) excede o saldo disponível (R$ ${investment.currentValue.toFixed(2)})` },
@@ -142,7 +127,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           );
         }
       } else {
-        // Renda variável: quantidade vendida não pode exceder a quantidade disponível
+
         if (quantity > investment.quantity) {
           return NextResponse.json(
             { error: `Quantidade (${quantity}) excede o disponível (${investment.quantity} cotas)` },
@@ -152,7 +137,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       }
     }
 
-    // Verificação de saldo para compra/depósito
     if (body.type === "buy" && !body.skipBalanceCheck) {
       const availableBalance = await getAvailableBalance(session.user.id);
       if (availableBalance < total) {
@@ -168,7 +152,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       }
     }
 
-    // Cria a operação
     const operation = await prisma.operation.create({
       data: {
         investmentId,
@@ -182,7 +165,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       },
     });
 
-    // Cria transação de despesa para compra/depósito (se não estiver ignorando)
     if (body.type === "buy" && !body.skipBalanceCheck) {
       await prisma.transaction.create({
         data: {
@@ -196,12 +178,11 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       });
     }
 
-    // Cria transação de receita para venda/resgate (dinheiro volta para conta)
     if (body.type === "sell") {
       await prisma.transaction.create({
         data: {
           type: "income",
-          value: total - fees, // Desconta taxas do valor recebido
+          value: total - fees,
           category: "Investimento",
           description: `${isFixed ? "Resgate" : "Venda"}: ${investment.name}`,
           date: operationDate,
@@ -217,38 +198,38 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     let currentValue: number;
 
     if (isFixed) {
-      // Renda Fixa: usa valores totais diretamente
+
       if (body.type === "buy") {
-        // Depósito: aumenta total investido e valor atual
+
         newTotalInvested = investment.totalInvested + total;
         currentValue = investment.currentValue + total;
       } else {
-        // Resgate: diminui total investido proporcionalmente
+
         const percentResgatado = total / investment.currentValue;
         const totalInvestidoResgatado = investment.totalInvested * percentResgatado;
         newTotalInvested = Math.max(0, investment.totalInvested - totalInvestidoResgatado);
         currentValue = Math.max(0, investment.currentValue - total);
       }
-      // Para renda fixa, esses campos não são usados da mesma forma
+
       newQuantity = 1;
       newAveragePrice = newTotalInvested;
       currentPrice = currentValue;
     } else {
-      // Renda Variável: usa quantidade x preço
+
       if (body.type === "buy") {
-        // Compra: aumenta quantidade e recalcula preço médio
+
         newQuantity = investment.quantity + quantity;
         newTotalInvested = investment.totalInvested + total;
         newAveragePrice = newQuantity > 0 ? newTotalInvested / newQuantity : 0;
       } else {
-        // Venda: diminui quantidade (preço médio permanece)
+
         newQuantity = Math.max(0, investment.quantity - quantity);
-        // Proporcional ao que foi vendido
+
         const soldValue = quantity * investment.averagePrice;
         newTotalInvested = Math.max(0, investment.totalInvested - soldValue);
         newAveragePrice = newQuantity > 0 ? newTotalInvested / newQuantity : 0;
       }
-      // Usa o preço da operação como preço atual se não tiver preço atual
+
       currentPrice = investment.currentPrice || price;
       currentValue = newQuantity * currentPrice;
     }
@@ -257,7 +238,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const profitLossPercent =
       newTotalInvested > 0 ? (profitLoss / newTotalInvested) * 100 : 0;
 
-    // Atualiza o investimento
     let updatedInvestment = await prisma.investment.update({
       where: { id: investmentId },
       data: {
@@ -276,13 +256,12 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       },
     });
 
-    // Para renda fixa, recalcula o rendimento automaticamente
     if (isFixed && investment.indexer && investment.indexer !== "NA") {
       try {
         const cdiHistory = await fetchCDIHistory(1500);
 
         if (cdiHistory) {
-          // Busca todas as operações atualizadas
+
           const allOperations = await prisma.operation.findMany({
             where: { investmentId },
             orderBy: { date: "asc" },
@@ -291,7 +270,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           const deposits = allOperations.filter(op => op.type === "deposit" || op.type === "buy");
           const withdrawals = allOperations.filter(op => op.type === "sell" || op.type === "withdraw");
 
-          // Calcula rendimento de cada aporte
           let totalGrossValue = 0;
           let totalGrossYield = 0;
           let totalPrincipal = 0;
@@ -318,7 +296,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
             }
           }
 
-          // Subtrai resgates
           let totalWithdrawals = 0;
           for (const withdrawal of withdrawals) {
             totalWithdrawals += withdrawal.price;
@@ -331,7 +308,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
             ? (finalProfitLoss / effectivePrincipal) * 100
             : 0;
 
-          // Atualiza com os valores recalculados
           updatedInvestment = await prisma.investment.update({
             where: { id: investmentId },
             data: {
@@ -348,7 +324,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
           });
         }
       } catch (yieldError) {
-        // Se falhar o cálculo de rendimento, continua com os valores básicos
+
         console.error("Erro ao recalcular rendimento:", yieldError);
       }
     }

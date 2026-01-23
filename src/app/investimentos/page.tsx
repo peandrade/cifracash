@@ -45,14 +45,12 @@ export default function InvestmentsPage() {
     fetchInvestments();
   }, [fetchInvestments]);
 
-  // Atualiza rendimentos de renda fixa automaticamente ao carregar
   useEffect(() => {
     if (investments.length > 0 && !lastYieldsUpdate) {
       refreshYields();
     }
   }, [investments.length, lastYieldsUpdate, refreshYields]);
 
-  // Handler para atualização manual de cotações
   const handleRefreshQuotes = async () => {
     const result = await refreshQuotes();
     if (result.updated > 0) {
@@ -74,7 +72,6 @@ export default function InvestmentsPage() {
     setTimeout(() => setQuotesMessage(null), 4000);
   };
 
-  // Handler para atualização manual de rendimentos
   const handleRefreshYields = async () => {
     const result = await refreshYields();
     if (result.success && result.updated > 0) {
@@ -169,16 +166,16 @@ export default function InvestmentsPage() {
         .animate-slideUp { animation: slideUp 0.3s ease-out; }
       `}</style>
 
-      {/* Background */}
+      {}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-600/20 rounded-full blur-3xl" />
         <div className="absolute top-1/2 -left-40 w-80 h-80 bg-violet-600/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-40 right-1/3 w-80 h-80 bg-emerald-600/10 rounded-full blur-3xl" />
       </div>
 
-      {/* Container */}
+      {}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
+        {}
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold" style={{ color: "var(--text-primary)" }}>
@@ -187,7 +184,7 @@ export default function InvestmentsPage() {
             <p className="mt-1" style={{ color: "var(--text-dimmed)" }}>Acompanhe sua carteira</p>
           </div>
           <div className="flex items-center gap-3">
-            {/* Mensagem de atualização */}
+            {}
             {quotesMessage && (
               <div
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium animate-slideUp ${
@@ -205,7 +202,7 @@ export default function InvestmentsPage() {
               </div>
             )}
 
-            {/* Botão de atualizar rendimentos (renda fixa) */}
+            {}
             <button
               onClick={handleRefreshYields}
               disabled={isRefreshingYields}
@@ -218,7 +215,7 @@ export default function InvestmentsPage() {
               </span>
             </button>
 
-            {/* Botão de atualizar cotações */}
+            {}
             <button
               onClick={handleRefreshQuotes}
               disabled={isRefreshingQuotes}
@@ -231,7 +228,7 @@ export default function InvestmentsPage() {
               </span>
             </button>
 
-            {/* Botão de refresh geral */}
+            {}
             <button
               onClick={() => fetchInvestments()}
               className="p-3 hover:bg-white/10 rounded-xl transition-colors"
@@ -250,10 +247,10 @@ export default function InvestmentsPage() {
           </div>
         </header>
 
-        {/* Cards de Resumo */}
+        {}
         <InvestmentSummaryCards summary={summary} />
 
-        {/* Gráfico + Lista */}
+        {}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-1 space-y-6">
             <AllocationChart data={allocation} />
@@ -271,7 +268,7 @@ export default function InvestmentsPage() {
         </div>
       </div>
 
-      {/* Modais */}
+      {}
       <InvestmentModal
         isOpen={isInvestmentModalOpen}
         onClose={() => setIsInvestmentModalOpen(false)}

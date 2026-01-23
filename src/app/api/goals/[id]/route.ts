@@ -6,10 +6,6 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-/**
- * GET /api/goals/[id]
- * Busca uma meta específica com histórico de contribuições
- */
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -47,10 +43,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-/**
- * PUT /api/goals/[id]
- * Atualiza uma meta
- */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -62,7 +54,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const body = await request.json();
     const { name, description, category, targetValue, targetDate, icon, color } = body;
 
-    // Verifica se a meta pertence ao usuário
     const existing = await prisma.financialGoal.findUnique({
       where: { id },
     });
@@ -95,10 +86,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-/**
- * DELETE /api/goals/[id]
- * Remove uma meta
- */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -108,7 +95,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
     const { id } = await params;
 
-    // Verifica se a meta pertence ao usuário
     const existing = await prisma.financialGoal.findUnique({
       where: { id },
     });

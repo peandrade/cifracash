@@ -23,7 +23,6 @@ export function CategoryChart({ data }: CategoryChartProps) {
     [data]
   );
 
-  // Estilos do tooltip baseados no tema
   const tooltipStyle = {
     backgroundColor: theme === "dark" ? "#1f2937" : "#ffffff",
     border: theme === "dark" ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)",
@@ -74,7 +73,7 @@ export function CategoryChart({ data }: CategoryChartProps) {
         )}
       </div>
 
-      {/* Legenda */}
+      {}
       <div className="space-y-2 mt-4 max-h-32 overflow-y-auto">
         {data.slice(0, 5).map((item, index) => (
           <div

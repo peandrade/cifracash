@@ -20,7 +20,6 @@ function ResetPasswordForm() {
   const [error, setError] = useState("");
   const [tokenError, setTokenError] = useState("");
 
-  // Valida o token ao carregar
   useEffect(() => {
     if (!token) {
       setTokenError("Token não fornecido");
@@ -85,7 +84,6 @@ function ResetPasswordForm() {
     }
   };
 
-  // Loading state
   if (isValidating) {
     return (
       <div className="w-full max-w-md space-y-8 text-center">
@@ -95,7 +93,6 @@ function ResetPasswordForm() {
     );
   }
 
-  // Invalid token
   if (!isValid && !isSubmitted) {
     return (
       <div className="w-full max-w-md space-y-8">
@@ -142,7 +139,6 @@ function ResetPasswordForm() {
     );
   }
 
-  // Success state
   if (isSubmitted) {
     return (
       <div className="w-full max-w-md space-y-8">
@@ -168,7 +164,6 @@ function ResetPasswordForm() {
     );
   }
 
-  // Reset form
   return (
     <div className="w-full max-w-md space-y-8">
       <div className="text-center">
@@ -244,7 +239,7 @@ function ResetPasswordForm() {
           </div>
         </div>
 
-        {/* Password strength indicator */}
+        {}
         {password && (
           <div className="space-y-2">
             <div className="flex gap-1">

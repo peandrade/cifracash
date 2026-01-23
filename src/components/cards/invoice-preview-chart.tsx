@@ -22,7 +22,6 @@ const cardStyle = {
 export function InvoicePreviewChart({ data, title = "Previsão de Faturas" }: InvoicePreviewChartProps) {
   const { theme } = useTheme();
 
-  // Cores baseadas no tema
   const axisTickColor = theme === "dark" ? "#9CA3AF" : "#4B5563";
   const tooltipStyle = {
     backgroundColor: theme === "dark" ? "#1f2937" : "#ffffff",
@@ -105,7 +104,7 @@ export function InvoicePreviewChart({ data, title = "Previsão de Faturas" }: In
         </ResponsiveContainer>
       </div>
 
-      {/* Lista com valores */}
+      {}
       <div className="mt-4 pt-4" style={{ borderTop: "1px solid var(--border-color)" }}>
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
           {data.map((item) => (

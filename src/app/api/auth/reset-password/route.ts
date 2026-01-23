@@ -2,10 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
-/**
- * POST /api/auth/reset-password
- * Redefine a senha usando o token
- */
 export async function POST(request: NextRequest) {
   try {
     const { token, password } = await request.json();
@@ -24,13 +20,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Busca o token
     const resetToken = await prisma.passwordResetToken.findUnique({
       where: { token },
       include: { user: true },
     });
 
-    // Verifica se token existe
     if (!resetToken) {
       return NextResponse.json(
         { error: "Token inválido ou expirado" },
@@ -38,7 +32,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verifica se já foi usado
     if (resetToken.usedAt) {
       return NextResponse.json(
         { error: "Este link já foi utilizado. Solicite um novo." },
@@ -46,7 +39,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verifica se expirou
     if (resetToken.expiresAt < new Date()) {
       return NextResponse.json(
         { error: "Este link expirou. Solicite um novo." },
@@ -54,10 +46,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hash da nova senha
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Atualiza a senha e marca token como usado
     await prisma.$transaction([
       prisma.user.update({
         where: { id: resetToken.userId },
@@ -81,10 +71,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/**
- * GET /api/auth/reset-password?token=xxx
- * Verifica se o token é válido
- */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);

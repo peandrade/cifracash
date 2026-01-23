@@ -148,7 +148,7 @@ export function GoalSection({ onGoalUpdated }: GoalSectionProps) {
   return (
     <>
       <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)] overflow-hidden">
-        {/* Header */}
+        {}
         <div className="p-6 border-b border-[var(--border-color)]">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -175,7 +175,7 @@ export function GoalSection({ onGoalUpdated }: GoalSectionProps) {
             </button>
           </div>
 
-          {/* Resumo */}
+          {}
           {data && data.goals.length > 0 && (
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-[var(--bg-hover)] rounded-xl p-3 text-center">
@@ -193,7 +193,7 @@ export function GoalSection({ onGoalUpdated }: GoalSectionProps) {
             </div>
           )}
 
-          {/* Progress bar geral */}
+          {}
           {data && data.goals.length > 0 && (
             <div className="mt-3">
               <div className="flex items-center justify-between text-xs mb-1">
@@ -212,7 +212,7 @@ export function GoalSection({ onGoalUpdated }: GoalSectionProps) {
           )}
         </div>
 
-        {/* Lista de metas */}
+        {}
         <div className="p-4 space-y-3 max-h-[500px] overflow-y-auto">
           {data?.goals.length === 0 ? (
             <div className="text-center py-6">
@@ -224,7 +224,7 @@ export function GoalSection({ onGoalUpdated }: GoalSectionProps) {
             </div>
           ) : (
             <>
-              {/* Metas Ativas */}
+              {}
               {activeGoals.length > 0 && (
                 <div className="space-y-2">
                   <span className="text-xs font-medium text-violet-400 uppercase tracking-wide flex items-center gap-1">
@@ -242,7 +242,7 @@ export function GoalSection({ onGoalUpdated }: GoalSectionProps) {
                 </div>
               )}
 
-              {/* Metas Concluídas */}
+              {}
               {completedGoals.length > 0 && (
                 <div className="space-y-2 mt-4">
                   <span className="text-xs font-medium text-emerald-400 uppercase tracking-wide flex items-center gap-1">

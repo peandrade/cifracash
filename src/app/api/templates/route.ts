@@ -2,11 +2,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
-/**
- * GET /api/templates
- *
- * Retorna todos os templates de transação do usuário ordenados por uso
- */
 export async function GET() {
   try {
     const session = await auth();
@@ -32,20 +27,6 @@ export async function GET() {
   }
 }
 
-/**
- * POST /api/templates
- *
- * Cria um novo template de transação
- *
- * Body esperado:
- * {
- *   name: string,
- *   description?: string,
- *   category: string,
- *   type: "income" | "expense",
- *   value?: number
- * }
- */
 export async function POST(request: Request) {
   try {
     const session = await auth();
@@ -55,7 +36,6 @@ export async function POST(request: Request) {
 
     const body = await request.json();
 
-    // Validação básica
     if (!body.name || !body.category || !body.type) {
       return NextResponse.json(
         { error: "Campos obrigatórios: name, category, type" },
@@ -63,7 +43,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Valida o tipo
     if (!["income", "expense"].includes(body.type)) {
       return NextResponse.json(
         { error: "Tipo deve ser 'income' ou 'expense'" },
@@ -71,7 +50,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Valida o valor se fornecido
     if (body.value !== undefined && body.value !== null) {
       if (typeof body.value !== "number" || body.value < 0) {
         return NextResponse.json(
@@ -81,7 +59,6 @@ export async function POST(request: Request) {
       }
     }
 
-    // Cria o template
     const template = await prisma.transactionTemplate.create({
       data: {
         name: body.name,

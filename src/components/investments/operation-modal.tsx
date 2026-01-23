@@ -27,38 +27,33 @@ export function OperationModal({
   const [type, setType] = useState<OperationType>("buy");
   const [quantity, setQuantity] = useState("");
   const [price, setPrice] = useState("");
-  const [totalValue, setTotalValue] = useState(""); // Para renda fixa
+  const [totalValue, setTotalValue] = useState("");
   const [date, setDate] = useState(formatDateForInput(new Date()));
   const [fees, setFees] = useState("");
   const [notes, setNotes] = useState("");
 
-  // Modo de venda: por quantidade ou por valor
   const [sellMode, setSellMode] = useState<SellMode>("quantity");
-  const [sellTargetValue, setSellTargetValue] = useState(""); // Valor desejado para venda
+  const [sellTargetValue, setSellTargetValue] = useState("");
 
-  // Controle de saldo
   const [availableBalance, setAvailableBalance] = useState<number | null>(null);
   const [skipBalanceCheck, setSkipBalanceCheck] = useState(false);
   const [isLoadingBalance, setIsLoadingBalance] = useState(false);
 
   const isFixed = investment ? isFixedIncome(investment.type) : false;
 
-  // Calcula quantidade automaticamente quando vender por valor
   const priceNum = parseFloat(price) || 0;
   const sellTargetNum = parseFloat(sellTargetValue) || 0;
   const calculatedQuantity = priceNum > 0 && sellTargetNum > 0
-    ? Math.floor((sellTargetNum / priceNum) * 1000000) / 1000000 // Arredonda para baixo com 6 casas
+    ? Math.floor((sellTargetNum / priceNum) * 1000000) / 1000000
     : 0;
   const calculatedValue = calculatedQuantity * priceNum;
 
-  // Atualiza quantidade quando calcular por valor
   useEffect(() => {
     if (type === "sell" && sellMode === "value" && calculatedQuantity > 0) {
       setQuantity(calculatedQuantity.toString());
     }
   }, [calculatedQuantity, type, sellMode]);
 
-  // Reset sellMode quando muda o tipo de operação
   useEffect(() => {
     if (type === "buy") {
       setSellMode("quantity");
@@ -66,7 +61,6 @@ export function OperationModal({
     }
   }, [type]);
 
-  // Busca o saldo disponível quando abrir o modal
   useEffect(() => {
     if (isOpen) {
       setIsLoadingBalance(true);
@@ -88,12 +82,11 @@ export function OperationModal({
     e.preventDefault();
     if (!investment) return;
 
-    // Para renda fixa, usa valor total com quantidade 1
     if (isFixed) {
       if (!totalValue) return;
       await onSave({
         investmentId: investment.id,
-        type, // buy = depósito, sell = resgate
+        type,
         quantity: 1,
         price: parseFloat(totalValue),
         date: new Date(date),
@@ -115,7 +108,6 @@ export function OperationModal({
       });
     }
 
-    // Reset
     setType("buy");
     setQuantity("");
     setPrice("");
@@ -133,7 +125,6 @@ export function OperationModal({
     ? (parseFloat(totalValue) || 0) + (parseFloat(fees) || 0)
     : (parseFloat(quantity) || 0) * (parseFloat(price) || 0) + (parseFloat(fees) || 0);
 
-  // Validação de limites para venda/resgate
   const quantityNum = parseFloat(quantity) || 0;
   const totalValueNum = parseFloat(totalValue) || 0;
 
@@ -142,7 +133,6 @@ export function OperationModal({
   const exceedsSellTargetValue = !isFixed && type === "sell" && sellMode === "value" && investment && sellTargetNum > investment.currentValue;
   const hasExcessError = exceedsQuantity || exceedsValue || exceedsSellTargetValue;
 
-  // Verificação de saldo insuficiente para compra/depósito
   const hasInsufficientBalance = type === "buy" && availableBalance !== null && total > availableBalance && !skipBalanceCheck;
 
   if (!isOpen || !investment) return null;
@@ -150,7 +140,7 @@ export function OperationModal({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-[var(--bg-secondary)] border border-[var(--border-color-strong)] rounded-2xl w-full max-w-md shadow-2xl animate-slideUp max-h-[90vh] flex flex-col">
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between p-6 border-b border-[var(--border-color-strong)] flex-shrink-0">
           <div>
             <h2 className="text-xl font-semibold text-[var(--text-primary)]">Nova Operação</h2>
@@ -166,9 +156,9 @@ export function OperationModal({
           </button>
         </div>
 
-        {/* Form */}
+        {}
         <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto flex-1">
-          {/* Tipo de operação */}
+          {}
           <div className="flex gap-3">
             <button
               type="button"
@@ -196,7 +186,7 @@ export function OperationModal({
             </button>
           </div>
 
-          {/* Saldo Disponível - apenas para compra/depósito */}
+          {}
           {type === "buy" && (
             <div className="bg-[var(--bg-hover)] rounded-xl p-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -209,10 +199,10 @@ export function OperationModal({
             </div>
           )}
 
-          {/* Campos para Renda Variável */}
+          {}
           {!isFixed && (
             <>
-              {/* Preço Unitário - sempre aparece primeiro */}
+              {}
               <div>
                 <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
                   Preço Unitário
@@ -236,7 +226,7 @@ export function OperationModal({
                 )}
               </div>
 
-              {/* Seleção de modo de venda - apenas para venda */}
+              {}
               {type === "sell" && (
                 <div>
                   <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
@@ -274,7 +264,7 @@ export function OperationModal({
                 </div>
               )}
 
-              {/* Campo de valor desejado - apenas para venda por valor */}
+              {}
               {type === "sell" && sellMode === "value" && (
                 <div>
                   <div className="flex items-center justify-between mb-2">
@@ -311,7 +301,7 @@ export function OperationModal({
                     </p>
                   )}
 
-                  {/* Preview do cálculo */}
+                  {}
                   {calculatedQuantity > 0 && priceNum > 0 && (
                     <div className="mt-3 p-3 bg-violet-500/10 border border-violet-500/20 rounded-xl">
                       <p className="text-sm text-violet-400 font-medium mb-1">Cálculo automático:</p>
@@ -337,7 +327,7 @@ export function OperationModal({
                 </div>
               )}
 
-              {/* Quantidade - para compra ou venda por quantidade */}
+              {}
               {(type === "buy" || sellMode === "quantity") && (
                 <div>
                   <div className="flex items-center justify-between mb-2">
@@ -376,7 +366,7 @@ export function OperationModal({
             </>
           )}
 
-          {/* Campo de Valor para Renda Fixa */}
+          {}
           {isFixed && (
             <div>
               <div className="flex items-center justify-between mb-2">
@@ -416,19 +406,19 @@ export function OperationModal({
             </div>
           )}
 
-          {/* Data */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Data da Operação
             </label>
             {(() => {
-              // Calcula a data mínima (última operação)
+
               const lastOpDate = investment.operations && investment.operations.length > 0
                 ? [...investment.operations].sort((a, b) =>
                     new Date(b.date).getTime() - new Date(a.date).getTime()
                   )[0].date
                 : null;
-              // Usa as funções que ignoram timezone
+
               const minDateStr = lastOpDate ? parseDateFromDB(lastOpDate) : undefined;
               const minDateDisplay = lastOpDate ? formatDateFromDB(lastOpDate) : null;
 
@@ -453,7 +443,7 @@ export function OperationModal({
             })()}
           </div>
 
-          {/* Taxas - apenas para renda variável */}
+          {}
           {!isFixed && (
             <div>
               <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
@@ -473,7 +463,7 @@ export function OperationModal({
             </div>
           )}
 
-          {/* Total */}
+          {}
           {total > 0 && (
             <div className="bg-[var(--bg-hover)] rounded-xl p-4">
               <div className="flex items-center justify-between">
@@ -485,7 +475,7 @@ export function OperationModal({
             </div>
           )}
 
-          {/* Aviso de saldo insuficiente */}
+          {}
           {type === "buy" && hasInsufficientBalance && (
             <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/20 rounded-xl p-3">
               <AlertTriangle className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
@@ -498,7 +488,7 @@ export function OperationModal({
             </div>
           )}
 
-          {/* Opção para ignorar verificação de saldo */}
+          {}
           {type === "buy" && (
             <div className="bg-[var(--bg-hover)] rounded-xl p-3">
               <label className="flex items-start gap-3 cursor-pointer">
@@ -518,7 +508,7 @@ export function OperationModal({
             </div>
           )}
 
-          {/* Notas */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Observações (opcional)
@@ -532,7 +522,7 @@ export function OperationModal({
             />
           </div>
 
-          {/* Botões */}
+          {}
           <div className="flex gap-3 pt-2">
             <button
               type="button"

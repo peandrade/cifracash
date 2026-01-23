@@ -43,7 +43,6 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
   const [emergencySuggestion, setEmergencySuggestion] = useState<EmergencySuggestion | null>(null);
   const [loadingSuggestion, setLoadingSuggestion] = useState(false);
 
-  // Busca sugestão de reserva de emergência quando seleciona a categoria
   useEffect(() => {
     if (category === "emergency" && !emergencySuggestion) {
       setLoadingSuggestion(true);
@@ -57,7 +56,6 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
     }
   }, [category, emergencySuggestion]);
 
-  // Auto-preenche nome baseado na categoria
   useEffect(() => {
     if (category && !name) {
       setName(GOAL_CATEGORY_LABELS[category as GoalCategoryType]);
@@ -78,7 +76,6 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
       color: GOAL_CATEGORY_COLORS[category as GoalCategoryType],
     });
 
-    // Reset
     setName("");
     setDescription("");
     setCategory("");
@@ -99,7 +96,7 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-[var(--bg-secondary)] border border-[var(--border-color-strong)] rounded-2xl w-full max-w-md shadow-2xl animate-slideUp max-h-[90vh] flex flex-col">
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between p-6 border-b border-[var(--border-color-strong)] flex-shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-violet-500/10 rounded-lg">
@@ -122,9 +119,9 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
           </button>
         </div>
 
-        {/* Form */}
+        {}
         <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto flex-1">
-          {/* Categoria */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Tipo de Meta
@@ -155,7 +152,7 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
             </div>
           </div>
 
-          {/* Sugestão de Emergência */}
+          {}
           {category === "emergency" && (
             <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
@@ -197,7 +194,7 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
             </div>
           )}
 
-          {/* Nome */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Nome da Meta
@@ -212,7 +209,7 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
             />
           </div>
 
-          {/* Valor Alvo */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Valor Objetivo
@@ -231,7 +228,7 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
             </div>
           </div>
 
-          {/* Valor Inicial (opcional) */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Já tenho guardado (opcional)
@@ -249,7 +246,7 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
             </div>
           </div>
 
-          {/* Data Alvo (opcional) */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Data Prevista (opcional)
@@ -266,7 +263,7 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
             </p>
           </div>
 
-          {/* Descrição (opcional) */}
+          {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
               Descrição (opcional)
@@ -280,7 +277,7 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
             />
           </div>
 
-          {/* Botões */}
+          {}
           <div className="flex gap-3 pt-2">
             <button
               type="button"

@@ -120,7 +120,7 @@ export function BudgetList({ budgets, onDelete, isDeleting }: BudgetListProps) {
                 </div>
               </div>
 
-              {/* Barra de progresso */}
+              {}
               <div className="relative">
                 <div className="w-full bg-[var(--bg-hover-strong)] rounded-full h-2.5 overflow-hidden">
                   <div

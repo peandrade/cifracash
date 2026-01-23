@@ -1,12 +1,5 @@
-/**
- * Serviço de Cotações
- *
- * APIs utilizadas:
- * - Brapi.dev (gratuita) - Ações BR, ETFs, FIIs
- * - CoinGecko (gratuita) - Criptomoedas
- */
 
-// Tipos
+
 interface BrapiQuote {
   symbol: string;
   shortName: string;
@@ -37,7 +30,6 @@ export interface QuoteResult {
   error?: string;
 }
 
-// Cache simples para evitar requisições repetidas
 interface CacheEntry {
   data: QuoteResult[];
   timestamp: number;
@@ -51,10 +43,8 @@ const cache: {
   coingecko: null,
 };
 
-// Tempo de cache: 2 minutos (em ms)
 const CACHE_DURATION = 2 * 60 * 1000;
 
-// Mapeamento de tickers de crypto para IDs do CoinGecko
 const CRYPTO_TICKER_TO_COINGECKO: Record<string, string> = {
   BTC: "bitcoin",
   ETH: "ethereum",
@@ -102,24 +92,15 @@ const CRYPTO_TICKER_TO_COINGECKO: Record<string, string> = {
   BNB: "binancecoin",
 };
 
-/**
- * Verifica se o cache ainda é válido
- */
 function isCacheValid(entry: CacheEntry | null): boolean {
   if (!entry) return false;
   return Date.now() - entry.timestamp < CACHE_DURATION;
 }
 
-/**
- * Delay helper
- */
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/**
- * Busca cotação de um único ticker na Brapi
- */
 async function fetchSingleBrapiQuote(
   ticker: string,
   apiKey: string
@@ -182,13 +163,9 @@ async function fetchSingleBrapiQuote(
   }
 }
 
-/**
- * Busca cotações de ações/ETFs/FIIs na Brapi (uma por vez)
- */
 async function fetchBrapiQuotes(tickers: string[]): Promise<QuoteResult[]> {
   if (tickers.length === 0) return [];
 
-  // Verifica cache
   if (isCacheValid(cache.brapi)) {
     const cachedTickers = new Set(cache.brapi!.data.map(q => q.ticker.toUpperCase()));
     const requestedTickers = new Set(tickers.map(t => t.toUpperCase()));
@@ -215,7 +192,6 @@ async function fetchBrapiQuotes(tickers: string[]): Promise<QuoteResult[]> {
 
   const results: QuoteResult[] = [];
 
-  // Busca um ticker por vez com delay de 300ms entre cada
   for (let i = 0; i < tickers.length; i++) {
     const ticker = tickers[i];
     console.log(`[Brapi] Buscando ${i + 1}/${tickers.length}: ${ticker.toUpperCase()}`);
@@ -223,13 +199,11 @@ async function fetchBrapiQuotes(tickers: string[]): Promise<QuoteResult[]> {
     const result = await fetchSingleBrapiQuote(ticker, apiKey);
     results.push(result);
 
-    // Delay entre requisições (exceto na última)
     if (i < tickers.length - 1) {
       await delay(300);
     }
   }
 
-  // Salva no cache apenas os que deram certo
   const successResults = results.filter(r => r.source === "brapi");
   if (successResults.length > 0) {
     cache.brapi = {
@@ -241,16 +215,12 @@ async function fetchBrapiQuotes(tickers: string[]): Promise<QuoteResult[]> {
   return results;
 }
 
-/**
- * Busca cotações de criptomoedas no CoinGecko
- */
 async function fetchCoinGeckoQuotes(tickers: string[]): Promise<QuoteResult[]> {
   if (tickers.length === 0) return [];
 
   const results: QuoteResult[] = [];
   const validTickers: { ticker: string; coinId: string }[] = [];
 
-  // Mapeia tickers para IDs do CoinGecko
   for (const ticker of tickers) {
     const upperTicker = ticker.toUpperCase();
     const coinId = CRYPTO_TICKER_TO_COINGECKO[upperTicker];
@@ -258,14 +228,13 @@ async function fetchCoinGeckoQuotes(tickers: string[]): Promise<QuoteResult[]> {
     if (coinId) {
       validTickers.push({ ticker, coinId });
     } else {
-      // Ticker não encontrado no mapeamento, tenta usar o ticker como ID
+
       validTickers.push({ ticker, coinId: ticker.toLowerCase() });
     }
   }
 
   if (validTickers.length === 0) return results;
 
-  // Verifica cache
   if (isCacheValid(cache.coingecko)) {
     const cachedTickers = new Set(cache.coingecko!.data.map(q => q.ticker.toUpperCase()));
     const requestedTickers = new Set(tickers.map(t => t.toUpperCase()));
@@ -291,7 +260,6 @@ async function fetchCoinGeckoQuotes(tickers: string[]): Promise<QuoteResult[]> {
       }
     );
 
-    // Erro 429 = Limite de requisições
     if (response.status === 429) {
       console.warn("Limite de requisições do CoinGecko atingido.");
       return tickers.map((ticker) => ({
@@ -326,7 +294,6 @@ async function fetchCoinGeckoQuotes(tickers: string[]): Promise<QuoteResult[]> {
       }
     }
 
-    // Salva no cache
     cache.coingecko = {
       data: results,
       timestamp: Date.now(),
@@ -344,49 +311,38 @@ async function fetchCoinGeckoQuotes(tickers: string[]): Promise<QuoteResult[]> {
   return results;
 }
 
-/**
- * Identifica se um ticker é de cripto ou ação/ETF/FII
- */
 function isCryptoTicker(ticker: string): boolean {
   if (!ticker) return false;
   const upper = ticker.toUpperCase();
 
-  // Se está no mapeamento de crypto, é crypto
   if (CRYPTO_TICKER_TO_COINGECKO[upper]) return true;
 
-  // Padrão brasileiro: 4-6 letras + 1-2 números
   const brPattern = /^[A-Z]{4,6}\d{1,2}$/;
   if (brPattern.test(upper)) return false;
 
-  // Se não segue o padrão BR e tem 2-5 letras, provavelmente é crypto
   const cryptoPattern = /^[A-Z]{2,5}$/;
   return cryptoPattern.test(upper);
 }
 
-/**
- * Busca cotações para uma lista de investimentos
- */
 export async function fetchQuotes(
   investments: Array<{ ticker: string | null; type: string }>
 ): Promise<Map<string, QuoteResult>> {
   const results = new Map<string, QuoteResult>();
 
-  // Separa tickers por tipo
   const brTickers: string[] = [];
   const cryptoTickers: string[] = [];
 
   for (const inv of investments) {
     if (!inv.ticker) continue;
 
-    // Tipos que usam Brapi
     if (["stock", "fii", "etf"].includes(inv.type)) {
       brTickers.push(inv.ticker);
     }
-    // Crypto usa CoinGecko
+
     else if (inv.type === "crypto") {
       cryptoTickers.push(inv.ticker);
     }
-    // Para outros tipos, tenta identificar pelo ticker
+
     else if (isCryptoTicker(inv.ticker)) {
       cryptoTickers.push(inv.ticker);
     } else {
@@ -394,13 +350,11 @@ export async function fetchQuotes(
     }
   }
 
-  // Busca em paralelo
   const [brapiResults, coinGeckoResults] = await Promise.all([
-    fetchBrapiQuotes([...new Set(brTickers)]), // Remove duplicados
+    fetchBrapiQuotes([...new Set(brTickers)]),
     fetchCoinGeckoQuotes([...new Set(cryptoTickers)]),
   ]);
 
-  // Monta o mapa de resultados
   for (const result of [...brapiResults, ...coinGeckoResults]) {
     results.set(result.ticker.toUpperCase(), result);
   }
@@ -408,9 +362,6 @@ export async function fetchQuotes(
   return results;
 }
 
-/**
- * Busca cotação de um único ticker
- */
 export async function fetchSingleQuote(
   ticker: string,
   type: string
@@ -426,9 +377,6 @@ export async function fetchSingleQuote(
   );
 }
 
-/**
- * Limpa o cache manualmente
- */
 export function clearQuotesCache() {
   cache.brapi = null;
   cache.coingecko = null;

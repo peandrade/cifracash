@@ -174,7 +174,7 @@ export function WealthEvolutionChart() {
         }
       `}</style>
 
-      {/* Header */}
+      {}
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-violet-500/10 rounded-lg">
@@ -220,7 +220,7 @@ export function WealthEvolutionChart() {
         </div>
       </div>
 
-      {/* Resumo atual */}
+      {}
       <div className="flex items-center gap-4 mb-4">
         <div>
           <p className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
@@ -247,7 +247,7 @@ export function WealthEvolutionChart() {
         </div>
       </div>
 
-      {/* Gráfico */}
+      {}
       <div className="h-56">
         {isLoading ? (
           <div className="h-full flex items-center justify-center">
@@ -300,7 +300,7 @@ export function WealthEvolutionChart() {
         )}
       </div>
 
-      {/* Composição */}
+      {}
       <div className="grid grid-cols-4 gap-2 mt-4 pt-4 border-t border-[var(--border-color)]">
         <div className="text-center">
           <div className="flex items-center justify-center gap-1 mb-1">

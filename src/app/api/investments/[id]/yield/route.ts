@@ -10,13 +10,6 @@ import {
   type YieldCalculationResult,
 } from "@/lib/cdi-history-service";
 
-/**
- * GET /api/investments/[id]/yield
- * Calcula o rendimento detalhado de um investimento específico
- *
- * IMPORTANTE: Calcula o rendimento de CADA aporte individualmente,
- * pois cada depósito tem sua própria data de início e período de rendimento.
- */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -29,7 +22,6 @@ export async function GET(
 
     const { id } = await params;
 
-    // Busca o investimento
     const investment = await prisma.investment.findUnique({
       where: { id },
       include: {
@@ -50,7 +42,6 @@ export async function GET(
       return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
     }
 
-    // Verifica se é renda fixa
     if (!isFixedIncome(investment.type as Parameters<typeof isFixedIncome>[0])) {
       return NextResponse.json(
         { error: "Este investimento não é de renda fixa" },
@@ -58,7 +49,6 @@ export async function GET(
       );
     }
 
-    // Verifica indexador
     if (!investment.indexer || investment.indexer === "NA") {
       return NextResponse.json({
         investmentId: id,
@@ -68,8 +58,7 @@ export async function GET(
       });
     }
 
-    // Busca histórico do CDI (busca mais dias para cobrir investimentos antigos)
-    const cdiHistory = await fetchCDIHistory(1500); // ~4 anos
+    const cdiHistory = await fetchCDIHistory(1500);
 
     if (!cdiHistory) {
       return NextResponse.json(
@@ -78,7 +67,6 @@ export async function GET(
       );
     }
 
-    // Filtra operações de depósito (buy/deposit) e resgate (sell/withdraw)
     const deposits = investment.operations.filter(op => op.type === "deposit" || op.type === "buy");
     const withdrawals = investment.operations.filter(op => op.type === "sell" || op.type === "withdraw");
 
@@ -91,7 +79,6 @@ export async function GET(
       });
     }
 
-    // Calcula rendimento de CADA aporte individualmente
     const depositCalculations: {
       date: string;
       principal: number;
@@ -110,7 +97,7 @@ export async function GET(
 
     for (const deposit of deposits) {
       const depositDate = new Date(deposit.date).toISOString().split("T")[0];
-      // Para renda fixa, o valor está em price (quantidade é sempre 1)
+
       const depositValue = deposit.price;
 
       const result = calculateFixedIncomeYield(
@@ -135,7 +122,6 @@ export async function GET(
         totalIofAmount += result.iofAmount;
         totalIrAmount += result.irAmount;
 
-        // Usa o maior período para referência
         if (result.calendarDays > maxCalendarDays) {
           maxCalendarDays = result.calendarDays;
           totalBusinessDays = result.businessDays;
@@ -146,25 +132,20 @@ export async function GET(
       }
     }
 
-    // Subtrai resgates do valor total
     let totalWithdrawals = 0;
     for (const withdrawal of withdrawals) {
       totalWithdrawals += withdrawal.price;
     }
 
-    // Valor líquido final = valor bruto acumulado - resgates - impostos
     totalNetValue = totalGrossValue - totalIofAmount - totalIrAmount - totalWithdrawals;
 
-    // Calcula percentuais consolidados
     const effectivePrincipal = totalPrincipal - totalWithdrawals;
     const grossYieldPercent = effectivePrincipal > 0 ? (totalGrossYield / effectivePrincipal) * 100 : 0;
     const netYieldPercent = effectivePrincipal > 0 ? (totalNetYield / effectivePrincipal) * 100 : 0;
 
-    // Calcula alíquotas médias ponderadas (baseado no primeiro depósito para simplificar)
     const avgIofPercent = totalGrossYield > 0 ? (totalIofAmount / totalGrossYield) * 100 : calculateIOF(maxCalendarDays);
     const avgIrPercent = calculateIR(maxCalendarDays);
 
-    // Monta resultado consolidado
     const calculation: YieldCalculationResult = {
       grossValue: totalGrossValue - totalWithdrawals,
       grossYield: totalGrossYield,
@@ -178,10 +159,9 @@ export async function GET(
       netYieldPercent,
       businessDays: totalBusinessDays,
       calendarDays: maxCalendarDays,
-      dailyRates: [], // Não incluímos detalhes diários no consolidado
+      dailyRates: [],
     };
 
-    // Data do primeiro aporte (para referência)
     const startDate = new Date(deposits[0].date).toISOString().split("T")[0];
 
     return NextResponse.json({
@@ -193,7 +173,7 @@ export async function GET(
       totalInvested: investment.totalInvested,
       startDate,
       calculation,
-      // Detalhes por aporte (para debug/transparência)
+
       depositBreakdown: depositCalculations.map(d => ({
         date: d.date,
         principal: d.principal,

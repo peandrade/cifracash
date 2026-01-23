@@ -5,13 +5,8 @@ import { fetchSingleQuote } from "@/lib/quotes-service";
 import { isFixedIncome } from "@/types";
 import type { CreateInvestmentInput, InvestmentType } from "@/types";
 
-// Tipos que suportam cotação automática
 const QUOTABLE_TYPES = ["stock", "fii", "etf", "crypto"];
 
-/**
- * GET /api/investments
- * Lista todos os investimentos com suas operações
- */
 export async function GET() {
   try {
     const session = await auth();
@@ -39,9 +34,6 @@ export async function GET() {
   }
 }
 
-/**
- * Calcula o saldo disponível (receitas - despesas)
- */
 async function getAvailableBalance(userId: string): Promise<number> {
   const transactions = await prisma.transaction.findMany({
     where: { userId },
@@ -60,10 +52,6 @@ async function getAvailableBalance(userId: string): Promise<number> {
   return balance;
 }
 
-/**
- * POST /api/investments
- * Cria um novo investimento
- */
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
@@ -73,7 +61,6 @@ export async function POST(request: NextRequest) {
 
     const body: CreateInvestmentInput = await request.json();
 
-    // Validação básica
     if (!body.type || !body.name) {
       return NextResponse.json(
         { error: "Tipo e nome são obrigatórios" },
@@ -83,7 +70,6 @@ export async function POST(request: NextRequest) {
 
     const isFixed = isFixedIncome(body.type as InvestmentType);
 
-    // Validação para renda fixa: depósito inicial obrigatório
     if (isFixed) {
       if (!body.initialDeposit || body.initialDeposit < 1) {
         return NextResponse.json(
@@ -98,7 +84,6 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Verificação de saldo (apenas se não estiver ignorando)
       if (!body.skipBalanceCheck) {
         const availableBalance = await getAvailableBalance(session.user.id);
         if (availableBalance < body.initialDeposit) {
@@ -115,7 +100,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Busca cotação se tiver ticker e for tipo suportado
     let currentPrice = 0;
     if (body.ticker && QUOTABLE_TYPES.includes(body.type)) {
       try {
@@ -129,11 +113,10 @@ export async function POST(request: NextRequest) {
         }
       } catch (error) {
         console.error("[Investments API] Erro ao buscar cotação:", error);
-        // Continua sem a cotação
+
       }
     }
 
-    // Valores iniciais para renda fixa
     const initialDeposit = isFixed ? body.initialDeposit! : 0;
     const depositDate = isFixed ? new Date(body.depositDate!) : new Date();
 
@@ -151,7 +134,7 @@ export async function POST(request: NextRequest) {
         currentValue: isFixed ? initialDeposit : 0,
         profitLoss: 0,
         profitLossPercent: 0,
-        // Campos de renda fixa
+
         interestRate: body.interestRate || null,
         indexer: body.indexer || null,
         maturityDate: body.maturityDate ? new Date(body.maturityDate) : null,
@@ -159,12 +142,11 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Se for renda fixa, cria a operação de depósito inicial
     if (isFixed) {
       await prisma.operation.create({
         data: {
           investmentId: investment.id,
-          type: "buy", // Depósito
+          type: "buy",
           quantity: 1,
           price: initialDeposit,
           total: initialDeposit,
@@ -174,8 +156,6 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // Cria transação de despesa para descontar do saldo
-      // (apenas se não estiver ignorando a verificação de saldo)
       if (!body.skipBalanceCheck) {
         await prisma.transaction.create({
           data: {
@@ -190,7 +170,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Busca o investimento atualizado com as operações
     const investmentWithOperations = await prisma.investment.findUnique({
       where: { id: investment.id },
       include: {

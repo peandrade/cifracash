@@ -13,7 +13,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-      {/* Receitas */}
+      {}
       <div className="card-hover bg-gradient-to-br from-emerald-500/90 to-teal-600/90 rounded-2xl p-6 shadow-xl shadow-emerald-500/10">
         <div className="flex items-start justify-between">
           <div>
@@ -42,7 +42,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
         </div>
       </div>
 
-      {/* Despesas */}
+      {}
       <div className="card-hover bg-gradient-to-br from-orange-500/90 to-red-500/90 rounded-2xl p-6 shadow-xl shadow-orange-500/10">
         <div className="flex items-start justify-between">
           <div>
@@ -71,7 +71,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
         </div>
       </div>
 
-      {/* Saldo */}
+      {}
       <div
         className={`card-hover bg-gradient-to-br ${
           balance >= 0

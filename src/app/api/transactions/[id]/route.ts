@@ -6,11 +6,6 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-/**
- * DELETE /api/transactions/[id]
- *
- * Deleta uma transação pelo ID
- */
 export async function DELETE(request: Request, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -20,7 +15,6 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 
     const { id } = await params;
 
-    // Verifica se a transação existe e pertence ao usuário
     const transaction = await prisma.transaction.findUnique({
       where: { id },
     });
@@ -36,7 +30,6 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
     }
 
-    // Deleta a transação
     await prisma.transaction.delete({
       where: { id },
     });
@@ -51,11 +44,6 @@ export async function DELETE(request: Request, { params }: RouteParams) {
   }
 }
 
-/**
- * GET /api/transactions/[id]
- *
- * Busca uma transação pelo ID
- */
 export async function GET(request: Request, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -90,11 +78,6 @@ export async function GET(request: Request, { params }: RouteParams) {
   }
 }
 
-/**
- * PATCH /api/transactions/[id]
- *
- * Atualiza uma transação parcialmente
- */
 export async function PATCH(request: Request, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -105,7 +88,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     const { id } = await params;
     const body = await request.json();
 
-    // Verifica se a transação existe e pertence ao usuário
     const existing = await prisma.transaction.findUnique({
       where: { id },
     });
@@ -121,7 +103,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 403 });
     }
 
-    // Prepara os dados para atualização
     const updateData: Record<string, unknown> = {};
 
     if (body.type && ["income", "expense"].includes(body.type)) {
@@ -141,17 +122,16 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     }
 
     if (body.date) {
-      // Corrige o fuso horário: parseia a data manualmente para evitar mudança de dia
+
       const dateParts = body.date.split("T")[0].split("-");
       updateData.date = new Date(
-        parseInt(dateParts[0]),      // ano
-        parseInt(dateParts[1]) - 1,  // mês (0-indexed)
-        parseInt(dateParts[2]),      // dia
-        12, 0, 0, 0                  // meio-dia para evitar problemas de timezone
+        parseInt(dateParts[0]),
+        parseInt(dateParts[1]) - 1,
+        parseInt(dateParts[2]),
+        12, 0, 0, 0
       );
     }
 
-    // Atualiza a transação
     const transaction = await prisma.transaction.update({
       where: { id },
       data: updateData,

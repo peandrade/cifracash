@@ -51,7 +51,7 @@ export function LoginForm() {
         borderWidth: "1px",
       }}
     >
-      {/* Logo */}
+      {}
       <div className="text-center mb-8">
         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center mx-auto shadow-lg shadow-violet-500/25 mb-4">
           <span className="text-3xl">💰</span>
@@ -67,7 +67,7 @@ export function LoginForm() {
         </p>
       </div>
 
-      {/* Error Message */}
+      {}
       {error && (
         <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-3">
           <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
@@ -75,7 +75,7 @@ export function LoginForm() {
         </div>
       )}
 
-      {/* Form */}
+      {}
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label
@@ -176,7 +176,7 @@ export function LoginForm() {
         </button>
       </form>
 
-      {/* Register Link */}
+      {}
       <p
         className="mt-6 text-center text-sm"
         style={{ color: "var(--text-muted)" }}

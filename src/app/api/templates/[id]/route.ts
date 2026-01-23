@@ -6,11 +6,6 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-/**
- * GET /api/templates/[id]
- *
- * Retorna um template específico
- */
 export async function GET(request: Request, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -44,20 +39,6 @@ export async function GET(request: Request, { params }: RouteParams) {
   }
 }
 
-/**
- * PUT /api/templates/[id]
- *
- * Atualiza um template existente
- *
- * Body esperado:
- * {
- *   name?: string,
- *   description?: string,
- *   category?: string,
- *   type?: "income" | "expense",
- *   value?: number | null
- * }
- */
 export async function PUT(request: Request, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -68,7 +49,6 @@ export async function PUT(request: Request, { params }: RouteParams) {
     const { id } = await params;
     const body = await request.json();
 
-    // Verifica se o template existe e pertence ao usuário
     const existingTemplate = await prisma.transactionTemplate.findFirst({
       where: {
         id,
@@ -83,7 +63,6 @@ export async function PUT(request: Request, { params }: RouteParams) {
       );
     }
 
-    // Valida o tipo se fornecido
     if (body.type && !["income", "expense"].includes(body.type)) {
       return NextResponse.json(
         { error: "Tipo deve ser 'income' ou 'expense'" },
@@ -91,7 +70,6 @@ export async function PUT(request: Request, { params }: RouteParams) {
       );
     }
 
-    // Valida o valor se fornecido
     if (body.value !== undefined && body.value !== null) {
       if (typeof body.value !== "number" || body.value < 0) {
         return NextResponse.json(
@@ -101,7 +79,6 @@ export async function PUT(request: Request, { params }: RouteParams) {
       }
     }
 
-    // Atualiza o template
     const template = await prisma.transactionTemplate.update({
       where: { id },
       data: {
@@ -123,11 +100,6 @@ export async function PUT(request: Request, { params }: RouteParams) {
   }
 }
 
-/**
- * DELETE /api/templates/[id]
- *
- * Exclui um template
- */
 export async function DELETE(request: Request, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -137,7 +109,6 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 
     const { id } = await params;
 
-    // Verifica se o template existe e pertence ao usuário
     const existingTemplate = await prisma.transactionTemplate.findFirst({
       where: {
         id,
@@ -152,7 +123,6 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       );
     }
 
-    // Exclui o template
     await prisma.transactionTemplate.delete({
       where: { id },
     });
@@ -167,11 +137,6 @@ export async function DELETE(request: Request, { params }: RouteParams) {
   }
 }
 
-/**
- * POST /api/templates/[id]
- *
- * Incrementa o contador de uso do template
- */
 export async function POST(request: Request, { params }: RouteParams) {
   try {
     const session = await auth();
@@ -181,7 +146,6 @@ export async function POST(request: Request, { params }: RouteParams) {
 
     const { id } = await params;
 
-    // Verifica se o template existe e pertence ao usuário
     const existingTemplate = await prisma.transactionTemplate.findFirst({
       where: {
         id,
@@ -196,7 +160,6 @@ export async function POST(request: Request, { params }: RouteParams) {
       );
     }
 
-    // Incrementa o contador de uso
     const template = await prisma.transactionTemplate.update({
       where: { id },
       data: {

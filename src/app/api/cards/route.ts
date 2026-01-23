@@ -3,10 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import type { CreateCardInput } from "@/types/credit-card";
 
-/**
- * GET /api/cards
- * Lista todos os cartões com faturas
- */
 export async function GET() {
   try {
     const session = await auth();
@@ -40,10 +36,6 @@ export async function GET() {
   }
 }
 
-/**
- * POST /api/cards
- * Cria um novo cartão
- */
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();

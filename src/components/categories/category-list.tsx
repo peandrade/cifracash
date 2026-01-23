@@ -94,7 +94,7 @@ export function CategoryList({
         ))}
       </div>
 
-      {/* Modal de confirmação de exclusão */}
+      {}
       <ConfirmDialog
         isOpen={!!deleteConfirm}
         onClose={() => setDeleteConfirm(null)}

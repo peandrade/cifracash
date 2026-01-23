@@ -1,9 +1,5 @@
 import type { InvestmentType } from "@/types";
 
-// ============================================
-// TRANSAÇÕES - CATEGORIAS
-// ============================================
-
 export const EXPENSE_CATEGORIES = [
   "Aluguel",
   "Supermercado",
@@ -33,7 +29,7 @@ export const INCOME_CATEGORIES = [
 ] as const;
 
 export const CATEGORY_COLORS: Record<string, string> = {
-  // Despesas
+
   Aluguel: "#8B5CF6",
   Supermercado: "#F59E0B",
   Restaurante: "#EC4899",
@@ -49,12 +45,12 @@ export const CATEGORY_COLORS: Record<string, string> = {
   Roupas: "#E879F9",
   Pix: "#32BCAD",
   "Fatura Cartão": "#7C3AED",
-  // Receitas
+
   Salário: "#22C55E",
   Freelance: "#84CC16",
   Investimentos: "#0EA5E9",
   Dividendos: "#10B981",
-  // Default
+
   Outros: "#64748B",
 };
 
@@ -65,10 +61,6 @@ export function getCategoryColor(category: string): string {
 export function getMonthYearLabel(date: Date = new Date()): string {
   return date.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
 }
-
-// ============================================
-// INVESTIMENTOS - TIPOS E CORES
-// ============================================
 
 export const INVESTMENT_TYPES: InvestmentType[] = [
   "stock",
@@ -95,15 +87,15 @@ export const INVESTMENT_TYPE_LABELS: Record<InvestmentType, string> = {
 };
 
 export const INVESTMENT_TYPE_COLORS: Record<InvestmentType, string> = {
-  stock: "#3B82F6",      // Azul
-  fii: "#8B5CF6",        // Roxo
-  etf: "#06B6D4",        // Ciano
-  crypto: "#F59E0B",     // Amarelo
-  cdb: "#10B981",        // Verde
-  treasury: "#22C55E",   // Verde claro
-  lci_lca: "#14B8A6",    // Teal
-  savings: "#64748B",    // Cinza
-  other: "#6366F1",      // Indigo
+  stock: "#3B82F6",
+  fii: "#8B5CF6",
+  etf: "#06B6D4",
+  crypto: "#F59E0B",
+  cdb: "#10B981",
+  treasury: "#22C55E",
+  lci_lca: "#14B8A6",
+  savings: "#64748B",
+  other: "#6366F1",
 };
 
 export const INVESTMENT_TYPE_ICONS: Record<InvestmentType, string> = {
@@ -130,10 +122,6 @@ export function getInvestmentTypeIcon(type: InvestmentType): string {
   return INVESTMENT_TYPE_ICONS[type] || "💼";
 }
 
-// ============================================
-// INVESTIMENTOS - CATEGORIAS POR TIPO
-// ============================================
-
 export const INVESTMENT_CATEGORIES = {
   variableIncome: ["stock", "fii", "etf", "crypto"] as InvestmentType[],
   fixedIncome: ["cdb", "treasury", "lci_lca", "savings"] as InvestmentType[],
@@ -146,10 +134,6 @@ export function isVariableIncome(type: InvestmentType): boolean {
 export function isFixedIncome(type: InvestmentType): boolean {
   return INVESTMENT_CATEGORIES.fixedIncome.includes(type);
 }
-
-// ============================================
-// METAS FINANCEIRAS - CATEGORIAS
-// ============================================
 
 export type GoalCategoryType = "emergency" | "travel" | "car" | "house" | "education" | "retirement" | "other";
 
@@ -174,13 +158,13 @@ export const GOAL_CATEGORY_LABELS: Record<GoalCategoryType, string> = {
 };
 
 export const GOAL_CATEGORY_COLORS: Record<GoalCategoryType, string> = {
-  emergency: "#EF4444",   // Vermelho
-  travel: "#F59E0B",      // Amarelo
-  car: "#3B82F6",         // Azul
-  house: "#8B5CF6",       // Roxo
-  education: "#06B6D4",   // Ciano
-  retirement: "#10B981",  // Verde
-  other: "#64748B",       // Cinza
+  emergency: "#EF4444",
+  travel: "#F59E0B",
+  car: "#3B82F6",
+  house: "#8B5CF6",
+  education: "#06B6D4",
+  retirement: "#10B981",
+  other: "#64748B",
 };
 
 export const GOAL_CATEGORY_ICONS: Record<GoalCategoryType, string> = {

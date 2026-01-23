@@ -1,6 +1,4 @@
-// ============================================
-// CARTÕES DE CRÉDITO
-// ============================================
+
 
 export type InvoiceStatus = "open" | "closed" | "paid" | "overdue";
 

@@ -3,34 +3,33 @@
 import * as LucideIcons from "lucide-react";
 import { Check } from "lucide-react";
 
-// Lista de ícones populares para categorias financeiras
 const POPULAR_ICONS = [
-  // Despesas gerais
+
   "ShoppingCart", "ShoppingBag", "Store", "Package",
-  // Casa
+
   "Home", "Building", "Building2", "Key",
-  // Alimentação
+
   "UtensilsCrossed", "Coffee", "Pizza", "Salad",
-  // Transporte
+
   "Car", "Bus", "Bike", "Plane", "Train", "Fuel",
-  // Utilidades
+
   "Lightbulb", "Droplets", "Wifi", "Phone", "Smartphone",
-  // Entretenimento
+
   "Play", "Gamepad2", "Music", "Film", "Tv", "Ticket",
-  // Saúde
+
   "Heart", "HeartPulse", "Pill", "Stethoscope", "Activity",
-  // Educação
+
   "GraduationCap", "BookOpen", "Library", "PenTool",
-  // Trabalho
+
   "Laptop", "Briefcase", "Wallet", "Calculator",
-  // Finanças
+
   "CreditCard", "Banknote", "PiggyBank", "TrendingUp", "TrendingDown",
   "CircleDollarSign", "Receipt", "Landmark",
-  // Compras
+
   "Shirt", "Gift", "Watch", "Gem",
-  // Pets
+
   "Dog", "Cat", "PawPrint",
-  // Outros
+
   "Tag", "Tags", "Star", "Zap", "ArrowLeftRight",
   "MoreHorizontal", "HelpCircle", "Sparkles",
 ];
@@ -84,9 +83,6 @@ export function IconPicker({ value, onChange, color = "#8B5CF6" }: IconPickerPro
   );
 }
 
-/**
- * Componente para renderizar um ícone pelo nome
- */
 export function DynamicIcon({
   name,
   className,

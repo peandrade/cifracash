@@ -9,7 +9,7 @@ interface SendEmailOptions {
 }
 
 export async function sendEmail({ to, subject, html }: SendEmailOptions) {
-  // Em desenvolvimento sem API key, apenas loga
+
   if (!process.env.RESEND_API_KEY) {
     console.log("\n");
     console.log("╔══════════════════════════════════════════════════════════════╗");
@@ -18,7 +18,7 @@ export async function sendEmail({ to, subject, html }: SendEmailOptions) {
     console.log(`║ Para: ${to.padEnd(54)}║`);
     console.log(`║ Assunto: ${subject.padEnd(51)}║`);
     console.log("╠══════════════════════════════════════════════════════════════╣");
-    // Extrai o link do HTML
+
     const linkMatch = html.match(/href="([^"]*reset-password[^"]*)"/);
     if (linkMatch) {
       console.log("║ 🔗 Link de recuperação:                                       ║");

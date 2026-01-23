@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
 import { fetchAllRates } from "@/lib/rates-service";
 
-/**
- * GET /api/rates
- * Retorna as taxas atuais (CDI, SELIC, IPCA)
- */
 export async function GET() {
   try {
     const rates = await fetchAllRates();

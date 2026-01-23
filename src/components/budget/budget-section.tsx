@@ -1,0 +1,221 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { Plus, Wallet, RefreshCw } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
+import { BudgetList } from "./budget-list";
+import { BudgetModal } from "./budget-modal";
+import type { BudgetWithSpent } from "@/app/api/budgets/route";
+
+interface BudgetData {
+  budgets: BudgetWithSpent[];
+  summary: {
+    totalLimit: number;
+    totalSpent: number;
+    totalRemaining: number;
+    totalPercentage: number;
+  };
+  month: number;
+  year: number;
+}
+
+interface BudgetSectionProps {
+  refreshTrigger?: number; // Incrementar para forçar refresh
+}
+
+export function BudgetSection({ refreshTrigger = 0 }: BudgetSectionProps) {
+  const [data, setData] = useState<BudgetData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const fetchBudgets = useCallback(async () => {
+    try {
+      const response = await fetch("/api/budgets");
+      if (response.ok) {
+        const budgetData = await response.json();
+        setData(budgetData);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar orçamentos:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchBudgets();
+  }, [fetchBudgets, refreshTrigger]);
+
+  const handleSave = async (budgetData: {
+    category: string;
+    limit: number;
+    isFixed: boolean;
+  }) => {
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/budgets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...budgetData,
+          month: budgetData.isFixed ? null : data?.month,
+          year: budgetData.isFixed ? null : data?.year,
+        }),
+      });
+
+      if (response.ok) {
+        await fetchBudgets();
+        setIsModalOpen(false);
+      }
+    } catch (error) {
+      console.error("Erro ao salvar orçamento:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/budgets/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        await fetchBudgets();
+      }
+    } catch (error) {
+      console.error("Erro ao deletar orçamento:", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const getProgressColor = (percentage: number): string => {
+    if (percentage >= 100) return "from-red-500 to-red-600";
+    if (percentage >= 80) return "from-amber-500 to-orange-500";
+    return "from-violet-500 to-indigo-500";
+  };
+
+  if (isLoading) {
+    return (
+      <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)] p-6">
+        <div className="flex items-center justify-center py-8">
+          <RefreshCw className="w-6 h-6 text-[var(--text-dimmed)] animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  const existingCategories = data?.budgets.map((b) => b.category) || [];
+  const summary = data?.summary || {
+    totalLimit: 0,
+    totalSpent: 0,
+    totalRemaining: 0,
+    totalPercentage: 0,
+  };
+
+  return (
+    <>
+      <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)] overflow-hidden">
+        {/* Header */}
+        <div className="p-6 border-b border-[var(--border-color)]">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-violet-500/10 rounded-lg">
+                <Wallet className="w-5 h-5 text-violet-400" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-[var(--text-primary)]">
+                  Orçamento Mensal
+                </h3>
+                <p className="text-sm text-[var(--text-dimmed)]">
+                  {new Date(data?.year || 0, (data?.month || 1) - 1).toLocaleDateString("pt-BR", {
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-500 hover:to-indigo-500 transition-all shadow-lg shadow-violet-500/25 text-sm"
+            >
+              <Plus className="w-4 h-4" />
+              Novo Orçamento
+            </button>
+          </div>
+
+          {/* Resumo Total */}
+          {data && data.budgets.length > 0 && (
+            <div className="bg-[var(--bg-hover)] rounded-xl p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm text-[var(--text-muted)]">
+                  Total do mês
+                </span>
+                <div className="text-right">
+                  <span className="text-lg font-bold text-[var(--text-primary)]">
+                    {formatCurrency(summary.totalSpent)}
+                  </span>
+                  <span className="text-sm text-[var(--text-dimmed)]">
+                    {" "}/ {formatCurrency(summary.totalLimit)}
+                  </span>
+                </div>
+              </div>
+              <div className="relative">
+                <div className="w-full bg-[var(--bg-hover-strong)] rounded-full h-3 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full bg-gradient-to-r ${getProgressColor(
+                      summary.totalPercentage
+                    )} transition-all duration-500`}
+                    style={{
+                      width: `${Math.min(summary.totalPercentage, 100)}%`,
+                    }}
+                  />
+                </div>
+                <div className="flex justify-between mt-2 text-xs">
+                  <span
+                    className={`${
+                      summary.totalPercentage >= 100
+                        ? "text-red-400"
+                        : summary.totalPercentage >= 80
+                        ? "text-amber-400"
+                        : "text-emerald-400"
+                    }`}
+                  >
+                    {summary.totalPercentage.toFixed(0)}% utilizado
+                  </span>
+                  <span className={summary.totalRemaining < 0 ? "text-red-400 font-medium" : "text-[var(--text-dimmed)]"}>
+                    {summary.totalRemaining < 0
+                      ? `Excedeu em ${formatCurrency(Math.abs(summary.totalRemaining))}`
+                      : `Restam ${formatCurrency(summary.totalRemaining)}`
+                    }
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Lista */}
+        <div className="p-6">
+          <BudgetList
+            budgets={data?.budgets || []}
+            onDelete={handleDelete}
+            isDeleting={isDeleting}
+          />
+        </div>
+      </div>
+
+      <BudgetModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSave}
+        isSubmitting={isSubmitting}
+        existingCategories={existingCategories}
+      />
+    </>
+  );
+}

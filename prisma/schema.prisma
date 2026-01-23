@@ -1,0 +1,330 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USUÁRIOS E AUTENTICAÇÃO
+// ============================================
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String
+  image     String?  // URL da foto de perfil
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions         Transaction[]
+  investments          Investment[]
+  creditCards          CreditCard[]
+  budgets              Budget[]
+  recurringExpenses    RecurringExpense[]
+  financialGoals       FinancialGoal[]
+  passwordResetTokens  PasswordResetToken[]
+  categories           Category[]
+  transactionTemplates TransactionTemplate[]
+
+  @@map("users")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}
+
+// ============================================
+// TRANSAÇÕES
+// ============================================
+
+enum TransactionType {
+  income
+  expense
+}
+
+model Transaction {
+  id          String          @id @default(cuid())
+  type        TransactionType
+  value       Float
+  category    String
+  description String?
+  date        DateTime
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("transactions")
+}
+
+model Category {
+  id        String          @id @default(cuid())
+  name      String
+  type      TransactionType
+  icon      String          // nome do ícone Lucide (ex: "ShoppingCart")
+  color     String          // hex color (ex: "#8B5CF6")
+  isDefault Boolean         @default(false)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([name, type, userId])
+  @@map("categories")
+}
+
+model TransactionTemplate {
+  id          String          @id @default(cuid())
+  name        String
+  description String?
+  category    String
+  type        TransactionType
+  value       Float?
+  usageCount  Int             @default(0)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("transaction_templates")
+}
+
+// ============================================
+// INVESTIMENTOS
+// ============================================
+
+enum InvestmentType {
+  stock
+  fii
+  etf
+  crypto
+  cdb
+  treasury
+  lci_lca
+  savings
+  other
+}
+
+model Investment {
+  id                String         @id @default(cuid())
+  type              InvestmentType
+  name              String
+  ticker            String?
+  institution       String?
+  quantity          Float          @default(0)
+  averagePrice      Float          @default(0)
+  currentPrice      Float          @default(0)
+  totalInvested     Float          @default(0)
+  currentValue      Float          @default(0)
+  profitLoss        Float          @default(0)
+  profitLossPercent Float          @default(0)
+  goalValue         Float?
+
+  // Campos para Renda Fixa
+  interestRate Float?    // Taxa (ex: 100 para 100% CDI, 5 para IPCA+5%)
+  indexer      String?   // CDI, IPCA, SELIC, PREFIXADO
+  maturityDate DateTime? // Data de vencimento
+
+  notes      String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  operations Operation[]
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("investments")
+}
+
+model Operation {
+  id           String     @id @default(cuid())
+  investmentId String
+  investment   Investment @relation(fields: [investmentId], references: [id], onDelete: Cascade)
+  type         String
+  quantity     Float      @default(0)
+  price        Float      @default(0)
+  total        Float
+  date         DateTime
+  fees         Float      @default(0)
+  notes        String?
+  createdAt    DateTime   @default(now())
+
+  @@map("operations")
+}
+
+// ============================================
+// CARTÕES DE CRÉDITO
+// ============================================
+
+enum InvoiceStatus {
+  open // Fatura aberta
+  closed // Fechada aguardando pagamento
+  paid // Paga
+  overdue // Vencida
+}
+
+model CreditCard {
+  id         String    @id @default(cuid())
+  name       String
+  lastDigits String?
+  limit      Float     @default(0)
+  closingDay Int       @default(1)
+  dueDay     Int       @default(10)
+  color      String    @default("#8B5CF6")
+  isActive   Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  invoices Invoice[]
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("credit_cards")
+}
+
+model Invoice {
+  id           String        @id @default(cuid())
+  creditCardId String
+  creditCard   CreditCard    @relation(fields: [creditCardId], references: [id], onDelete: Cascade)
+  month        Int
+  year         Int
+  closingDate  DateTime
+  dueDate      DateTime
+  status       InvoiceStatus @default(open)
+  total        Float         @default(0)
+  paidAmount   Float         @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  purchases Purchase[]
+
+  @@unique([creditCardId, month, year])
+  @@map("invoices")
+}
+
+model Purchase {
+  id                 String   @id @default(cuid())
+  invoiceId          String
+  invoice            Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  description        String
+  value              Float
+  totalValue         Float
+  category           String
+  date               DateTime
+  installments       Int      @default(1)
+  currentInstallment Int      @default(1)
+  isRecurring        Boolean  @default(false)
+  parentPurchaseId   String?
+  notes              String?
+  createdAt          DateTime @default(now())
+
+  @@map("purchases")
+}
+
+// ============================================
+// ORÇAMENTOS
+// ============================================
+
+model Budget {
+  id        String   @id @default(cuid())
+  category  String
+  limit     Float
+  month     Int      @default(0) // 0 = orçamento fixo (todo mês)
+  year      Int      @default(0) // 0 = orçamento fixo (todo mês)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([category, month, year, userId])
+  @@map("budgets")
+}
+
+// ============================================
+// DESPESAS RECORRENTES
+// ============================================
+
+model RecurringExpense {
+  id             String    @id @default(cuid())
+  description    String
+  value          Float
+  category       String
+  dueDay         Int       @default(1) // Dia do mês para vencer/lançar
+  isActive       Boolean   @default(true)
+  lastLaunchedAt DateTime? // Última vez que foi lançada como transação
+  notes          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("recurring_expenses")
+}
+
+// ============================================
+// METAS FINANCEIRAS
+// ============================================
+
+enum GoalCategory {
+  emergency // Reserva de emergência
+  travel // Viagem
+  car // Carro
+  house // Casa própria
+  education // Educação
+  retirement // Aposentadoria
+  other // Outro
+}
+
+model FinancialGoal {
+  id           String       @id @default(cuid())
+  name         String
+  description  String?
+  category     GoalCategory
+  targetValue  Float // Valor alvo
+  currentValue Float        @default(0) // Valor atual guardado
+  targetDate   DateTime? // Data prevista para alcançar
+  icon         String? // Ícone personalizado
+  color        String       @default("#8B5CF6") // Cor do progresso
+  isCompleted  Boolean      @default(false)
+  completedAt  DateTime?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  contributions GoalContribution[]
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("financial_goals")
+}
+
+model GoalContribution {
+  id        String        @id @default(cuid())
+  goalId    String
+  goal      FinancialGoal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  value     Float
+  date      DateTime
+  notes     String?
+  createdAt DateTime      @default(now())
+
+  @@map("goal_contributions")
+}

@@ -1,0 +1,194 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { LogIn, Mail, Lock, AlertCircle, Loader2, Eye, EyeOff } from "lucide-react";
+
+export function LoginForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("Email ou senha incorretos");
+      } else {
+        router.push(callbackUrl);
+        router.refresh();
+      }
+    } catch {
+      setError("Erro ao fazer login. Tente novamente.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div
+      className="w-full max-w-md p-8 rounded-2xl shadow-2xl"
+      style={{
+        backgroundColor: "var(--bg-secondary)",
+        borderColor: "var(--border-color)",
+        borderWidth: "1px",
+      }}
+    >
+      {/* Logo */}
+      <div className="text-center mb-8">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center mx-auto shadow-lg shadow-violet-500/25 mb-4">
+          <span className="text-3xl">💰</span>
+        </div>
+        <h1
+          className="text-2xl font-bold"
+          style={{ color: "var(--text-primary)" }}
+        >
+          FinControl
+        </h1>
+        <p style={{ color: "var(--text-muted)" }} className="mt-2">
+          Entre na sua conta
+        </p>
+      </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+          <span className="text-red-500 text-sm">{error}</span>
+        </div>
+      )}
+
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium mb-2"
+            style={{ color: "var(--text-primary)" }}
+          >
+            Email
+          </label>
+          <div className="relative">
+            <Mail
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5"
+              style={{ color: "var(--text-muted)" }}
+            />
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="seu@email.com"
+              required
+              className="w-full pl-12 pr-4 py-3 rounded-xl border transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500/50"
+              style={{
+                backgroundColor: "var(--bg-primary)",
+                borderColor: "var(--border-color)",
+                color: "var(--text-primary)",
+              }}
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium"
+              style={{ color: "var(--text-primary)" }}
+            >
+              Senha
+            </label>
+            <Link
+              href="/forgot-password"
+              className="text-sm text-violet-500 hover:text-violet-400 transition-colors"
+            >
+              Esqueceu a senha?
+            </Link>
+          </div>
+          <div className="relative">
+            <Lock
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5"
+              style={{ color: "var(--text-muted)" }}
+            />
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              className="w-full pl-12 pr-12 py-3 rounded-xl border transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500/50"
+              style={{
+                backgroundColor: "var(--bg-primary)",
+                borderColor: "var(--border-color)",
+                color: "var(--text-primary)",
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 transition-colors hover:opacity-80"
+              style={{ color: "var(--text-muted)" }}
+            >
+              {showPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-medium shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              Entrando...
+            </>
+          ) : (
+            <>
+              <LogIn className="w-5 h-5" />
+              Entrar
+            </>
+          )}
+        </button>
+      </form>
+
+      {/* Register Link */}
+      <p
+        className="mt-6 text-center text-sm"
+        style={{ color: "var(--text-muted)" }}
+      >
+        Não tem uma conta?{" "}
+        <Link
+          href="/register"
+          className="text-violet-500 hover:text-violet-400 font-medium"
+        >
+          Criar conta
+        </Link>
+      </p>
+    </div>
+  );
+}

@@ -1,0 +1,220 @@
+"use client";
+
+import { X, TrendingUp, TrendingDown, PiggyBank, Wallet, FileText } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
+import { isFixedIncome } from "@/types";
+import type { Investment, Operation, OperationType, InvestmentType } from "@/types";
+
+interface TransactionHistoryModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  investment: Investment | null;
+}
+
+function getOperationIcon(type: OperationType, isFixed: boolean) {
+  if (isFixed) {
+    return type === "buy" || type === "deposit" ? (
+      <PiggyBank className="w-4 h-4" />
+    ) : (
+      <Wallet className="w-4 h-4" />
+    );
+  }
+  return type === "buy" ? (
+    <TrendingUp className="w-4 h-4" />
+  ) : (
+    <TrendingDown className="w-4 h-4" />
+  );
+}
+
+function getOperationLabel(type: OperationType, isFixed: boolean): string {
+  if (isFixed) {
+    return type === "buy" || type === "deposit" ? "Depósito" : "Resgate";
+  }
+  return type === "buy" ? "Compra" : "Venda";
+}
+
+function formatDate(date: Date | string): string {
+  const d = new Date(date);
+  return d.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+export function TransactionHistoryModal({
+  isOpen,
+  onClose,
+  investment,
+}: TransactionHistoryModalProps) {
+  if (!isOpen || !investment) return null;
+
+  const isFixed = isFixedIncome(investment.type as InvestmentType);
+  const operations = investment.operations || [];
+
+  // Ordena por data decrescente (mais recente primeiro)
+  const sortedOperations = [...operations].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
+  // Calcula totais
+  const totalDeposits = operations
+    .filter((op) => op.type === "buy" || op.type === "deposit")
+    .reduce((sum, op) => sum + op.total, 0);
+
+  const totalWithdrawals = operations
+    .filter((op) => op.type === "sell" || op.type === "withdraw")
+    .reduce((sum, op) => sum + op.total, 0);
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-[var(--bg-secondary)] border border-[var(--border-color-strong)] rounded-2xl w-full max-w-lg shadow-2xl animate-slideUp max-h-[90vh] flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-[var(--border-color-strong)] flex-shrink-0">
+          <div>
+            <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+              Histórico de Transações
+            </h2>
+            <p className="text-[var(--text-dimmed)] text-sm">
+              {investment.ticker || investment.name}
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+          >
+            <X className="w-5 h-5 text-gray-400" />
+          </button>
+        </div>
+
+        {/* Resumo */}
+        <div className="p-4 border-b border-[var(--border-color-strong)] flex-shrink-0">
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center">
+              <p className="text-xs text-[var(--text-muted)] mb-1">
+                {isFixed ? "Depósitos" : "Compras"}
+              </p>
+              <p className="text-emerald-400 font-semibold">
+                {formatCurrency(totalDeposits)}
+              </p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs text-[var(--text-muted)] mb-1">
+                {isFixed ? "Resgates" : "Vendas"}
+              </p>
+              <p className="text-red-400 font-semibold">
+                {formatCurrency(totalWithdrawals)}
+              </p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs text-[var(--text-muted)] mb-1">Operações</p>
+              <p className="text-[var(--text-primary)] font-semibold">
+                {operations.length}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Lista de transações */}
+        <div className="flex-1 overflow-y-auto p-4">
+          {sortedOperations.length === 0 ? (
+            <div className="text-center py-8">
+              <FileText className="w-12 h-12 text-[var(--text-dimmed)] mx-auto mb-3" />
+              <p className="text-[var(--text-muted)]">
+                Nenhuma transação registrada
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {sortedOperations.map((op) => (
+                <TransactionItem
+                  key={op.id}
+                  operation={op}
+                  isFixed={isFixed}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="p-4 border-t border-[var(--border-color-strong)] flex-shrink-0">
+          <button
+            onClick={onClose}
+            className="w-full py-3 px-4 rounded-xl font-medium bg-[var(--bg-hover)] text-[var(--text-muted)] hover:bg-[var(--bg-hover-strong)] transition-all"
+          >
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TransactionItem({
+  operation,
+  isFixed,
+}: {
+  operation: Operation;
+  isFixed: boolean;
+}) {
+  const isDeposit = operation.type === "buy" || operation.type === "deposit";
+  const colorClass = isDeposit ? "text-emerald-400" : "text-red-400";
+  const bgClass = isDeposit ? "bg-emerald-500/10" : "bg-red-500/10";
+
+  return (
+    <div className="bg-[var(--bg-hover)] rounded-xl p-4">
+      <div className="flex items-start justify-between gap-3">
+        {/* Ícone e info */}
+        <div className="flex items-start gap-3">
+          <div className={`p-2 rounded-lg ${bgClass}`}>
+            <span className={colorClass}>
+              {getOperationIcon(operation.type, isFixed)}
+            </span>
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className={`font-medium ${colorClass}`}>
+                {getOperationLabel(operation.type, isFixed)}
+              </span>
+              <span className="text-xs text-[var(--text-dimmed)]">
+                {formatDate(operation.date)}
+              </span>
+            </div>
+            {!isFixed && (
+              <p className="text-sm text-[var(--text-muted)] mt-0.5">
+                {operation.quantity.toLocaleString("pt-BR", {
+                  maximumFractionDigits: 6,
+                })}{" "}
+                cotas × {formatCurrency(operation.price)}
+              </p>
+            )}
+            {operation.fees > 0 && (
+              <p className="text-xs text-[var(--text-dimmed)] mt-0.5">
+                Taxas: {formatCurrency(operation.fees)}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Valor */}
+        <div className="text-right">
+          <p className={`font-semibold ${colorClass}`}>
+            {isDeposit ? "+" : "-"}
+            {formatCurrency(operation.total)}
+          </p>
+        </div>
+      </div>
+
+      {/* Observação */}
+      {operation.notes && (
+        <div className="mt-3 pt-3 border-t border-[var(--border-color)]">
+          <p className="text-sm text-[var(--text-muted)] flex items-start gap-2">
+            <FileText className="w-4 h-4 flex-shrink-0 mt-0.5 text-[var(--text-dimmed)]" />
+            <span>{operation.notes}</span>
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}

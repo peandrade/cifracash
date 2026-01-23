@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Navbar } from "@/components/layout";
+import { Navbar, Footer } from "@/components/layout";
 import { ThemeProvider } from "@/contexts";
 import { SessionProvider } from "@/components/providers/session-provider";
 
@@ -19,11 +19,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body className="antialiased">
+      <body className="antialiased min-h-screen flex flex-col">
         <SessionProvider>
           <ThemeProvider>
             <Navbar />
-            {children}
+            <main className="flex-1">{children}</main>
+            <Footer />
           </ThemeProvider>
         </SessionProvider>
       </body>

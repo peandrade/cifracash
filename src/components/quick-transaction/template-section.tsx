@@ -78,7 +78,7 @@ export function TemplateSection({
           </h3>
         </div>
         <div className="flex items-center justify-center py-8">
-          <div className="w-6 h-6 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-primary-color border-t-transparent rounded-full animate-spin" />
         </div>
       </div>
     );
@@ -103,7 +103,7 @@ export function TemplateSection({
         </div>
         <button
           onClick={onCreateTemplate}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-violet-400 hover:bg-violet-500/10 rounded-lg transition-all"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-primary-color hover:bg-primary-soft rounded-lg transition-all"
         >
           <Plus className="w-4 h-4" />
           Novo
@@ -118,7 +118,7 @@ export function TemplateSection({
           </p>
           <button
             onClick={onCreateTemplate}
-            className="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-violet-400 hover:bg-violet-500/10 rounded-lg transition-all"
+            className="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary-color hover:bg-primary-soft rounded-lg transition-all"
           >
             <Plus className="w-4 h-4" />
             Criar primeiro atalho

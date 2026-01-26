@@ -27,10 +27,7 @@ export async function GET() {
     return NextResponse.json(user);
   } catch (error) {
     console.error("Erro ao buscar perfil:", error);
-    return NextResponse.json(
-      { error: "Erro ao buscar perfil" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Erro ao buscar perfil" }, { status: 500 });
   }
 }
 
@@ -42,30 +39,13 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, email } = body;
-
-    if (email) {
-
-      const existingUser = await prisma.user.findFirst({
-        where: {
-          email: email.toLowerCase().trim(),
-          NOT: { id: session.user.id },
-        },
-      });
-
-      if (existingUser) {
-        return NextResponse.json(
-          { error: "Este email já está em uso" },
-          { status: 400 }
-        );
-      }
-    }
+    const { name, image } = body;
 
     const user = await prisma.user.update({
       where: { id: session.user.id },
       data: {
-        ...(name !== undefined && { name: name.trim() || null }),
-        ...(email !== undefined && { email: email.toLowerCase().trim() }),
+        ...(name !== undefined && { name }),
+        ...(image !== undefined && { image }),
       },
       select: {
         id: true,
@@ -79,9 +59,6 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json(user);
   } catch (error) {
     console.error("Erro ao atualizar perfil:", error);
-    return NextResponse.json(
-      { error: "Erro ao atualizar perfil" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Erro ao atualizar perfil" }, { status: 500 });
   }
 }

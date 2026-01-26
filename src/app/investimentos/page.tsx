@@ -10,7 +10,8 @@ import {
   OperationModal,
   EditInvestmentModal,
 } from "@/components/investments";
-import { GoalSection } from "@/components/goals";
+import { InvestmentAnalytics } from "@/components/investments/investment-analytics";
+import { GoalSection, GoalsAnalytics } from "@/components/goals";
 import type { Investment, CreateInvestmentInput, CreateOperationInput, UpdateInvestmentInput } from "@/types";
 import { useInvestmentStore } from "@/store/investments-store";
 
@@ -149,7 +150,7 @@ export default function InvestmentsPage() {
         style={{ backgroundColor: "var(--bg-primary)" }}
       >
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-12 h-12 border-4 border-primary-color border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p style={{ color: "var(--text-muted)" }}>Carregando investimentos...</p>
         </div>
       </div>
@@ -169,7 +170,7 @@ export default function InvestmentsPage() {
       {}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-600/20 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 -left-40 w-80 h-80 bg-violet-600/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 -left-40 w-80 h-80 bg-[color-mix(in_srgb,var(--color-primary)_10%,transparent)] rounded-full blur-3xl" />
         <div className="absolute -bottom-40 right-1/3 w-80 h-80 bg-emerald-600/10 rounded-full blur-3xl" />
       </div>
 
@@ -239,7 +240,7 @@ export default function InvestmentsPage() {
 
             <button
               onClick={() => setIsInvestmentModalOpen(true)}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 rounded-xl font-medium transition-all shadow-lg shadow-violet-500/25 text-white"
+              className="flex items-center gap-2 px-6 py-3 bg-primary-gradient rounded-xl font-medium transition-all shadow-lg shadow-primary text-white"
             >
               <Plus className="w-5 h-5" />
               Novo Investimento
@@ -255,6 +256,7 @@ export default function InvestmentsPage() {
           <div className="lg:col-span-1 space-y-6">
             <AllocationChart data={allocation} />
             <GoalSection />
+            <GoalsAnalytics />
           </div>
           <div className="lg:col-span-2">
             <InvestmentList
@@ -265,6 +267,11 @@ export default function InvestmentsPage() {
               deletingId={deletingId}
             />
           </div>
+        </div>
+
+        {}
+        <div className="mt-6">
+          <InvestmentAnalytics />
         </div>
       </div>
 

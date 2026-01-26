@@ -42,7 +42,7 @@ export function TransactionList({
 
   return (
     <div
-      className="backdrop-blur rounded-2xl p-6 transition-colors duration-300 h-full flex flex-col"
+      className="backdrop-blur rounded-xl sm:rounded-2xl p-4 sm:p-6 transition-colors duration-300 flex flex-col"
       style={{
         backgroundColor: "var(--card-bg)",
         borderWidth: "1px",
@@ -50,14 +50,14 @@ export function TransactionList({
         borderColor: "var(--border-color)"
       }}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
         <div>
-          <h3 className="text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
+          <h3 className="text-base sm:text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
             Transações
           </h3>
-          <p className="text-sm" style={{ color: "var(--text-dimmed)" }}>
+          <p className="text-xs sm:text-sm" style={{ color: "var(--text-dimmed)" }}>
             {hasActiveFilters()
-              ? `${filteredTransactions.length} de ${transactions.length} transações`
+              ? `${filteredTransactions.length} de ${transactions.length}`
               : `${transactions.length} transações`
             }
           </p>
@@ -65,74 +65,74 @@ export function TransactionList({
       </div>
 
       {}
-      <TransactionFilters className="mb-4" />
+      <TransactionFilters className="mb-3 sm:mb-4" />
 
       {sortedTransactions.length === 0 ? (
-        <div className="text-center py-12">
+        <div className="text-center py-8 sm:py-12">
           {hasActiveFilters() ? (
             <>
-              <p style={{ color: "var(--text-dimmed)" }}>Nenhuma transação encontrada</p>
-              <p className="text-sm mt-1" style={{ color: "var(--text-dimmed)" }}>
-                Tente ajustar os filtros para ver mais resultados
+              <p className="text-sm sm:text-base" style={{ color: "var(--text-dimmed)" }}>Nenhuma transação encontrada</p>
+              <p className="text-xs sm:text-sm mt-1" style={{ color: "var(--text-dimmed)" }}>
+                Tente ajustar os filtros
               </p>
             </>
           ) : (
             <>
-              <p style={{ color: "var(--text-dimmed)" }}>Nenhuma transação registrada</p>
-              <p className="text-sm mt-1" style={{ color: "var(--text-dimmed)" }}>
-                Clique em &quot;Nova Transação&quot; para começar
+              <p className="text-sm sm:text-base" style={{ color: "var(--text-dimmed)" }}>Nenhuma transação registrada</p>
+              <p className="text-xs sm:text-sm mt-1" style={{ color: "var(--text-dimmed)" }}>
+                Clique em &quot;+&quot; para começar
               </p>
             </>
           )}
         </div>
       ) : (
-        <div className="space-y-3 flex-1 overflow-y-auto pr-2 min-h-0">
+        <div className="space-y-2 sm:space-y-3 overflow-y-auto pr-1 sm:pr-2 max-h-[300px] sm:max-h-[400px]">
           {sortedTransactions.map((transaction) => (
             <div
               key={transaction.id}
-              className="flex items-center justify-between p-4 rounded-xl transition-all group"
+              className="flex items-center justify-between p-2.5 sm:p-4 rounded-xl transition-all group gap-2"
               style={{ backgroundColor: "var(--bg-hover)" }}
               onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--bg-hover-strong)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "var(--bg-hover)"; }}
             >
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
                 <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center"
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0"
                   style={{
                     backgroundColor: `${getCategoryColor(transaction.category)}20`,
                     color: getCategoryColor(transaction.category),
                   }}
                 >
                   {transaction.type === "income" ? (
-                    <ArrowUp className="w-5 h-5" />
+                    <ArrowUp className="w-4 h-4 sm:w-5 sm:h-5" />
                   ) : (
-                    <ArrowDown className="w-5 h-5" />
+                    <ArrowDown className="w-4 h-4 sm:w-5 sm:h-5" />
                   )}
                 </div>
-                <div>
-                  <p className="font-medium" style={{ color: "var(--text-primary)" }}>
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-sm sm:text-base truncate" style={{ color: "var(--text-primary)" }}>
                     {transaction.description || transaction.category}
                   </p>
-                  <p className="text-sm" style={{ color: "var(--text-dimmed)" }}>
-                    {transaction.category} • {formatDate(transaction.date)}
+                  <p className="text-[10px] sm:text-sm truncate" style={{ color: "var(--text-dimmed)" }}>
+                    <span className="hidden sm:inline">{transaction.category} • </span>{formatDate(transaction.date)}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1 sm:gap-3 shrink-0">
                 <p
-                  className={`font-semibold ${
+                  className={`font-semibold text-sm sm:text-base ${
                     transaction.type === "income"
                       ? "text-emerald-400"
                       : "text-red-400"
                   }`}
                 >
-                  {transaction.type === "income" ? "+" : "-"}{" "}
+                  {transaction.type === "income" ? "+" : "-"}
                   {formatCurrency(transaction.value)}
                 </p>
                 <button
                   onClick={() => handleDeleteClick(transaction)}
                   disabled={deletingId === transaction.id}
-                  className="p-2 opacity-0 group-hover:opacity-100 hover:bg-red-500/20 rounded-lg transition-all disabled:opacity-50"
+                  className="p-1.5 sm:p-2 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-red-500/20 active:bg-red-500/30 rounded-lg transition-all disabled:opacity-50"
                 >
                   {deletingId === transaction.id ? (
                     <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />

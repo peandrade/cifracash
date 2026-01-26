@@ -53,7 +53,7 @@ export function LoginForm() {
     >
       {}
       <div className="text-center mb-8">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center mx-auto shadow-lg shadow-violet-500/25 mb-4">
+        <div className="w-16 h-16 rounded-2xl bg-primary-gradient flex items-center justify-center mx-auto shadow-lg shadow-primary mb-4">
           <span className="text-3xl">💰</span>
         </div>
         <h1
@@ -97,7 +97,7 @@ export function LoginForm() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="seu@email.com"
               required
-              className="w-full pl-12 pr-4 py-3 rounded-xl border transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500/50"
+              className="w-full pl-12 pr-4 py-3 rounded-xl border transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/50"
               style={{
                 backgroundColor: "var(--bg-primary)",
                 borderColor: "var(--border-color)",
@@ -118,7 +118,7 @@ export function LoginForm() {
             </label>
             <Link
               href="/forgot-password"
-              className="text-sm text-violet-500 hover:text-violet-400 transition-colors"
+              className="text-sm text-primary-color hover:opacity-80 transition-colors"
             >
               Esqueceu a senha?
             </Link>
@@ -135,7 +135,7 @@ export function LoginForm() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              className="w-full pl-12 pr-12 py-3 rounded-xl border transition-colors focus:outline-none focus:ring-2 focus:ring-violet-500/50"
+              className="w-full pl-12 pr-12 py-3 rounded-xl border transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/50"
               style={{
                 backgroundColor: "var(--bg-primary)",
                 borderColor: "var(--border-color)",
@@ -160,7 +160,7 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-medium shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full py-3 px-4 rounded-xl bg-primary-gradient text-white font-medium shadow-lg shadow-primary hover:shadow-[var(--color-primary)]/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isLoading ? (
             <>
@@ -184,7 +184,7 @@ export function LoginForm() {
         Não tem uma conta?{" "}
         <Link
           href="/register"
-          className="text-violet-500 hover:text-violet-400 font-medium"
+          className="text-primary-color hover:opacity-80 font-medium"
         >
           Criar conta
         </Link>

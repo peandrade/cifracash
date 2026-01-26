@@ -315,7 +315,7 @@ function EditInvestmentForm({
                   value={form.totalInvested}
                   onChange={(value) => handleChange("totalInvested", value)}
                   placeholder="0,00"
-                  className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                  className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                 />
               </div>
               <p className="mt-1 text-xs text-[var(--text-dimmed)]">
@@ -337,7 +337,7 @@ function EditInvestmentForm({
                   value={form.currentPrice}
                   onChange={(value) => handleChange("currentPrice", value)}
                   placeholder="0,00"
-                  className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                  className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                 />
               </div>
               <p className="mt-1 text-xs text-[var(--text-dimmed)]">
@@ -356,7 +356,7 @@ function EditInvestmentForm({
                   value={form.currentValue}
                   onChange={(value) => handleChange("currentValue", value)}
                   placeholder="0,00"
-                  className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                  className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                 />
               </div>
               <p className="mt-1 text-xs text-[var(--text-dimmed)]">
@@ -382,7 +382,7 @@ function EditInvestmentForm({
                         handleChange("indexer", newIndexer);
                         if (newIndexer === "NA") handleChange("interestRate", "");
                       }}
-                      className="indexer-select w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 pr-10 text-[var(--text-primary)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all appearance-none cursor-pointer"
+                      className="indexer-select w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 pr-10 text-[var(--text-primary)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all appearance-none cursor-pointer"
                     >
                       {INDEXER_TYPES.map((idx) => (
                         <option key={idx.value} value={idx.value}>
@@ -404,7 +404,7 @@ function EditInvestmentForm({
                     onChange={(e) => handleChange("interestRate", e.target.value)}
                     placeholder={form.indexer === "CDI" ? "Ex: 100" : form.indexer === "NA" ? "-" : "Ex: 5.5"}
                     disabled={form.indexer === "NA"}
-                    className={`w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all ${form.indexer === "NA" ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all ${form.indexer === "NA" ? "opacity-50 cursor-not-allowed" : ""}`}
                   />
                 </div>
               </div>
@@ -428,7 +428,7 @@ function EditInvestmentForm({
                       type="checkbox"
                       checked={form.noMaturity}
                       onChange={(e) => handleChange("noMaturity", e.target.checked)}
-                      className="w-4 h-4 rounded border-[var(--border-color-strong)] bg-[var(--bg-hover)] text-violet-600 focus:ring-violet-500 focus:ring-offset-0 cursor-pointer"
+                      className="w-4 h-4 rounded border-[var(--border-color-strong)] bg-[var(--bg-hover)] text-primary-color focus:ring-[var(--color-primary)] focus:ring-offset-0 cursor-pointer"
                     />
                     <span className="text-xs text-[var(--text-muted)]">Sem vencimento</span>
                   </label>
@@ -443,7 +443,7 @@ function EditInvestmentForm({
                     type="date"
                     value={form.maturityDate}
                     onChange={(e) => handleChange("maturityDate", e.target.value)}
-                    className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                    className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                   />
                 )}
               </div>
@@ -484,7 +484,7 @@ function EditInvestmentForm({
                 value={form.goalValue}
                 onChange={(value) => handleChange("goalValue", value)}
                 placeholder="10.000,00"
-                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
               />
             </div>
           </div>
@@ -503,7 +503,7 @@ function EditInvestmentForm({
                   className={`h-full rounded-full transition-all duration-500 ${
                     targetProgress >= 100
                       ? "bg-gradient-to-r from-emerald-500 to-teal-500"
-                      : "bg-gradient-to-r from-violet-500 to-indigo-500"
+                      : "bg-primary-gradient"
                   }`}
                   style={{ width: `${Math.min(targetProgress, 100)}%` }}
                 />
@@ -528,7 +528,7 @@ function EditInvestmentForm({
               onChange={(e) => handleChange("notes", e.target.value)}
               placeholder="Anotações..."
               rows={2}
-              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all resize-none"
+              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all resize-none"
             />
           </div>
 
@@ -544,7 +544,7 @@ function EditInvestmentForm({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 py-3 px-4 rounded-xl font-medium bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-500 hover:to-indigo-500 transition-all shadow-lg shadow-violet-500/25 disabled:opacity-50"
+              className="flex-1 py-3 px-4 rounded-xl font-medium bg-primary-gradient text-white hover:opacity-90 transition-all shadow-lg shadow-primary disabled:opacity-50"
             >
               {isSubmitting ? "Salvando..." : "Salvar"}
             </button>

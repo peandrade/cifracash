@@ -215,7 +215,7 @@ export function OperationModal({
                     value={price}
                     onChange={setPrice}
                     placeholder="0,00"
-                    className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                    className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                     required
                   />
                 </div>
@@ -241,7 +241,7 @@ export function OperationModal({
                       }}
                       className={`flex-1 py-2.5 px-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 text-sm ${
                         sellMode === "quantity"
-                          ? "bg-violet-600 text-white"
+                          ? "bg-[var(--color-primary)] text-white"
                           : "bg-[var(--bg-hover)] text-[var(--text-muted)] hover:bg-[var(--bg-hover-strong)]"
                       }`}
                     >
@@ -253,7 +253,7 @@ export function OperationModal({
                       onClick={() => setSellMode("value")}
                       className={`flex-1 py-2.5 px-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 text-sm ${
                         sellMode === "value"
-                          ? "bg-violet-600 text-white"
+                          ? "bg-[var(--color-primary)] text-white"
                           : "bg-[var(--bg-hover)] text-[var(--text-muted)] hover:bg-[var(--bg-hover-strong)]"
                       }`}
                     >
@@ -275,7 +275,7 @@ export function OperationModal({
                       <button
                         type="button"
                         onClick={() => setSellTargetValue(investment.currentValue.toString())}
-                        className="text-xs font-semibold text-violet-400 hover:text-violet-300 bg-violet-500/10 hover:bg-violet-500/20 px-2 py-1 rounded-md transition-all"
+                        className="text-xs font-semibold text-primary-color hover:opacity-80 bg-primary-soft hover:bg-primary-medium px-2 py-1 rounded-md transition-all"
                       >
                         MAX
                       </button>
@@ -289,7 +289,7 @@ export function OperationModal({
                       value={sellTargetValue}
                       onChange={setSellTargetValue}
                       placeholder="0,00"
-                      className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                      className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                     />
                   </div>
                   {investment.currentValue > 0 && (
@@ -303,8 +303,8 @@ export function OperationModal({
 
                   {}
                   {calculatedQuantity > 0 && priceNum > 0 && (
-                    <div className="mt-3 p-3 bg-violet-500/10 border border-violet-500/20 rounded-xl">
-                      <p className="text-sm text-violet-400 font-medium mb-1">Cálculo automático:</p>
+                    <div className="mt-3 p-3 bg-primary-soft border border-[var(--color-primary)]/20 rounded-xl">
+                      <p className="text-sm text-primary-color font-medium mb-1">Cálculo automático:</p>
                       <div className="flex justify-between text-sm">
                         <span className="text-[var(--text-muted)]">Cotas a vender:</span>
                         <span className="text-[var(--text-primary)] font-medium">
@@ -318,7 +318,7 @@ export function OperationModal({
                         </span>
                       </div>
                       {calculatedValue !== sellTargetNum && (
-                        <p className="text-xs text-violet-400/70 mt-2">
+                        <p className="text-xs text-[var(--text-dimmed)] mt-2">
                           * Valor arredondado para baixo (cotas inteiras ou fração disponível)
                         </p>
                       )}
@@ -338,7 +338,7 @@ export function OperationModal({
                       <button
                         type="button"
                         onClick={() => setQuantity(investment.quantity.toString())}
-                        className="text-xs font-semibold text-violet-400 hover:text-violet-300 bg-violet-500/10 hover:bg-violet-500/20 px-2 py-1 rounded-md transition-all"
+                        className="text-xs font-semibold text-primary-color hover:opacity-80 bg-primary-soft hover:bg-primary-medium px-2 py-1 rounded-md transition-all"
                       >
                         MAX
                       </button>
@@ -350,7 +350,7 @@ export function OperationModal({
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
                     placeholder="0"
-                    className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                    className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                     required
                   />
                   {type === "sell" && investment.quantity > 0 && (
@@ -377,7 +377,7 @@ export function OperationModal({
                   <button
                     type="button"
                     onClick={() => setTotalValue(investment.currentValue.toString())}
-                    className="text-xs font-semibold text-violet-400 hover:text-violet-300 bg-violet-500/10 hover:bg-violet-500/20 px-2 py-1 rounded-md transition-all"
+                    className="text-xs font-semibold text-primary-color hover:opacity-80 bg-primary-soft hover:bg-primary-medium px-2 py-1 rounded-md transition-all"
                   >
                     MAX
                   </button>
@@ -391,7 +391,7 @@ export function OperationModal({
                   value={totalValue}
                   onChange={setTotalValue}
                   placeholder="0,00"
-                  className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                  className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                   required
                 />
               </div>
@@ -430,7 +430,7 @@ export function OperationModal({
                     onChange={(e) => setDate(e.target.value)}
                     min={minDateStr}
                     max={formatDateForInput(new Date())}
-                    className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                    className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                     required
                   />
                   {minDateDisplay && (
@@ -457,7 +457,7 @@ export function OperationModal({
                   value={fees}
                   onChange={setFees}
                   placeholder="0,00"
-                  className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                  className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                 />
               </div>
             </div>
@@ -496,7 +496,7 @@ export function OperationModal({
                   type="checkbox"
                   checked={skipBalanceCheck}
                   onChange={(e) => setSkipBalanceCheck(e.target.checked)}
-                  className="w-4 h-4 mt-0.5 rounded border-[var(--border-color-strong)] bg-[var(--bg-hover)] text-violet-600 focus:ring-violet-500 focus:ring-offset-0 cursor-pointer"
+                  className="w-4 h-4 mt-0.5 rounded border-[var(--border-color-strong)] bg-[var(--bg-hover)] text-primary-color focus:ring-[var(--color-primary)] focus:ring-offset-0 cursor-pointer"
                 />
                 <div>
                   <span className="text-sm text-[var(--text-primary)]">Não descontar do saldo</span>
@@ -518,7 +518,7 @@ export function OperationModal({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Ex: Compra mensal"
-              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
             />
           </div>
 

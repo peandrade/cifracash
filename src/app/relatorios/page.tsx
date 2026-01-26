@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { FileBarChart, Calendar, Download, Filter, RefreshCw } from "lucide-react";
 import { useTransactionStore } from "@/store/transaction-store";
 import { useCategoryStore } from "@/store/category-store";
-import { CategoryReport, MonthlyComparison } from "@/components/reports";
+import { CategoryReport, MonthlyComparison, AdvancedAnalytics } from "@/components/reports";
 import { generateReportPDF } from "@/lib/pdf-generator";
 
 const MONTHS = [
@@ -63,7 +63,7 @@ export default function RelatoriosPage() {
         style={{ backgroundColor: "var(--bg-primary)" }}
       >
         <div className="text-center">
-          <RefreshCw className="w-8 h-8 text-violet-500 animate-spin mx-auto mb-4" />
+          <RefreshCw className="w-8 h-8 text-primary-color animate-spin mx-auto mb-4" />
           <p style={{ color: "var(--text-muted)" }}>Carregando relatórios...</p>
         </div>
       </div>
@@ -77,8 +77,8 @@ export default function RelatoriosPage() {
     >
       {}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-violet-600/20 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 -left-40 w-80 h-80 bg-indigo-600/10 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[color-mix(in_srgb,var(--color-primary)_20%,transparent)] rounded-full blur-3xl" />
+        <div className="absolute top-1/2 -left-40 w-80 h-80 bg-[color-mix(in_srgb,var(--color-secondary)_10%,transparent)] rounded-full blur-3xl" />
         <div className="absolute -bottom-40 right-1/3 w-80 h-80 bg-fuchsia-600/10 rounded-full blur-3xl" />
       </div>
 
@@ -88,7 +88,7 @@ export default function RelatoriosPage() {
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold flex items-center gap-3" style={{ color: "var(--text-primary)" }}>
-              <FileBarChart className="w-8 h-8 text-violet-500" />
+              <FileBarChart className="w-8 h-8 text-primary-color" />
               Relatórios
             </h1>
             <p className="mt-1" style={{ color: "var(--text-dimmed)" }}>
@@ -98,7 +98,7 @@ export default function RelatoriosPage() {
           <button
             onClick={handleExportPDF}
             disabled={isExporting || filteredTransactions.length === 0}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 rounded-xl font-medium transition-all shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 text-white disabled:opacity-50"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-primary-gradient rounded-xl font-medium transition-all shadow-lg shadow-primary text-white disabled:opacity-50"
           >
             {isExporting ? (
               <>
@@ -123,7 +123,7 @@ export default function RelatoriosPage() {
               <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                className="bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-2 px-3 text-[var(--text-primary)] focus:outline-none focus:border-violet-500 appearance-none cursor-pointer"
+                className="bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-2 px-3 text-[var(--text-primary)] focus:outline-none focus:border-primary-color appearance-none cursor-pointer"
               >
                 {MONTHS.map((month, index) => (
                   <option key={index} value={index + 1} className="bg-[var(--bg-secondary)]">
@@ -137,7 +137,7 @@ export default function RelatoriosPage() {
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-              className="bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-2 px-3 text-[var(--text-primary)] focus:outline-none focus:border-violet-500 appearance-none cursor-pointer"
+              className="bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-2 px-3 text-[var(--text-primary)] focus:outline-none focus:border-primary-color appearance-none cursor-pointer"
             >
               {years.map((year) => (
                 <option key={year} value={year} className="bg-[var(--bg-secondary)]">
@@ -177,7 +177,7 @@ export default function RelatoriosPage() {
                   onClick={() => setFilterType("all")}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                     filterType === "all"
-                      ? "bg-violet-500/20 text-violet-400 border border-violet-500/30"
+                      ? "bg-primary-soft text-primary-color border border-[var(--color-primary)]/30"
                       : "bg-[var(--bg-hover)] text-[var(--text-muted)] hover:bg-[var(--bg-hover-strong)]"
                   }`}
                 >
@@ -212,6 +212,14 @@ export default function RelatoriosPage() {
               currentMonth={selectedMonth}
               currentYear={selectedYear}
             />
+          </div>
+
+          {}
+          <div className="mt-6">
+            <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-6">
+              Analytics Avançados
+            </h2>
+            <AdvancedAnalytics />
           </div>
         </div>
       </div>

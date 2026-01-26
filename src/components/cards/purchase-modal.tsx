@@ -161,7 +161,7 @@ export function PurchaseModal({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Ex: Amazon, iFood, Uber..."
               required
-              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500"
+              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color"
             />
           </div>
 
@@ -178,7 +178,7 @@ export function PurchaseModal({
                   onChange={setValue}
                   placeholder="0,00"
                   required
-                  className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500"
+                  className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color"
                 />
               </div>
             </div>
@@ -191,7 +191,7 @@ export function PurchaseModal({
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 required
-                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] focus:outline-none focus:border-violet-500"
+                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] focus:outline-none focus:border-primary-color"
               />
             </div>
           </div>
@@ -205,7 +205,7 @@ export function PurchaseModal({
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               required
-              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] focus:outline-none focus:border-violet-500 appearance-none cursor-pointer"
+              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] focus:outline-none focus:border-primary-color appearance-none cursor-pointer"
             >
               {PURCHASE_CATEGORIES.map((cat) => (
                 <option key={cat} value={cat} className="bg-[var(--bg-secondary)] text-[var(--text-primary)]">
@@ -223,7 +223,7 @@ export function PurchaseModal({
             <select
               value={installments}
               onChange={(e) => setInstallments(e.target.value)}
-              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] focus:outline-none focus:border-violet-500 appearance-none cursor-pointer"
+              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] focus:outline-none focus:border-primary-color appearance-none cursor-pointer"
             >
               <option value="1" className="bg-[var(--bg-secondary)] text-[var(--text-primary)]">À vista</option>
               {Array.from({ length: 11 }, (_, i) => i + 2).map((n) => (
@@ -287,7 +287,7 @@ export function PurchaseModal({
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Adicione detalhes..."
               rows={2}
-              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 resize-none"
+              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color resize-none"
             />
           </div>
 

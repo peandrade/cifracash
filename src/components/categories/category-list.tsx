@@ -76,10 +76,10 @@ export function CategoryList({
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <button
                   onClick={() => onEdit(category)}
-                  className="p-2 hover:bg-violet-500/20 rounded-lg transition-colors"
+                  className="p-2 hover:bg-primary-medium rounded-lg transition-colors"
                   title="Editar"
                 >
-                  <Pencil className="w-4 h-4 text-violet-400" />
+                  <Pencil className="w-4 h-4 text-primary-color" />
                 </button>
                 <button
                   onClick={() => handleDeleteClick(category)}

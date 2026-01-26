@@ -78,7 +78,7 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
               onChange={(e) => setName(e.target.value)}
               placeholder="Ex: Nubank, Inter, Itaú..."
               required
-              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
+              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)]"
             />
           </div>
 
@@ -93,7 +93,7 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
               onChange={(e) => setLastDigits(e.target.value.replace(/\D/g, "").slice(0, 4))}
               placeholder="0000"
               maxLength={4}
-              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
+              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)]"
             />
           </div>
 
@@ -108,7 +108,7 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
                 value={limit}
                 onChange={setLimit}
                 placeholder="0,00"
-                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
+                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)]"
               />
             </div>
           </div>
@@ -123,7 +123,7 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
                 value={closingDay}
                 onChange={(e) => setClosingDay(e.target.value)}
                 required
-                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 pr-10 text-[var(--text-primary)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 appearance-none cursor-pointer"
+                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 pr-10 text-[var(--text-primary)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] appearance-none cursor-pointer"
               >
                 {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (
                   <option key={day} value={day} className="bg-[var(--bg-secondary)] text-[var(--text-primary)]">
@@ -140,7 +140,7 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
                 value={dueDay}
                 onChange={(e) => setDueDay(e.target.value)}
                 required
-                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 pr-10 text-[var(--text-primary)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 appearance-none cursor-pointer"
+                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 pr-10 text-[var(--text-primary)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] appearance-none cursor-pointer"
               >
                 {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (
                   <option key={day} value={day} className="bg-[var(--bg-secondary)] text-[var(--text-primary)]">
@@ -163,7 +163,7 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
                   type="button"
                   onClick={() => setColor(c)}
                   className={`w-8 h-8 rounded-full transition-all ${
-                    color === c ? "ring-2 ring-violet-500 ring-offset-2 ring-offset-[var(--bg-secondary)]" : ""
+                    color === c ? "ring-2 ring-[var(--color-primary)] ring-offset-2 ring-offset-[var(--bg-secondary)]" : ""
                   }`}
                   style={{ backgroundColor: c }}
                 />

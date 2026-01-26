@@ -142,7 +142,7 @@ export function InvestmentModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
       <style>{`
         .indexer-select {
           -webkit-appearance: none;
@@ -158,28 +158,28 @@ export function InvestmentModal({
           color: var(--text-primary);
         }
       `}</style>
-      <div className="bg-[var(--bg-secondary)] border border-[var(--border-color-strong)] rounded-2xl w-full max-w-md shadow-2xl animate-slideUp">
+      <div className="bg-[var(--bg-secondary)] border border-[var(--border-color-strong)] rounded-t-2xl sm:rounded-2xl w-full max-w-md shadow-2xl animate-slideUp max-h-[90vh] overflow-y-auto">
         {}
-        <div className="flex items-center justify-between p-6 border-b border-[var(--border-color-strong)]">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-[var(--border-color-strong)] sticky top-0 bg-[var(--bg-secondary)] z-10">
+          <div className="flex items-center gap-2 sm:gap-3">
             {(step === 2 || step === 3) && (
               <button
                 onClick={handleBack}
-                className="p-1.5 hover:bg-[var(--bg-hover)] rounded-lg transition-colors"
+                className="p-1.5 hover:bg-[var(--bg-hover)] active:bg-[var(--bg-hover-strong)] rounded-lg transition-colors"
               >
                 <ChevronLeft className="w-5 h-5 text-[var(--text-muted)]" />
               </button>
             )}
             <div>
-              <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+              <h2 className="text-lg sm:text-xl font-semibold text-[var(--text-primary)]">
                 {step === 1 ? "Novo Investimento" : step === 3 ? "Depósito Inicial" : "Detalhes do Ativo"}
               </h2>
               {(step === 2 || step === 3) && (
-                <p className="text-sm text-[var(--text-dimmed)] flex items-center gap-1.5 mt-0.5">
-                  <span className="text-lg">{getInvestmentTypeIcon(type)}</span>
+                <p className="text-xs sm:text-sm text-[var(--text-dimmed)] flex items-center gap-1.5 mt-0.5">
+                  <span className="text-base sm:text-lg">{getInvestmentTypeIcon(type)}</span>
                   {getInvestmentTypeLabel(type)}
                   {showFixedIncomeFields && (
-                    <span className="text-[var(--text-dimmed)]">• Etapa {step === 2 ? "1" : "2"}/2</span>
+                    <span className="text-[var(--text-dimmed)]">• {step === 2 ? "1" : "2"}/2</span>
                   )}
                 </p>
               )}
@@ -187,7 +187,7 @@ export function InvestmentModal({
           </div>
           <button
             onClick={handleClose}
-            className="p-2 hover:bg-[var(--bg-hover)] rounded-lg transition-colors"
+            className="p-2 hover:bg-[var(--bg-hover)] active:bg-[var(--bg-hover-strong)] rounded-lg transition-colors"
           >
             <X className="w-5 h-5 text-[var(--text-muted)]" />
           </button>
@@ -195,30 +195,30 @@ export function InvestmentModal({
 
         {}
         {step === 1 && (
-          <div className="p-6">
-            <p className="text-sm text-[var(--text-muted)] mb-4">
+          <div className="p-4 sm:p-6">
+            <p className="text-xs sm:text-sm text-[var(--text-muted)] mb-3 sm:mb-4">
               Selecione o tipo de investimento:
             </p>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {INVESTMENT_TYPES.map((t) => (
                 <button
                   key={t}
                   type="button"
                   onClick={() => handleSelectType(t)}
-                  className="p-4 rounded-xl text-center transition-all bg-[var(--bg-hover)] text-[var(--text-muted)] hover:bg-[var(--bg-hover-strong)] hover:text-[var(--text-primary)] border border-transparent hover:border-violet-500/50 group"
+                  className="p-2.5 sm:p-4 rounded-xl text-center transition-all bg-[var(--bg-hover)] text-[var(--text-muted)] hover:bg-[var(--bg-hover-strong)] active:bg-[var(--bg-hover-strong)] hover:text-[var(--text-primary)] border border-transparent hover:border-[color-mix(in_srgb,var(--color-primary)_50%,transparent)] group"
                 >
-                  <span className="text-2xl block mb-2 group-hover:scale-110 transition-transform">
+                  <span className="text-xl sm:text-2xl block mb-1 sm:mb-2 group-hover:scale-110 transition-transform">
                     {getInvestmentTypeIcon(t)}
                   </span>
-                  <span className="text-xs font-medium">{getInvestmentTypeLabel(t)}</span>
+                  <span className="text-[10px] sm:text-xs font-medium">{getInvestmentTypeLabel(t)}</span>
                 </button>
               ))}
             </div>
-            <div className="flex justify-end mt-6">
+            <div className="flex justify-end mt-4 sm:mt-6">
               <button
                 type="button"
                 onClick={handleClose}
-                className="py-2.5 px-5 rounded-xl font-medium bg-[var(--bg-hover)] text-[var(--text-muted)] hover:bg-[var(--bg-hover-strong)] transition-all"
+                className="py-2.5 px-5 rounded-xl font-medium bg-[var(--bg-hover)] text-[var(--text-muted)] hover:bg-[var(--bg-hover-strong)] active:bg-[var(--bg-hover-strong)] transition-all"
               >
                 Cancelar
               </button>
@@ -228,7 +228,7 @@ export function InvestmentModal({
 
         {}
         {step === 2 && (
-          <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-3 sm:space-y-4">
             {}
             <div>
               <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
@@ -243,7 +243,7 @@ export function InvestmentModal({
                     ? "Ex: CDB Nubank 100% CDI, Tesouro Selic 2029"
                     : "Ex: Petrobras, Bitcoin, IVVB11"
                 }
-                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                 autoFocus
                 required
               />
@@ -260,7 +260,7 @@ export function InvestmentModal({
                   value={ticker}
                   onChange={(e) => setTicker(e.target.value.toUpperCase())}
                   placeholder="Ex: PETR4, BTC, IVVB11"
-                  className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all uppercase"
+                  className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all uppercase"
                 />
               </div>
             )}
@@ -275,7 +275,7 @@ export function InvestmentModal({
                 value={institution}
                 onChange={(e) => setInstitution(e.target.value)}
                 placeholder={showFixedIncomeFields ? "Ex: Nubank, XP, Inter" : "Ex: XP, Clear, Rico"}
-                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
               />
             </div>
 
@@ -296,7 +296,7 @@ export function InvestmentModal({
                           setIndexer(newIndexer);
                           if (newIndexer === "NA") setInterestRate("");
                         }}
-                        className="indexer-select w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 pr-10 text-[var(--text-primary)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all appearance-none cursor-pointer"
+                        className="indexer-select w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 pr-10 text-[var(--text-primary)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all appearance-none cursor-pointer"
                       >
                         {INDEXER_TYPES.map((idx) => (
                           <option key={idx.value} value={idx.value}>
@@ -318,7 +318,7 @@ export function InvestmentModal({
                       onChange={(e) => setInterestRate(e.target.value)}
                       placeholder={indexer === "CDI" ? "100" : indexer === "NA" ? "-" : "5.5"}
                       disabled={indexer === "NA"}
-                      className={`w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all ${indexer === "NA" ? "opacity-50 cursor-not-allowed" : ""}`}
+                      className={`w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all ${indexer === "NA" ? "opacity-50 cursor-not-allowed" : ""}`}
                     />
                   </div>
                 </div>
@@ -345,7 +345,7 @@ export function InvestmentModal({
                           setNoMaturity(e.target.checked);
                           if (e.target.checked) setMaturityDate("");
                         }}
-                        className="w-4 h-4 rounded border-[var(--border-color-strong)] bg-[var(--bg-hover)] text-violet-600 focus:ring-violet-500 focus:ring-offset-0 cursor-pointer"
+                        className="w-4 h-4 rounded border-[var(--border-color-strong)] bg-[var(--bg-hover)] text-primary-color focus:ring-[var(--color-primary)] focus:ring-offset-0 cursor-pointer"
                       />
                       <span className="text-xs text-[var(--text-muted)]">Sem vencimento</span>
                     </label>
@@ -359,7 +359,7 @@ export function InvestmentModal({
                       type="date"
                       value={maturityDate}
                       onChange={(e) => setMaturityDate(e.target.value)}
-                      className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                      className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                     />
                   )}
                 </div>
@@ -378,7 +378,7 @@ export function InvestmentModal({
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Anotações opcionais..."
                   rows={2}
-                  className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all resize-none"
+                  className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all resize-none"
                 />
               </div>
             )}
@@ -398,7 +398,7 @@ export function InvestmentModal({
                   type="button"
                   onClick={handleAdvanceToDeposit}
                   disabled={!name}
-                  className="flex-1 py-3 px-4 rounded-xl font-medium bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-500 hover:to-indigo-500 transition-all shadow-lg shadow-violet-500/25 disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex-1 py-3 px-4 rounded-xl font-medium bg-primary-gradient text-white transition-all shadow-lg shadow-primary disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   Avançar
                   <ArrowRight className="w-4 h-4" />
@@ -407,7 +407,7 @@ export function InvestmentModal({
                 <button
                   type="submit"
                   disabled={isSubmitting || !name}
-                  className="flex-1 py-3 px-4 rounded-xl font-medium bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-500 hover:to-indigo-500 transition-all shadow-lg shadow-violet-500/25 disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex-1 py-3 px-4 rounded-xl font-medium bg-primary-gradient text-white transition-all shadow-lg shadow-primary disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? "Salvando..." : "Criar Ativo"}
                   {!isSubmitting && <ArrowRight className="w-4 h-4" />}
@@ -419,7 +419,7 @@ export function InvestmentModal({
 
         {}
         {step === 3 && showFixedIncomeFields && (
-          <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-3 sm:space-y-4">
             {}
             <div className="bg-[var(--bg-hover)] rounded-xl p-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -502,7 +502,7 @@ export function InvestmentModal({
                   type="checkbox"
                   checked={skipBalanceCheck}
                   onChange={(e) => setSkipBalanceCheck(e.target.checked)}
-                  className="w-4 h-4 mt-0.5 rounded border-[var(--border-color-strong)] bg-[var(--bg-hover)] text-violet-600 focus:ring-violet-500 focus:ring-offset-0 cursor-pointer"
+                  className="w-4 h-4 mt-0.5 rounded border-[var(--border-color-strong)] bg-[var(--bg-hover)] text-primary-color focus:ring-[var(--color-primary)] focus:ring-offset-0 cursor-pointer"
                 />
                 <div>
                   <span className="text-sm text-[var(--text-primary)]">Investimento já existente</span>
@@ -523,7 +523,7 @@ export function InvestmentModal({
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Anotações opcionais..."
                 rows={2}
-                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all resize-none"
+                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all resize-none"
               />
             </div>
 

@@ -150,7 +150,7 @@ export function WealthEvolutionChart() {
 
   return (
     <div
-      className="backdrop-blur rounded-2xl p-6 transition-colors duration-300"
+      className="backdrop-blur rounded-2xl p-4 sm:p-6 transition-colors duration-300"
       style={{
         backgroundColor: "var(--card-bg)",
         borderWidth: "1px",
@@ -175,12 +175,12 @@ export function WealthEvolutionChart() {
       `}</style>
 
       {}
-      <div className="flex items-center justify-between mb-1">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-violet-500/10 rounded-lg">
-            <Wallet className="w-5 h-5 text-violet-400" />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3 sm:mb-1">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="p-1.5 sm:p-2 bg-primary-soft rounded-lg">
+            <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-primary-color" />
           </div>
-          <h3 className="text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
+          <h3 className="text-base sm:text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
             Evolução Patrimonial
           </h3>
         </div>
@@ -193,11 +193,11 @@ export function WealthEvolutionChart() {
           >
             <RefreshCw className={`w-4 h-4 text-gray-400 ${isLoading ? "animate-spin" : ""}`} />
           </button>
-          <div className="relative">
+          <div className="relative flex-1 sm:flex-none">
             <select
               value={period}
               onChange={(e) => setPeriod(e.target.value as WealthPeriod)}
-              className="wealth-period-select appearance-none cursor-pointer px-3 py-1.5 pr-8 rounded-lg text-sm font-medium transition-colors"
+              className="wealth-period-select w-full sm:w-auto appearance-none cursor-pointer px-3 py-1.5 pr-8 rounded-lg text-sm font-medium transition-colors"
               style={{
                 backgroundColor: "var(--bg-hover)",
                 color: "var(--text-primary)",
@@ -223,24 +223,24 @@ export function WealthEvolutionChart() {
       {}
       <div className="flex items-center gap-4 mb-4">
         <div>
-          <p className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
+          <p className="text-xl sm:text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
             {formatCurrency(summary.currentWealth)}
           </p>
-          <div className="flex items-center gap-2 mt-1">
+          <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1">
             {isPositiveChange ? (
-              <TrendingUp className="w-4 h-4 text-emerald-400" />
+              <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-400" />
             ) : (
-              <TrendingDown className="w-4 h-4 text-red-400" />
+              <TrendingDown className="w-3 h-3 sm:w-4 sm:h-4 text-red-400" />
             )}
             <span
-              className={`text-sm font-medium ${
+              className={`text-xs sm:text-sm font-medium ${
                 isPositiveChange ? "text-emerald-400" : "text-red-400"
               }`}
             >
               {isPositiveChange ? "+" : ""}
               {formatCurrency(summary.wealthChange)} ({summary.wealthChangePercent.toFixed(1)}%)
             </span>
-            <span className="text-xs" style={{ color: "var(--text-dimmed)" }}>
+            <span className="text-[10px] sm:text-xs" style={{ color: "var(--text-dimmed)" }}>
               vs mês anterior
             </span>
           </div>
@@ -301,7 +301,7 @@ export function WealthEvolutionChart() {
       </div>
 
       {}
-      <div className="grid grid-cols-4 gap-2 mt-4 pt-4 border-t border-[var(--border-color)]">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-2 mt-4 pt-4 border-t border-[var(--border-color)]">
         <div className="text-center">
           <div className="flex items-center justify-center gap-1 mb-1">
             <div className="w-2 h-2 rounded-full bg-emerald-500" />
@@ -309,7 +309,7 @@ export function WealthEvolutionChart() {
               Saldo
             </span>
           </div>
-          <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+          <p className="text-xs sm:text-sm font-medium" style={{ color: "var(--text-primary)" }}>
             {formatCurrency(summary.transactionBalance)}
           </p>
         </div>
@@ -320,7 +320,7 @@ export function WealthEvolutionChart() {
               Investido
             </span>
           </div>
-          <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+          <p className="text-xs sm:text-sm font-medium" style={{ color: "var(--text-primary)" }}>
             {formatCurrency(summary.investmentValue)}
           </p>
         </div>
@@ -331,7 +331,7 @@ export function WealthEvolutionChart() {
               Metas
             </span>
           </div>
-          <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+          <p className="text-xs sm:text-sm font-medium" style={{ color: "var(--text-primary)" }}>
             {formatCurrency(summary.goalsSaved)}
           </p>
         </div>
@@ -342,7 +342,7 @@ export function WealthEvolutionChart() {
               Dívida
             </span>
           </div>
-          <p className="text-sm font-medium text-red-400">
+          <p className="text-xs sm:text-sm font-medium text-red-400">
             -{formatCurrency(summary.cardDebt)}
           </p>
         </div>

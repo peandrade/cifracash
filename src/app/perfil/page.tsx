@@ -223,7 +223,7 @@ export default function PerfilPage() {
         style={{ backgroundColor: "var(--bg-primary)" }}
       >
         <div className="text-center">
-          <RefreshCw className="w-8 h-8 text-violet-500 animate-spin mx-auto mb-4" />
+          <RefreshCw className="w-8 h-8 text-primary-color animate-spin mx-auto mb-4" />
           <p style={{ color: "var(--text-muted)" }}>Carregando perfil...</p>
         </div>
       </div>
@@ -237,7 +237,7 @@ export default function PerfilPage() {
     >
       {}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-violet-600/20 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary-medium rounded-full blur-3xl" />
         <div className="absolute top-1/2 -left-40 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl" />
       </div>
 
@@ -256,7 +256,7 @@ export default function PerfilPage() {
         {}
         <div className="mb-6 bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)] p-6">
           <div className="flex items-center gap-4">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-3xl shadow-lg shadow-violet-500/25">
+            <div className="w-20 h-20 rounded-full bg-primary-gradient flex items-center justify-center text-3xl shadow-lg shadow-primary">
               {profile?.name ? profile.name.charAt(0).toUpperCase() : "U"}
             </div>
             <div>
@@ -285,8 +285,8 @@ export default function PerfilPage() {
           <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)] overflow-hidden">
             <div className="p-6 border-b border-[var(--border-color)]">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-violet-500/10 rounded-lg">
-                  <User className="w-5 h-5 text-violet-400" />
+                <div className="p-2 bg-primary-soft rounded-lg">
+                  <User className="w-5 h-5 text-primary-color" />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-[var(--text-primary)]">
@@ -336,7 +336,7 @@ export default function PerfilPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Seu nome"
-                    className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                    className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                   />
                 </div>
               </div>
@@ -353,7 +353,7 @@ export default function PerfilPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="seu@email.com"
                     required
-                    className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                    className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                   />
                 </div>
               </div>
@@ -361,7 +361,7 @@ export default function PerfilPage() {
               <button
                 type="submit"
                 disabled={isUpdatingProfile}
-                className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl font-medium bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-500 hover:to-indigo-500 transition-all shadow-lg shadow-violet-500/25 disabled:opacity-50"
+                className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl font-medium bg-primary-gradient text-white hover:opacity-90 transition-all shadow-lg shadow-primary disabled:opacity-50"
               >
                 {isUpdatingProfile ? (
                   <>
@@ -613,7 +613,7 @@ export default function PerfilPage() {
               {}
               {isCategoriesLoading ? (
                 <div className="text-center py-8">
-                  <RefreshCw className="w-6 h-6 text-violet-500 animate-spin mx-auto mb-2" />
+                  <RefreshCw className="w-6 h-6 text-primary-color animate-spin mx-auto mb-2" />
                   <p className="text-[var(--text-dimmed)]">Carregando categorias...</p>
                 </div>
               ) : (

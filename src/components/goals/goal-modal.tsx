@@ -99,8 +99,8 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
         {}
         <div className="flex items-center justify-between p-6 border-b border-[var(--border-color-strong)] flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-violet-500/10 rounded-lg">
-              <Target className="w-5 h-5 text-violet-400" />
+            <div className="p-2 bg-primary-soft rounded-lg">
+              <Target className="w-5 h-5 text-primary-color" />
             </div>
             <div>
               <h2 className="text-xl font-semibold text-[var(--text-primary)]">
@@ -139,7 +139,7 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
                   }}
                   className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-1 ${
                     category === cat
-                      ? "border-violet-500 bg-violet-500/10"
+                      ? "border-[var(--color-primary)] bg-primary-soft"
                       : "border-[var(--border-color)] hover:border-[var(--border-color-strong)]"
                   }`}
                 >
@@ -204,7 +204,7 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Ex: Viagem para Europa"
-              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
               required
             />
           </div>
@@ -222,7 +222,7 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
                 value={targetValue}
                 onChange={setTargetValue}
                 placeholder="0,00"
-                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                 required
               />
             </div>
@@ -241,7 +241,7 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
                 value={currentValue}
                 onChange={setCurrentValue}
                 placeholder="0,00"
-                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
               />
             </div>
           </div>
@@ -256,7 +256,7 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
               value={targetDate}
               onChange={(e) => setTargetDate(e.target.value)}
               min={new Date().toISOString().split("T")[0]}
-              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
             />
             <p className="mt-1 text-xs text-[var(--text-dimmed)]">
               Usada para calcular quanto guardar por mês
@@ -273,7 +273,7 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Anotações sobre a meta..."
-              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+              className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
             />
           </div>
 
@@ -289,7 +289,7 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
             <button
               type="submit"
               disabled={isSubmitting || !name || !category || !targetValue}
-              className="flex-1 py-3 px-4 rounded-xl font-medium bg-gradient-to-r from-violet-500 to-purple-500 text-white hover:from-violet-400 hover:to-purple-400 transition-all shadow-lg shadow-violet-500/25 disabled:opacity-50"
+              className="flex-1 py-3 px-4 rounded-xl font-medium bg-primary-gradient text-white transition-all shadow-lg shadow-primary disabled:opacity-50"
             >
               {isSubmitting ? "Salvando..." : "Criar Meta"}
             </button>

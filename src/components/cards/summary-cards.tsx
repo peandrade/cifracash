@@ -25,8 +25,8 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
       {}
       <div className="backdrop-blur rounded-2xl p-5 transition-colors duration-300" style={cardStyle}>
         <div className="flex items-center gap-3 mb-3">
-          <div className="p-2 rounded-xl bg-violet-500/20">
-            <CreditCard className="w-5 h-5 text-violet-400" />
+          <div className="p-2 rounded-xl bg-primary-medium">
+            <CreditCard className="w-5 h-5 text-primary-color" />
           </div>
           <span className="text-sm" style={{ color: "var(--text-muted)" }}>Limite Total</span>
         </div>
@@ -41,7 +41,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
           <div className="w-full rounded-full h-2" style={{ backgroundColor: "var(--bg-hover)" }}>
             <div
               className={`h-full rounded-full transition-all ${
-                usagePercent > 80 ? "bg-red-500" : usagePercent > 50 ? "bg-yellow-500" : "bg-violet-500"
+                usagePercent > 80 ? "bg-red-500" : usagePercent > 50 ? "bg-yellow-500" : "bg-[var(--color-primary)]"
               }`}
               style={{ width: `${Math.min(usagePercent, 100)}%` }}
             />

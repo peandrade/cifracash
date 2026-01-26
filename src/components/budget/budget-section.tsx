@@ -96,7 +96,7 @@ export function BudgetSection({ refreshTrigger = 0 }: BudgetSectionProps) {
   const getProgressColor = (percentage: number): string => {
     if (percentage >= 100) return "from-red-500 to-red-600";
     if (percentage >= 80) return "from-amber-500 to-orange-500";
-    return "from-violet-500 to-indigo-500";
+    return "from-[var(--color-primary)] to-[var(--color-secondary)]";
   };
 
   if (isLoading) {
@@ -119,13 +119,13 @@ export function BudgetSection({ refreshTrigger = 0 }: BudgetSectionProps) {
 
   return (
     <>
-      <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)] overflow-hidden">
+      <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)] overflow-hidden h-full flex flex-col">
         {}
         <div className="p-6 border-b border-[var(--border-color)]">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-violet-500/10 rounded-lg">
-                <Wallet className="w-5 h-5 text-violet-400" />
+              <div className="p-2 bg-primary-soft rounded-lg">
+                <Wallet className="w-5 h-5 text-primary-color" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-[var(--text-primary)]">
@@ -141,7 +141,7 @@ export function BudgetSection({ refreshTrigger = 0 }: BudgetSectionProps) {
             </div>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-500 hover:to-indigo-500 transition-all shadow-lg shadow-violet-500/25 text-sm"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium bg-primary-gradient text-white transition-all shadow-lg shadow-primary text-sm"
             >
               <Plus className="w-4 h-4" />
               Novo Orçamento
@@ -200,7 +200,7 @@ export function BudgetSection({ refreshTrigger = 0 }: BudgetSectionProps) {
         </div>
 
         {}
-        <div className="p-6">
+        <div className="p-6 flex-1 overflow-y-auto">
           <BudgetList
             budgets={data?.budgets || []}
             onDelete={handleDelete}

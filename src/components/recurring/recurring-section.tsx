@@ -162,7 +162,7 @@ export function RecurringSection({ onExpenseLaunched }: RecurringSectionProps) {
 
   return (
     <>
-      <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)] overflow-hidden">
+      <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)] overflow-hidden h-full flex flex-col">
         {}
         <div className="p-6 border-b border-[var(--border-color)]">
           <div className="flex items-center justify-between mb-4">
@@ -210,7 +210,7 @@ export function RecurringSection({ onExpenseLaunched }: RecurringSectionProps) {
         </div>
 
         {}
-        <div className="p-4 space-y-3 max-h-[400px] overflow-y-auto">
+        <div className="p-4 space-y-3 flex-1 overflow-y-auto">
           {data?.expenses.length === 0 ? (
             <div className="text-center py-6">
               <Repeat className="w-10 h-10 text-[var(--text-dimmed)] mx-auto mb-2" />

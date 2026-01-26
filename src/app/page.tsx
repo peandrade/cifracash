@@ -1,15 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Calendar } from "lucide-react";
+import { Plus, Calendar, Activity, TrendingUp, PieChart, Target, CreditCard, Repeat, LayoutList } from "lucide-react";
 import { useTransactionStore } from "@/store/transaction-store";
 import { useTemplateStore } from "@/store/template-store";
 import { getMonthYearLabel } from "@/lib/constants";
 import { SummaryCards, MonthlyChart, CategoryChart, TransactionList, WealthEvolutionChart, QuickStats } from "@/components/dashboard";
+import { FinancialHealthScore } from "@/components/dashboard/financial-health-score";
+import { BudgetAlerts } from "@/components/dashboard/budget-alerts";
+import { BillsCalendar } from "@/components/dashboard/bills-calendar";
 import { TransactionModal } from "@/components/forms/transaction-modal";
 import { BudgetSection } from "@/components/budget/budget-section";
 import { RecurringSection } from "@/components/recurring";
 import { QuickActionButtons, TemplateSection, TemplateModal } from "@/components/quick-transaction";
+import { CollapsibleSection } from "@/components/ui/collapsible-section";
 import type { CreateTransactionInput, EvolutionPeriod, TransactionType, TransactionTemplate } from "@/types";
 
 export default function DashboardPage() {
@@ -140,7 +144,7 @@ export default function DashboardPage() {
         style={{ backgroundColor: "var(--bg-primary)" }}
       >
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-12 h-12 border-4 border-primary-color border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p style={{ color: "var(--text-muted)" }}>Carregando transações...</p>
         </div>
       </div>
@@ -168,8 +172,8 @@ export default function DashboardPage() {
 
       {}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-violet-600/20 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 -left-40 w-80 h-80 bg-indigo-600/10 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[color-mix(in_srgb,var(--color-primary)_20%,transparent)] rounded-full blur-3xl" />
+        <div className="absolute top-1/2 -left-40 w-80 h-80 bg-[color-mix(in_srgb,var(--color-secondary)_10%,transparent)] rounded-full blur-3xl" />
         <div className="absolute -bottom-40 right-1/3 w-80 h-80 bg-fuchsia-600/10 rounded-full blur-3xl" />
       </div>
 
@@ -192,47 +196,63 @@ export default function DashboardPage() {
               setInitialTransactionType(undefined);
               setIsModalOpen(true);
             }}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 rounded-xl font-medium transition-all shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 text-white"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-primary-gradient rounded-xl font-medium transition-all shadow-lg shadow-primary text-white"
           >
             <Plus className="w-5 h-5" />
             Nova Transação
           </button>
         </header>
 
-        {}
+        {/* Quick Stats - Always visible */}
         <QuickStats />
 
-        {}
+        {/* Summary Cards - Always visible */}
         <SummaryCards summary={summary} />
 
-        {}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <div className="lg:col-span-2">
-            <MonthlyChart
-              data={monthlyData}
-              period={evolutionPeriod}
-              onPeriodChange={setEvolutionPeriod}
-            />
+        {/* Section: Saúde Financeira */}
+        <CollapsibleSection
+          id="financial-health"
+          title="Saúde Financeira"
+          icon={<Activity className="w-5 h-5 text-primary-color" />}
+          defaultExpanded={true}
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <FinancialHealthScore />
+            <BudgetAlerts />
+            <BillsCalendar />
           </div>
-          <div>
-            <CategoryChart data={categoryData} />
-          </div>
-        </div>
+        </CollapsibleSection>
 
-        {}
-        <div className="mb-8">
+        {/* Section: Análises e Gráficos */}
+        <CollapsibleSection
+          id="analytics"
+          title="Análises e Gráficos"
+          icon={<TrendingUp className="w-5 h-5 text-primary-color" />}
+          defaultExpanded={true}
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <div className="lg:col-span-2">
+              <MonthlyChart
+                data={monthlyData}
+                period={evolutionPeriod}
+                onPeriodChange={setEvolutionPeriod}
+              />
+            </div>
+            <div>
+              <CategoryChart data={categoryData} />
+            </div>
+          </div>
           <WealthEvolutionChart />
-        </div>
+        </CollapsibleSection>
 
-        {}
-        <div className="flex flex-col lg:flex-row gap-6 mb-8">
-          <div className="lg:w-1/3 space-y-6">
-            {}
-            <TemplateSection
-              onUseTemplate={handleUseTemplate}
-              onEditTemplate={handleEditTemplate}
-              onCreateTemplate={handleCreateTemplate}
-            />
+        {/* Section: Planejamento */}
+        <CollapsibleSection
+          id="planning"
+          title="Planejamento"
+          icon={<Target className="w-5 h-5 text-primary-color" />}
+          defaultExpanded={false}
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <BudgetSection refreshTrigger={budgetRefreshTrigger} />
             <RecurringSection
               onExpenseLaunched={() => {
@@ -241,8 +261,26 @@ export default function DashboardPage() {
               }}
             />
           </div>
-          <div className="lg:w-2/3 relative">
-            <div className="lg:absolute lg:inset-0">
+        </CollapsibleSection>
+
+        {/* Section: Transações */}
+        <CollapsibleSection
+          id="transactions"
+          title="Transações Recentes"
+          icon={<LayoutList className="w-5 h-5 text-primary-color" />}
+          badge={transactions.length}
+          badgeColor="violet"
+          defaultExpanded={true}
+        >
+          <div className="flex flex-col lg:flex-row gap-6">
+            <div className="lg:w-1/3">
+              <TemplateSection
+                onUseTemplate={handleUseTemplate}
+                onEditTemplate={handleEditTemplate}
+                onCreateTemplate={handleCreateTemplate}
+              />
+            </div>
+            <div className="lg:w-2/3">
               <TransactionList
                 transactions={transactions}
                 onDelete={handleDeleteTransaction}
@@ -250,7 +288,7 @@ export default function DashboardPage() {
               />
             </div>
           </div>
-        </div>
+        </CollapsibleSection>
       </div>
 
       {}

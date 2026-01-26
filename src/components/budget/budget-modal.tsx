@@ -52,8 +52,8 @@ export function BudgetModal({
         {}
         <div className="flex items-center justify-between p-6 border-b border-[var(--border-color-strong)]">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-violet-500/10 rounded-lg">
-              <Wallet className="w-5 h-5 text-violet-400" />
+            <div className="p-2 bg-primary-soft rounded-lg">
+              <Wallet className="w-5 h-5 text-primary-color" />
             </div>
             <div>
               <h2 className="text-xl font-semibold text-[var(--text-primary)]">
@@ -87,7 +87,7 @@ export function BudgetModal({
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all appearance-none cursor-pointer"
+                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all appearance-none cursor-pointer"
                 required
               >
                 <option value="" className="bg-[var(--bg-secondary)]">
@@ -119,7 +119,7 @@ export function BudgetModal({
                 value={limit}
                 onChange={setLimit}
                 placeholder="0,00"
-                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)] transition-all"
                 required
               />
             </div>
@@ -132,7 +132,7 @@ export function BudgetModal({
                 type="checkbox"
                 checked={isFixed}
                 onChange={(e) => setIsFixed(e.target.checked)}
-                className="w-5 h-5 rounded border-[var(--border-color-strong)] bg-[var(--bg-hover)] text-violet-600 focus:ring-violet-500 focus:ring-offset-0 cursor-pointer"
+                className="w-5 h-5 rounded border-[var(--border-color-strong)] bg-[var(--bg-hover)] text-primary-color focus:ring-[var(--color-primary)] focus:ring-offset-0 cursor-pointer"
               />
               <div>
                 <span className="text-sm font-medium text-[var(--text-primary)]">
@@ -157,7 +157,7 @@ export function BudgetModal({
             <button
               type="submit"
               disabled={isSubmitting || !category || !limit || availableCategories.length === 0}
-              className="flex-1 py-3 px-4 rounded-xl font-medium bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-500 hover:to-indigo-500 transition-all shadow-lg shadow-violet-500/25 disabled:opacity-50"
+              className="flex-1 py-3 px-4 rounded-xl font-medium bg-primary-gradient text-white transition-all shadow-lg shadow-primary disabled:opacity-50"
             >
               {isSubmitting ? "Salvando..." : "Criar Orçamento"}
             </button>

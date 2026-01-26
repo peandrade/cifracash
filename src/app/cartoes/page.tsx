@@ -12,6 +12,7 @@ import {
   CardModal,
   PurchaseModal,
 } from "@/components/cards";
+import { CardAnalytics } from "@/components/cards/card-analytics";
 import { formatCurrency } from "@/lib/utils";
 import type {
   CreditCard as CardType,
@@ -151,7 +152,7 @@ function CartoesContent() {
         style={{ backgroundColor: "var(--bg-primary)" }}
       >
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-12 h-12 border-4 border-primary-color border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p style={{ color: "var(--text-muted)" }}>Carregando cartões...</p>
         </div>
       </div>
@@ -170,7 +171,7 @@ function CartoesContent() {
 
       {}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-violet-600/20 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[color-mix(in_srgb,var(--color-primary)_20%,transparent)] rounded-full blur-3xl" />
         <div className="absolute top-1/2 -left-40 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-40 right-1/3 w-80 h-80 bg-pink-600/10 rounded-full blur-3xl" />
       </div>
@@ -204,7 +205,7 @@ function CartoesContent() {
             )}
             <button
               onClick={() => setIsCardModalOpen(true)}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 rounded-xl font-medium transition-all shadow-lg shadow-violet-500/25 text-white"
+              className="flex items-center gap-2 px-6 py-3 bg-primary-gradient rounded-xl font-medium transition-all shadow-lg shadow-primary text-white"
             >
               <Plus className="w-5 h-5" />
               Novo Cartão
@@ -221,7 +222,7 @@ function CartoesContent() {
             onClick={() => setViewMode("all")}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all ${
               viewMode === "all"
-                ? "bg-violet-600 text-white"
+                ? "bg-primary-gradient text-white"
                 : "bg-[var(--bg-hover)] text-[var(--text-muted)] hover:bg-[var(--bg-hover-strong)]"
             }`}
           >
@@ -232,7 +233,7 @@ function CartoesContent() {
             onClick={() => setViewMode("single")}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all ${
               viewMode === "single"
-                ? "bg-violet-600 text-white"
+                ? "bg-primary-gradient text-white"
                 : "bg-[var(--bg-hover)] text-[var(--text-muted)] hover:bg-[var(--bg-hover-strong)]"
             }`}
           >
@@ -367,6 +368,11 @@ function CartoesContent() {
             </div>
           </div>
         )}
+
+        {}
+        <div className="mt-6">
+          <CardAnalytics />
+        </div>
       </div>
 
       {}
@@ -397,7 +403,7 @@ export default function CartoesPage() {
           style={{ backgroundColor: "var(--bg-primary)" }}
         >
           <div className="text-center">
-            <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <div className="w-12 h-12 border-4 border-primary-color border-t-transparent rounded-full animate-spin mx-auto mb-4" />
             <p style={{ color: "var(--text-muted)" }}>Carregando cartões...</p>
           </div>
         </div>

@@ -15,6 +15,7 @@ import {
   EyeOff,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { usePreferences } from "@/contexts";
 
 interface DashboardSummary {
   balance: {
@@ -52,13 +53,9 @@ interface DashboardSummary {
 export function QuickStats() {
   const [data, setData] = useState<DashboardSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isHidden, setIsHidden] = useState(false);
+  const { privacy, updatePrivacy } = usePreferences();
 
   useEffect(() => {
-    const savedHidden = localStorage.getItem("patrimony-hidden");
-    if (savedHidden !== null) {
-      setIsHidden(savedHidden === "true");
-    }
     fetchSummary();
   }, []);
 
@@ -77,9 +74,7 @@ export function QuickStats() {
   };
 
   const toggleHidden = () => {
-    const newState = !isHidden;
-    setIsHidden(newState);
-    localStorage.setItem("patrimony-hidden", String(newState));
+    updatePrivacy({ hideValues: !privacy.hideValues });
   };
 
   if (isLoading) {
@@ -166,9 +161,9 @@ export function QuickStats() {
             <button
               onClick={toggleHidden}
               className="p-1.5 rounded-lg hover:bg-[var(--bg-hover)] transition-colors"
-              title={isHidden ? "Mostrar valor" : "Esconder valor"}
+              title={privacy.hideValues ? "Mostrar valor" : "Esconder valor"}
             >
-              {isHidden ? (
+              {privacy.hideValues ? (
                 <EyeOff className="w-4 h-4 text-[var(--text-muted)]" />
               ) : (
                 <Eye className="w-4 h-4 text-[var(--text-muted)]" />
@@ -177,7 +172,7 @@ export function QuickStats() {
           </div>
           <p className="text-xs sm:text-sm text-[var(--text-muted)] mb-0.5 sm:mb-1">Patrimônio Total</p>
           <p className="text-base sm:text-xl font-bold text-[var(--text-primary)]">
-            {isHidden ? "••••••" : formatCurrency(data.wealth.total)}
+            {privacy.hideValues ? "•••••" : formatCurrency(data.wealth.total)}
           </p>
         </div>
 
@@ -200,7 +195,7 @@ export function QuickStats() {
               <p className="text-xs sm:text-sm text-[var(--text-muted)] mb-0.5 sm:mb-1">{stat.title}</p>
 
               <p className="text-base sm:text-xl font-bold text-[var(--text-primary)] mb-1 sm:mb-2">
-                {formatCurrency(stat.value)}
+                {privacy.hideValues ? "•••••" : formatCurrency(stat.value)}
               </p>
 
               <div className="flex items-center gap-1 text-[10px] sm:text-xs flex-wrap">
@@ -233,7 +228,7 @@ export function QuickStats() {
                     <span
                       className={stat.isPositive ? "text-emerald-400" : "text-red-400"}
                     >
-                      {formatCurrency(Math.abs(stat.subValue))}
+                      {privacy.hideValues ? "•••••" : formatCurrency(Math.abs(stat.subValue))}
                     </span>
                     <span className="text-[var(--text-dimmed)] hidden sm:inline">{stat.subLabel}</span>
                   </>

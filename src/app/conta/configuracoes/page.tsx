@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
 import {
   ArrowLeft,
   Bell,
@@ -11,49 +10,13 @@ import {
   Receipt,
   TrendingUp,
 } from "lucide-react";
-
-interface NotificationPreferences {
-  budgetAlerts: boolean;
-  budgetThreshold: number;
-  billReminders: boolean;
-  reminderDays: number;
-  weeklyReport: boolean;
-  monthlyReport: boolean;
-  sounds: boolean;
-  vibration: boolean;
-}
-
-const defaultPreferences: NotificationPreferences = {
-  budgetAlerts: true,
-  budgetThreshold: 80,
-  billReminders: true,
-  reminderDays: 3,
-  weeklyReport: false,
-  monthlyReport: true,
-  sounds: true,
-  vibration: true,
-};
+import { usePreferences } from "@/contexts";
 
 export default function ConfiguracoesPage() {
   const router = useRouter();
-  const [preferences, setPreferences] = useState<NotificationPreferences>(defaultPreferences);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const { notifications, updateNotifications, isLoading, isSaving } = usePreferences();
 
-  useEffect(() => {
-    const saved = localStorage.getItem("fincontrol-notification-preferences");
-    if (saved) {
-      setPreferences({ ...defaultPreferences, ...JSON.parse(saved) });
-    }
-    setIsLoaded(true);
-  }, []);
-
-  const updatePreference = <K extends keyof NotificationPreferences>(key: K, value: NotificationPreferences[K]) => {
-    const newPrefs = { ...preferences, [key]: value };
-    setPreferences(newPrefs);
-    localStorage.setItem("fincontrol-notification-preferences", JSON.stringify(newPrefs));
-  };
-
-  if (!isLoaded) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--bg-primary)" }}>
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
@@ -86,13 +49,18 @@ export default function ConfiguracoesPage() {
           <span>Voltar</span>
         </button>
 
-        <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">
-            Configurações
-          </h1>
-          <p className="text-[var(--text-dimmed)] mt-1">
-            Ajustes avançados e notificações
-          </p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">
+              Configurações
+            </h1>
+            <p className="text-[var(--text-dimmed)] mt-1">
+              Ajustes avançados e notificações
+            </p>
+          </div>
+          {isSaving && (
+            <span className="text-sm text-[var(--text-muted)] animate-pulse">Salvando...</span>
+          )}
         </div>
 
         <div className="space-y-6">
@@ -109,20 +77,20 @@ export default function ConfiguracoesPage() {
                 </div>
               </div>
               <button
-                onClick={() => updatePreference("budgetAlerts", !preferences.budgetAlerts)}
+                onClick={() => updateNotifications({ budgetAlerts: !notifications.budgetAlerts })}
                 className={`relative w-14 h-8 rounded-full transition-colors ${
-                  preferences.budgetAlerts ? "bg-amber-500" : "bg-[var(--bg-hover)]"
+                  notifications.budgetAlerts ? "bg-amber-500" : "bg-[var(--bg-hover)]"
                 }`}
               >
                 <div
                   className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform ${
-                    preferences.budgetAlerts ? "translate-x-7" : "translate-x-1"
+                    notifications.budgetAlerts ? "translate-x-7" : "translate-x-1"
                   }`}
                 />
               </button>
             </div>
 
-            {preferences.budgetAlerts && (
+            {notifications.budgetAlerts && (
               <div className="mt-4 pt-4 border-t border-[var(--border-color)]">
                 <p className="text-sm text-[var(--text-muted)] mb-3">Alertar quando atingir</p>
                 <div className="flex items-center gap-4">
@@ -131,12 +99,12 @@ export default function ConfiguracoesPage() {
                     min="50"
                     max="95"
                     step="5"
-                    value={preferences.budgetThreshold}
-                    onChange={(e) => updatePreference("budgetThreshold", Number(e.target.value))}
+                    value={notifications.budgetThreshold}
+                    onChange={(e) => updateNotifications({ budgetThreshold: Number(e.target.value) })}
                     className="flex-1 h-2 bg-[var(--bg-hover)] rounded-lg appearance-none cursor-pointer accent-amber-500"
                   />
                   <span className="text-lg font-semibold text-amber-400 w-16 text-right">
-                    {preferences.budgetThreshold}%
+                    {notifications.budgetThreshold}%
                   </span>
                 </div>
               </div>
@@ -156,29 +124,29 @@ export default function ConfiguracoesPage() {
                 </div>
               </div>
               <button
-                onClick={() => updatePreference("billReminders", !preferences.billReminders)}
+                onClick={() => updateNotifications({ billReminders: !notifications.billReminders })}
                 className={`relative w-14 h-8 rounded-full transition-colors ${
-                  preferences.billReminders ? "bg-red-500" : "bg-[var(--bg-hover)]"
+                  notifications.billReminders ? "bg-red-500" : "bg-[var(--bg-hover)]"
                 }`}
               >
                 <div
                   className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform ${
-                    preferences.billReminders ? "translate-x-7" : "translate-x-1"
+                    notifications.billReminders ? "translate-x-7" : "translate-x-1"
                   }`}
                 />
               </button>
             </div>
 
-            {preferences.billReminders && (
+            {notifications.billReminders && (
               <div className="mt-4 pt-4 border-t border-[var(--border-color)]">
                 <p className="text-sm text-[var(--text-muted)] mb-3">Dias de antecedência</p>
                 <div className="grid grid-cols-4 gap-2">
                   {[1, 3, 5, 7].map((days) => (
                     <button
                       key={days}
-                      onClick={() => updatePreference("reminderDays", days)}
+                      onClick={() => updateNotifications({ reminderDays: days })}
                       className={`p-3 rounded-xl border-2 transition-all text-center ${
-                        preferences.reminderDays === days
+                        notifications.reminderDays === days
                           ? "border-red-500 bg-red-500/10"
                           : "border-[var(--border-color)] hover:border-[var(--border-color-strong)]"
                       }`}
@@ -210,14 +178,14 @@ export default function ConfiguracoesPage() {
                   <span className="text-[var(--text-primary)]">Resumo Semanal</span>
                 </div>
                 <button
-                  onClick={() => updatePreference("weeklyReport", !preferences.weeklyReport)}
+                  onClick={() => updateNotifications({ weeklyReport: !notifications.weeklyReport })}
                   className={`relative w-14 h-8 rounded-full transition-colors ${
-                    preferences.weeklyReport ? "bg-blue-500" : "bg-[var(--bg-secondary)]"
+                    notifications.weeklyReport ? "bg-blue-500" : "bg-[var(--bg-secondary)]"
                   }`}
                 >
                   <div
                     className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform ${
-                      preferences.weeklyReport ? "translate-x-7" : "translate-x-1"
+                      notifications.weeklyReport ? "translate-x-7" : "translate-x-1"
                     }`}
                   />
                 </button>
@@ -229,14 +197,14 @@ export default function ConfiguracoesPage() {
                   <span className="text-[var(--text-primary)]">Resumo Mensal</span>
                 </div>
                 <button
-                  onClick={() => updatePreference("monthlyReport", !preferences.monthlyReport)}
+                  onClick={() => updateNotifications({ monthlyReport: !notifications.monthlyReport })}
                   className={`relative w-14 h-8 rounded-full transition-colors ${
-                    preferences.monthlyReport ? "bg-blue-500" : "bg-[var(--bg-secondary)]"
+                    notifications.monthlyReport ? "bg-blue-500" : "bg-[var(--bg-secondary)]"
                   }`}
                 >
                   <div
                     className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform ${
-                      preferences.monthlyReport ? "translate-x-7" : "translate-x-1"
+                      notifications.monthlyReport ? "translate-x-7" : "translate-x-1"
                     }`}
                   />
                 </button>
@@ -263,33 +231,33 @@ export default function ConfiguracoesPage() {
                   <span className="text-[var(--text-primary)]">Sons</span>
                 </div>
                 <button
-                  onClick={() => updatePreference("sounds", !preferences.sounds)}
+                  onClick={() => updateNotifications({ sounds: !notifications.sounds })}
                   className={`relative w-14 h-8 rounded-full transition-colors ${
-                    preferences.sounds ? "bg-violet-500" : "bg-[var(--bg-secondary)]"
+                    notifications.sounds ? "bg-violet-500" : "bg-[var(--bg-secondary)]"
                   }`}
                 >
                   <div
                     className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform ${
-                      preferences.sounds ? "translate-x-7" : "translate-x-1"
+                      notifications.sounds ? "translate-x-7" : "translate-x-1"
                     }`}
                   />
                 </button>
               </div>
 
-              <div className="flex items-center justify-between p-4 rounded-xl bg-[var(--bg-hover)]">
+              <div className="flex items-center justify-between p-4 rounded-xl bg-[var(--bg-hover)] sm:hidden">
                 <div className="flex items-center gap-3">
                   <Vibrate className="w-5 h-5 text-[var(--text-muted)]" />
                   <span className="text-[var(--text-primary)]">Vibração</span>
                 </div>
                 <button
-                  onClick={() => updatePreference("vibration", !preferences.vibration)}
+                  onClick={() => updateNotifications({ vibration: !notifications.vibration })}
                   className={`relative w-14 h-8 rounded-full transition-colors ${
-                    preferences.vibration ? "bg-violet-500" : "bg-[var(--bg-secondary)]"
+                    notifications.vibration ? "bg-violet-500" : "bg-[var(--bg-secondary)]"
                   }`}
                 >
                   <div
                     className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform ${
-                      preferences.vibration ? "translate-x-7" : "translate-x-1"
+                      notifications.vibration ? "translate-x-7" : "translate-x-1"
                     }`}
                   />
                 </button>

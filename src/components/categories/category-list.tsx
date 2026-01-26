@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Pencil, Trash2, Lock } from "lucide-react";
+import { usePreferences } from "@/contexts";
 import { DynamicIcon } from "./icon-picker";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import type { Category } from "@/store/category-store";
@@ -20,8 +21,13 @@ export function CategoryList({
   isDeleting,
 }: CategoryListProps) {
   const [deleteConfirm, setDeleteConfirm] = useState<Category | null>(null);
+  const { general } = usePreferences();
 
   const handleDeleteClick = (category: Category) => {
+    if (!general.confirmBeforeDelete) {
+      onDelete(category);
+      return;
+    }
     setDeleteConfirm(category);
   };
 

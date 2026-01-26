@@ -2,6 +2,7 @@
 
 import { Trash2, Plus, Trophy, Calendar, TrendingUp, Pencil } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { usePreferences } from "@/contexts";
 import { getGoalCategoryColor, getGoalCategoryIcon, type GoalCategoryType } from "@/lib/constants";
 import type { GoalWithProgress } from "@/app/api/goals/route";
 
@@ -13,6 +14,7 @@ interface GoalCardProps {
 }
 
 export function GoalCard({ goal, onContribute, onEdit, onDelete }: GoalCardProps) {
+  const { privacy } = usePreferences();
   const categoryColor = getGoalCategoryColor(goal.category as GoalCategoryType);
   const categoryIcon = getGoalCategoryIcon(goal.category as GoalCategoryType);
   const isCompleted = goal.isCompleted;
@@ -97,10 +99,10 @@ export function GoalCard({ goal, onContribute, onEdit, onDelete }: GoalCardProps
       {}
       <div className="flex items-center justify-between mb-1.5 sm:mb-2">
         <span className="text-xs sm:text-sm text-[var(--text-muted)]">
-          {formatCurrency(goal.currentValue)}
+          {privacy.hideValues ? "•••••" : formatCurrency(goal.currentValue)}
         </span>
         <span className="text-xs sm:text-sm font-medium text-[var(--text-primary)]">
-          {formatCurrency(goal.targetValue)}
+          {privacy.hideValues ? "•••••" : formatCurrency(goal.targetValue)}
         </span>
       </div>
 
@@ -125,7 +127,7 @@ export function GoalCard({ goal, onContribute, onEdit, onDelete }: GoalCardProps
             {goal.progress.toFixed(1)}%
           </span>
           {!isCompleted && goal.remaining > 0 && (
-            <span className="hidden sm:inline">Faltam {formatCurrency(goal.remaining)}</span>
+            <span className="hidden sm:inline">Faltam {privacy.hideValues ? "•••••" : formatCurrency(goal.remaining)}</span>
           )}
         </div>
 
@@ -133,7 +135,7 @@ export function GoalCard({ goal, onContribute, onEdit, onDelete }: GoalCardProps
           {goal.monthlyNeeded && !isCompleted && (
             <span className="hidden sm:flex items-center gap-1" title="Guardar por mês">
               <TrendingUp className="w-3 h-3" />
-              {formatCurrency(goal.monthlyNeeded)}/mês
+              {privacy.hideValues ? "•••••" : formatCurrency(goal.monthlyNeeded)}/mês
             </span>
           )}
           {goal.targetDate && (

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { TrendingUp, TrendingDown, Trash2, Plus, Pencil, Target } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { usePreferences } from "@/contexts";
 import {
   getInvestmentTypeLabel,
   getInvestmentTypeColor,
@@ -28,8 +29,13 @@ export function InvestmentList({
   deletingId,
 }: InvestmentListProps) {
   const [deleteConfirm, setDeleteConfirm] = useState<Investment | null>(null);
+  const { privacy, general } = usePreferences();
 
   const handleDeleteClick = (investment: Investment) => {
+    if (!general.confirmBeforeDelete) {
+      onDelete(investment.id);
+      return;
+    }
     setDeleteConfirm(investment);
   };
 
@@ -124,20 +130,20 @@ export function InvestmentList({
                           </span>
                           <span className="hidden sm:inline" style={{ color: "var(--text-dimmed)" }}>•</span>
                           <span style={{ color: "var(--text-dimmed)" }}>
-                            PM: {formatCurrency(investment.averagePrice)}
+                            PM: {privacy.hideValues ? "•••••" : formatCurrency(investment.averagePrice)}
                           </span>
                           {investment.currentPrice > 0 && (
                             <>
                               <span className="hidden sm:inline" style={{ color: "var(--text-dimmed)" }}>•</span>
                               <span className="hidden sm:inline" style={{ color: "var(--text-dimmed)" }}>
-                                Atual: {formatCurrency(investment.currentPrice)}
+                                Atual: {privacy.hideValues ? "•••••" : formatCurrency(investment.currentPrice)}
                               </span>
                             </>
                           )}
                         </>
                       ) : (
                         <span style={{ color: "var(--text-dimmed)" }}>
-                          Aplicado: {formatCurrency(investment.totalInvested)}
+                          Aplicado: {privacy.hideValues ? "•••••" : formatCurrency(investment.totalInvested)}
                         </span>
                       )}
                     </div>
@@ -147,7 +153,7 @@ export function InvestmentList({
                 <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
                   <div className="text-left sm:text-right">
                     <p className="font-semibold text-sm sm:text-base" style={{ color: "var(--text-primary)" }}>
-                      {formatCurrency(investment.currentValue)}
+                      {privacy.hideValues ? "•••••" : formatCurrency(investment.currentValue)}
                     </p>
                     <div className={`flex items-center sm:justify-end gap-1 text-xs sm:text-sm ${
                       isPositive ? "text-emerald-400" : "text-red-400"
@@ -158,7 +164,7 @@ export function InvestmentList({
                         <TrendingDown className="w-3 h-3" />
                       )}
                       <span>
-                        {isPositive ? "+" : ""}{formatCurrency(investment.profitLoss)}
+                        {privacy.hideValues ? "•••••" : `${isPositive ? "+" : ""}${formatCurrency(investment.profitLoss)}`}
                       </span>
                       <span className="hidden sm:inline" style={{ color: "var(--text-dimmed)" }}>
                         ({isPositive ? "+" : ""}{investment.profitLossPercent.toFixed(2)}%)
@@ -208,7 +214,7 @@ export function InvestmentList({
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <span style={{ color: "var(--text-dimmed)" }}>
-                        {formatCurrency(investment.currentValue)} / {formatCurrency(investment.goalValue!)}
+                        {privacy.hideValues ? "•••••" : formatCurrency(investment.currentValue)} / {privacy.hideValues ? "•••••" : formatCurrency(investment.goalValue!)}
                       </span>
                       <span className={`font-medium ${
                         goalProgress >= 100 ? "text-emerald-400" : "text-primary-color"

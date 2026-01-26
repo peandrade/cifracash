@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CreditCard as CardIcon, Trash2, ChevronRight } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { usePreferences } from "@/contexts";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import type { CreditCard } from "@/types/credit-card";
 
@@ -29,9 +30,14 @@ export function CardList({
   deletingId,
 }: CardListProps) {
   const [deleteConfirm, setDeleteConfirm] = useState<CreditCard | null>(null);
+  const { privacy, general } = usePreferences();
 
   const handleDeleteClick = (e: React.MouseEvent, card: CreditCard) => {
     e.stopPropagation();
+    if (!general.confirmBeforeDelete) {
+      onDeleteCard(card.id);
+      return;
+    }
     setDeleteConfirm(card);
   };
 
@@ -136,7 +142,7 @@ export function CardList({
                 <div className="flex items-center gap-2 sm:gap-4 shrink-0">
                   <div className="text-right">
                     <p className="font-semibold text-sm sm:text-base" style={{ color: "var(--text-primary)" }}>
-                      {formatCurrency(displayTotal)}
+                      {privacy.hideValues ? "•••••" : formatCurrency(displayTotal)}
                     </p>
                     <p className="text-[10px] sm:text-sm hidden sm:block" style={{ color: "var(--text-dimmed)" }}>
                       {displayTotal > 0 && displayInvoice
@@ -168,7 +174,7 @@ export function CardList({
               {card.limit > 0 && (
                 <div className="mt-2 sm:mt-3 pt-2 sm:pt-3" style={{ borderTop: "1px solid var(--border-color)" }}>
                   <div className="flex justify-between text-[10px] sm:text-xs mb-1" style={{ color: "var(--text-dimmed)" }}>
-                    <span>Limite: {formatCurrency(card.limit)}</span>
+                    <span>Limite: {privacy.hideValues ? "•••••" : formatCurrency(card.limit)}</span>
                     <span className={usagePercent > 80 ? "text-red-400" : usagePercent > 50 ? "text-yellow-400" : ""}>
                       {usagePercent.toFixed(0)}% usado
                     </span>

@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { Plus, Target, RefreshCw, Trophy, TrendingUp } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { usePreferences } from "@/contexts";
+import { useFeedback } from "@/hooks/use-feedback";
 import { getGoalCategoryLabel, getGoalCategoryColor, getGoalCategoryIcon, type GoalCategoryType } from "@/lib/constants";
 import { GoalModal } from "./goal-modal";
 import { EditGoalModal } from "./edit-goal-modal";
@@ -35,6 +37,8 @@ export function GoalSection({ onGoalUpdated }: GoalSectionProps) {
   const [deleteGoalId, setDeleteGoalId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const { privacy, general } = usePreferences();
+  const feedback = useFeedback();
 
   const fetchGoals = useCallback(async () => {
     try {
@@ -72,6 +76,7 @@ export function GoalSection({ onGoalUpdated }: GoalSectionProps) {
       });
 
       if (response.ok) {
+        feedback.success();
         await fetchGoals();
         setIsModalOpen(false);
         onGoalUpdated?.();
@@ -81,6 +86,27 @@ export function GoalSection({ onGoalUpdated }: GoalSectionProps) {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleDeleteGoal = (id: string) => {
+    if (!general.confirmBeforeDelete) {
+      (async () => {
+        setIsDeleting(true);
+        try {
+          const response = await fetch(`/api/goals/${id}`, { method: "DELETE" });
+          if (response.ok) {
+            await fetchGoals();
+            onGoalUpdated?.();
+          }
+        } catch (error) {
+          console.error("Erro ao deletar meta:", error);
+        } finally {
+          setIsDeleting(false);
+        }
+      })();
+      return;
+    }
+    setDeleteGoalId(id);
   };
 
   const handleDelete = async () => {
@@ -114,6 +140,7 @@ export function GoalSection({ onGoalUpdated }: GoalSectionProps) {
       });
 
       if (response.ok) {
+        feedback.success();
         await fetchGoals();
         setContributeGoalId(null);
         onGoalUpdated?.();
@@ -213,13 +240,13 @@ export function GoalSection({ onGoalUpdated }: GoalSectionProps) {
               <div className="bg-[var(--bg-hover)] rounded-lg sm:rounded-xl p-2.5 sm:p-3 text-center">
                 <p className="text-[10px] sm:text-xs text-[var(--text-dimmed)] mb-0.5 sm:mb-1">Guardado</p>
                 <p className="text-sm sm:text-lg font-bold text-emerald-400">
-                  {formatCurrency(summary.totalCurrentValue)}
+                  {privacy.hideValues ? "•••••" : formatCurrency(summary.totalCurrentValue)}
                 </p>
               </div>
               <div className="bg-[var(--bg-hover)] rounded-lg sm:rounded-xl p-2.5 sm:p-3 text-center">
                 <p className="text-[10px] sm:text-xs text-[var(--text-dimmed)] mb-0.5 sm:mb-1">Objetivo</p>
                 <p className="text-sm sm:text-lg font-bold text-[var(--text-primary)]">
-                  {formatCurrency(summary.totalTargetValue)}
+                  {privacy.hideValues ? "•••••" : formatCurrency(summary.totalTargetValue)}
                 </p>
               </div>
             </div>
@@ -269,7 +296,7 @@ export function GoalSection({ onGoalUpdated }: GoalSectionProps) {
                       goal={goal}
                       onContribute={() => setContributeGoalId(goal.id)}
                       onEdit={() => setEditGoalId(goal.id)}
-                      onDelete={() => setDeleteGoalId(goal.id)}
+                      onDelete={() => handleDeleteGoal(goal.id)}
                     />
                   ))}
                 </div>
@@ -287,7 +314,7 @@ export function GoalSection({ onGoalUpdated }: GoalSectionProps) {
                       key={goal.id}
                       goal={goal}
                       onEdit={() => setEditGoalId(goal.id)}
-                      onDelete={() => setDeleteGoalId(goal.id)}
+                      onDelete={() => handleDeleteGoal(goal.id)}
                     />
                   ))}
                 </div>

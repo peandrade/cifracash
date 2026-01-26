@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Plus, Calendar, Activity, TrendingUp, PieChart, Target, CreditCard, Repeat, LayoutList } from "lucide-react";
 import { useTransactionStore } from "@/store/transaction-store";
+import { useFeedback } from "@/hooks/use-feedback";
 import { useTemplateStore } from "@/store/template-store";
 import { getMonthYearLabel } from "@/lib/constants";
 import { SummaryCards, MonthlyChart, CategoryChart, TransactionList, WealthEvolutionChart, QuickStats } from "@/components/dashboard";
@@ -41,6 +42,7 @@ export default function DashboardPage() {
   } = useTransactionStore();
 
   const { addTemplate, updateTemplate } = useTemplateStore();
+  const feedback = useFeedback();
 
   useEffect(() => {
     fetchTransactions();
@@ -57,6 +59,7 @@ export default function DashboardPage() {
     setIsSubmitting(true);
     try {
       await addTransaction(data);
+      feedback.success();
 
       setBudgetRefreshTrigger((prev) => prev + 1);
 

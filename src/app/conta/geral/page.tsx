@@ -1,34 +1,20 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
 import {
   ArrowLeft,
-  Sliders,
   Home,
   Calendar,
   List,
+  CreditCard,
   AlertTriangle,
   Check,
 } from "lucide-react";
-
-interface GeneralPreferences {
-  defaultPage: string;
-  defaultPeriod: string;
-  defaultSort: string;
-  confirmBeforeDelete: boolean;
-}
-
-const defaultPreferences: GeneralPreferences = {
-  defaultPage: "dashboard",
-  defaultPeriod: "month",
-  defaultSort: "recent",
-  confirmBeforeDelete: true,
-};
+import { usePreferences } from "@/contexts";
 
 const pages = [
   { id: "dashboard", name: "Dashboard", icon: Home },
-  { id: "transactions", name: "Transações", icon: List },
+  { id: "cards", name: "Cartões", icon: CreditCard },
   { id: "investments", name: "Investimentos", icon: Calendar },
 ];
 
@@ -48,24 +34,9 @@ const sortOptions = [
 
 export default function GeralPage() {
   const router = useRouter();
-  const [preferences, setPreferences] = useState<GeneralPreferences>(defaultPreferences);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const { general, updateGeneral, isLoading, isSaving } = usePreferences();
 
-  useEffect(() => {
-    const saved = localStorage.getItem("fincontrol-general-preferences");
-    if (saved) {
-      setPreferences({ ...defaultPreferences, ...JSON.parse(saved) });
-    }
-    setIsLoaded(true);
-  }, []);
-
-  const updatePreference = <K extends keyof GeneralPreferences>(key: K, value: GeneralPreferences[K]) => {
-    const newPrefs = { ...preferences, [key]: value };
-    setPreferences(newPrefs);
-    localStorage.setItem("fincontrol-general-preferences", JSON.stringify(newPrefs));
-  };
-
-  if (!isLoaded) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--bg-primary)" }}>
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
@@ -98,13 +69,18 @@ export default function GeralPage() {
           <span>Voltar</span>
         </button>
 
-        <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">
-            Geral
-          </h1>
-          <p className="text-[var(--text-dimmed)] mt-1">
-            Preferências gerais do sistema
-          </p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">
+              Geral
+            </h1>
+            <p className="text-[var(--text-dimmed)] mt-1">
+              Preferências gerais do sistema
+            </p>
+          </div>
+          {isSaving && (
+            <span className="text-sm text-[var(--text-muted)] animate-pulse">Salvando...</span>
+          )}
         </div>
 
         <div className="space-y-6">
@@ -123,11 +99,11 @@ export default function GeralPage() {
             <div className="grid grid-cols-3 gap-3">
               {pages.map((page) => {
                 const Icon = page.icon;
-                const isSelected = preferences.defaultPage === page.id;
+                const isSelected = general.defaultPage === page.id;
                 return (
                   <button
                     key={page.id}
-                    onClick={() => updatePreference("defaultPage", page.id)}
+                    onClick={() => updateGeneral({ defaultPage: page.id })}
                     className={`p-4 rounded-xl border-2 transition-all text-center ${
                       isSelected
                         ? "border-blue-500 bg-blue-500/10"
@@ -159,11 +135,11 @@ export default function GeralPage() {
 
             <div className="grid grid-cols-2 gap-3">
               {periods.map((period) => {
-                const isSelected = preferences.defaultPeriod === period.id;
+                const isSelected = general.defaultPeriod === period.id;
                 return (
                   <button
                     key={period.id}
-                    onClick={() => updatePreference("defaultPeriod", period.id)}
+                    onClick={() => updateGeneral({ defaultPeriod: period.id })}
                     className={`p-4 rounded-xl border-2 transition-all text-center ${
                       isSelected
                         ? "border-emerald-500 bg-emerald-500/10"
@@ -194,11 +170,11 @@ export default function GeralPage() {
 
             <div className="grid grid-cols-2 gap-3">
               {sortOptions.map((option) => {
-                const isSelected = preferences.defaultSort === option.id;
+                const isSelected = general.defaultSort === option.id;
                 return (
                   <button
                     key={option.id}
-                    onClick={() => updatePreference("defaultSort", option.id)}
+                    onClick={() => updateGeneral({ defaultSort: option.id })}
                     className={`p-4 rounded-xl border-2 transition-all text-center ${
                       isSelected
                         ? "border-violet-500 bg-violet-500/10"
@@ -228,14 +204,14 @@ export default function GeralPage() {
                 </div>
               </div>
               <button
-                onClick={() => updatePreference("confirmBeforeDelete", !preferences.confirmBeforeDelete)}
+                onClick={() => updateGeneral({ confirmBeforeDelete: !general.confirmBeforeDelete })}
                 className={`relative w-14 h-8 rounded-full transition-colors ${
-                  preferences.confirmBeforeDelete ? "bg-amber-500" : "bg-[var(--bg-hover)]"
+                  general.confirmBeforeDelete ? "bg-amber-500" : "bg-[var(--bg-hover)]"
                 }`}
               >
                 <div
                   className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform ${
-                    preferences.confirmBeforeDelete ? "translate-x-7" : "translate-x-1"
+                    general.confirmBeforeDelete ? "translate-x-7" : "translate-x-1"
                   }`}
                 />
               </button>

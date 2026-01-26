@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ArrowUp, ArrowDown, Trash2 } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { usePreferences } from "@/contexts";
 import { getCategoryColor } from "@/lib/constants";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { TransactionFilters } from "@/components/filters/transaction-filters";
@@ -22,8 +23,13 @@ export function TransactionList({
 }: TransactionListProps) {
   const [deleteConfirm, setDeleteConfirm] = useState<Transaction | null>(null);
   const { getFilteredTransactions, hasActiveFilters } = useTransactionStore();
+  const { privacy, general } = usePreferences();
 
   const handleDeleteClick = (transaction: Transaction) => {
+    if (!general.confirmBeforeDelete) {
+      onDelete(transaction.id);
+      return;
+    }
     setDeleteConfirm(transaction);
   };
 
@@ -36,9 +42,15 @@ export function TransactionList({
 
   const filteredTransactions = hasActiveFilters() ? getFilteredTransactions() : transactions;
 
-  const sortedTransactions = [...filteredTransactions].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+  const sortedTransactions = [...filteredTransactions].sort((a, b) => {
+    switch (general.defaultSort) {
+      case "oldest":  return new Date(a.date).getTime() - new Date(b.date).getTime();
+      case "highest": return b.value - a.value;
+      case "lowest":  return a.value - b.value;
+      case "recent":
+      default:        return new Date(b.date).getTime() - new Date(a.date).getTime();
+    }
+  });
 
   return (
     <div
@@ -127,7 +139,7 @@ export function TransactionList({
                   }`}
                 >
                   {transaction.type === "income" ? "+" : "-"}
-                  {formatCurrency(transaction.value)}
+                  {privacy.hideValues ? "•••••" : formatCurrency(transaction.value)}
                 </p>
                 <button
                   onClick={() => handleDeleteClick(transaction)}

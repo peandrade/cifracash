@@ -1,55 +1,26 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   ArrowLeft,
   Eye,
   EyeOff,
-  Lock,
   Timer,
   Key,
   Trash2,
   AlertTriangle,
   Shield,
 } from "lucide-react";
-
-interface PrivacyPreferences {
-  hideValues: boolean;
-  autoLock: boolean;
-  autoLockTime: number;
-  requireAuth: boolean;
-}
-
-const defaultPreferences: PrivacyPreferences = {
-  hideValues: false,
-  autoLock: false,
-  autoLockTime: 5,
-  requireAuth: false,
-};
+import { usePreferences } from "@/contexts";
 
 export default function PrivacidadePage() {
   const router = useRouter();
-  const [preferences, setPreferences] = useState<PrivacyPreferences>(defaultPreferences);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const { privacy, updatePrivacy, isLoading, isSaving } = usePreferences();
   const [showDeleteAccount, setShowDeleteAccount] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
 
-  useEffect(() => {
-    const saved = localStorage.getItem("fincontrol-privacy-preferences");
-    if (saved) {
-      setPreferences({ ...defaultPreferences, ...JSON.parse(saved) });
-    }
-    setIsLoaded(true);
-  }, []);
-
-  const updatePreference = <K extends keyof PrivacyPreferences>(key: K, value: PrivacyPreferences[K]) => {
-    const newPrefs = { ...preferences, [key]: value };
-    setPreferences(newPrefs);
-    localStorage.setItem("fincontrol-privacy-preferences", JSON.stringify(newPrefs));
-  };
-
-  if (!isLoaded) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--bg-primary)" }}>
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
@@ -82,13 +53,18 @@ export default function PrivacidadePage() {
           <span>Voltar</span>
         </button>
 
-        <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">
-            Privacidade
-          </h1>
-          <p className="text-[var(--text-dimmed)] mt-1">
-            Controle sua privacidade e segurança
-          </p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">
+              Privacidade
+            </h1>
+            <p className="text-[var(--text-dimmed)] mt-1">
+              Controle sua privacidade e segurança
+            </p>
+          </div>
+          {isSaving && (
+            <span className="text-sm text-[var(--text-muted)] animate-pulse">Salvando...</span>
+          )}
         </div>
 
         <div className="space-y-6">
@@ -97,7 +73,7 @@ export default function PrivacidadePage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-3 rounded-xl bg-violet-500/10">
-                  {preferences.hideValues ? (
+                  {privacy.hideValues ? (
                     <EyeOff className="w-5 h-5 text-violet-400" />
                   ) : (
                     <Eye className="w-5 h-5 text-violet-400" />
@@ -109,20 +85,20 @@ export default function PrivacidadePage() {
                 </div>
               </div>
               <button
-                onClick={() => updatePreference("hideValues", !preferences.hideValues)}
+                onClick={() => updatePrivacy({ hideValues: !privacy.hideValues })}
                 className={`relative w-14 h-8 rounded-full transition-colors ${
-                  preferences.hideValues ? "bg-violet-500" : "bg-[var(--bg-hover)]"
+                  privacy.hideValues ? "bg-violet-500" : "bg-[var(--bg-hover)]"
                 }`}
               >
                 <div
                   className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform ${
-                    preferences.hideValues ? "translate-x-7" : "translate-x-1"
+                    privacy.hideValues ? "translate-x-7" : "translate-x-1"
                   }`}
                 />
               </button>
             </div>
 
-            {preferences.hideValues && (
+            {privacy.hideValues && (
               <div className="mt-4 p-4 rounded-xl bg-violet-500/10">
                 <p className="text-sm text-[var(--text-muted)]">Exemplo:</p>
                 <p className="text-lg font-semibold text-[var(--text-primary)] mt-1">
@@ -145,34 +121,36 @@ export default function PrivacidadePage() {
                 </div>
               </div>
               <button
-                onClick={() => updatePreference("autoLock", !preferences.autoLock)}
+                onClick={() => updatePrivacy({ autoLock: !privacy.autoLock })}
                 className={`relative w-14 h-8 rounded-full transition-colors ${
-                  preferences.autoLock ? "bg-amber-500" : "bg-[var(--bg-hover)]"
+                  privacy.autoLock ? "bg-amber-500" : "bg-[var(--bg-hover)]"
                 }`}
               >
                 <div
                   className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform ${
-                    preferences.autoLock ? "translate-x-7" : "translate-x-1"
+                    privacy.autoLock ? "translate-x-7" : "translate-x-1"
                   }`}
                 />
               </button>
             </div>
 
-            {preferences.autoLock && (
+            {privacy.autoLock && (
               <div className="pt-4 border-t border-[var(--border-color)]">
                 <p className="text-sm text-[var(--text-muted)] mb-3">Tempo de inatividade</p>
-                <div className="grid grid-cols-4 gap-2">
-                  {[1, 5, 15, 30].map((minutes) => (
+                <div className="grid grid-cols-5 gap-2">
+                  {[1, 5, 15, 30, 0].map((minutes) => (
                     <button
                       key={minutes}
-                      onClick={() => updatePreference("autoLockTime", minutes)}
+                      onClick={() => updatePrivacy({ autoLockTime: minutes })}
                       className={`p-3 rounded-xl border-2 transition-all text-center ${
-                        preferences.autoLockTime === minutes
+                        privacy.autoLockTime === minutes
                           ? "border-amber-500 bg-amber-500/10"
                           : "border-[var(--border-color)] hover:border-[var(--border-color-strong)]"
                       }`}
                     >
-                      <span className="text-sm text-[var(--text-primary)]">{minutes} min</span>
+                      <span className="text-sm text-[var(--text-primary)]">
+                        {minutes === 0 ? "Nunca" : `${minutes} min`}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -193,14 +171,14 @@ export default function PrivacidadePage() {
                 </div>
               </div>
               <button
-                onClick={() => updatePreference("requireAuth", !preferences.requireAuth)}
+                onClick={() => updatePrivacy({ requireAuth: !privacy.requireAuth })}
                 className={`relative w-14 h-8 rounded-full transition-colors ${
-                  preferences.requireAuth ? "bg-emerald-500" : "bg-[var(--bg-hover)]"
+                  privacy.requireAuth ? "bg-emerald-500" : "bg-[var(--bg-hover)]"
                 }`}
               >
                 <div
                   className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform ${
-                    preferences.requireAuth ? "translate-x-7" : "translate-x-1"
+                    privacy.requireAuth ? "translate-x-7" : "translate-x-1"
                   }`}
                 />
               </button>

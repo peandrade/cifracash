@@ -2,6 +2,7 @@
 
 import { CreditCard, Wallet, TrendingUp, Calendar } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { usePreferences } from "@/contexts";
 import type { CardSummary } from "@/types/credit-card";
 
 interface SummaryCardsProps {
@@ -9,6 +10,7 @@ interface SummaryCardsProps {
 }
 
 export function SummaryCards({ summary }: SummaryCardsProps) {
+  const { privacy } = usePreferences();
   const usagePercent = summary.totalLimit > 0
     ? (summary.usedLimit / summary.totalLimit) * 100
     : 0;
@@ -31,7 +33,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
           <span className="text-sm" style={{ color: "var(--text-muted)" }}>Limite Total</span>
         </div>
         <p className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
-          {formatCurrency(summary.totalLimit)}
+          {privacy.hideValues ? "•••••" : formatCurrency(summary.totalLimit)}
         </p>
         <div className="mt-2">
           <div className="flex justify-between text-xs mb-1" style={{ color: "var(--text-dimmed)" }}>
@@ -58,10 +60,10 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
           <span className="text-sm" style={{ color: "var(--text-muted)" }}>Disponível</span>
         </div>
         <p className="text-2xl font-bold text-emerald-400">
-          {formatCurrency(summary.availableLimit)}
+          {privacy.hideValues ? "•••••" : formatCurrency(summary.availableLimit)}
         </p>
         <p className="text-sm mt-1" style={{ color: "var(--text-dimmed)" }}>
-          {formatCurrency(summary.usedLimit)} usado
+          {privacy.hideValues ? "•••••" : formatCurrency(summary.usedLimit)} usado
         </p>
       </div>
 
@@ -74,7 +76,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
           <span className="text-sm" style={{ color: "var(--text-muted)" }}>Fatura Atual</span>
         </div>
         <p className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
-          {formatCurrency(summary.currentInvoice)}
+          {privacy.hideValues ? "•••••" : formatCurrency(summary.currentInvoice)}
         </p>
         <p className="text-sm mt-1" style={{ color: "var(--text-dimmed)" }}>Este mês</p>
       </div>
@@ -88,7 +90,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
           <span className="text-sm" style={{ color: "var(--text-muted)" }}>Próxima Fatura</span>
         </div>
         <p className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
-          {formatCurrency(summary.nextInvoice)}
+          {privacy.hideValues ? "•••••" : formatCurrency(summary.nextInvoice)}
         </p>
         <p className="text-sm mt-1" style={{ color: "var(--text-dimmed)" }}>Mês que vem</p>
       </div>

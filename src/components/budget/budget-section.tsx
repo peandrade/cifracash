@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Plus, Wallet, RefreshCw } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { useFeedback } from "@/hooks/use-feedback";
 import { BudgetList } from "./budget-list";
 import { BudgetModal } from "./budget-modal";
 import type { BudgetWithSpent } from "@/app/api/budgets/route";
@@ -29,6 +30,7 @@ export function BudgetSection({ refreshTrigger = 0 }: BudgetSectionProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const feedback = useFeedback();
 
   const fetchBudgets = useCallback(async () => {
     try {
@@ -66,6 +68,7 @@ export function BudgetSection({ refreshTrigger = 0 }: BudgetSectionProps) {
       });
 
       if (response.ok) {
+        feedback.success();
         await fetchBudgets();
         setIsModalOpen(false);
       }

@@ -15,6 +15,7 @@ import {
   TrendingDown,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { usePreferences } from "@/contexts";
 import { getCategoryColor } from "@/lib/constants";
 
 interface BillEvent {
@@ -81,6 +82,7 @@ export function BillsCalendar() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState<DayBills | null>(null);
   const [showCashFlow, setShowCashFlow] = useState(false);
+  const { privacy, notifications } = usePreferences();
 
   useEffect(() => {
     fetchData();
@@ -110,7 +112,7 @@ export function BillsCalendar() {
     );
   }
 
-  if (!data) return null;
+  if (!notifications.billReminders || !data) return null;
 
   // Calculate first day of month offset
   const firstDayOfMonth = new Date(data.currentYear, data.currentMonth - 1, 1).getDay();
@@ -161,7 +163,7 @@ export function BillsCalendar() {
               <AlertTriangle className="w-4 h-4 text-red-400 mx-auto mb-1" />
               <p className="text-[10px] sm:text-xs text-red-400">Atrasadas</p>
               <p className="text-xs sm:text-sm font-bold text-red-400">
-                {formatCurrency(data.summary.overdueValue)}
+                {privacy.hideValues ? "•••••" : formatCurrency(data.summary.overdueValue)}
               </p>
             </div>
           )}
@@ -169,14 +171,14 @@ export function BillsCalendar() {
             <Clock className="w-4 h-4 text-amber-400 mx-auto mb-1" />
             <p className="text-[10px] sm:text-xs text-amber-400">A vencer</p>
             <p className="text-xs sm:text-sm font-bold text-amber-400">
-              {formatCurrency(data.summary.upcomingValue)}
+              {privacy.hideValues ? "•••••" : formatCurrency(data.summary.upcomingValue)}
             </p>
           </div>
           <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-2 sm:p-3 text-center">
             <CheckCircle className="w-4 h-4 text-emerald-400 mx-auto mb-1" />
             <p className="text-[10px] sm:text-xs text-emerald-400">Pagas</p>
             <p className="text-xs sm:text-sm font-bold text-emerald-400">
-              {formatCurrency(data.summary.totalPaid)}
+              {privacy.hideValues ? "•••••" : formatCurrency(data.summary.totalPaid)}
             </p>
           </div>
         </div>
@@ -204,20 +206,20 @@ export function BillsCalendar() {
                     }`}
                   >
                     {projection.netFlow >= 0 ? "+" : ""}
-                    {formatCurrency(projection.netFlow)}
+                    {privacy.hideValues ? "•••••" : formatCurrency(projection.netFlow)}
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="flex items-center justify-between">
                     <span className="text-[var(--text-dimmed)]">Receitas</span>
                     <span className="text-emerald-400">
-                      {formatCurrency(projection.expectedIncome)}
+                      {privacy.hideValues ? "•••••" : formatCurrency(projection.expectedIncome)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-[var(--text-dimmed)]">Despesas</span>
                     <span className="text-red-400">
-                      {formatCurrency(projection.expectedExpenses)}
+                      {privacy.hideValues ? "•••••" : formatCurrency(projection.expectedExpenses)}
                     </span>
                   </div>
                 </div>
@@ -325,7 +327,7 @@ export function BillsCalendar() {
             <div className="p-4 sm:p-6 border-t border-[var(--border-color)] bg-[var(--bg-hover)]">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-medium text-[var(--text-primary)]">
-                  Dia {selectedDay.day} - {formatCurrency(selectedDay.total)}
+                  Dia {selectedDay.day} - {privacy.hideValues ? "•••••" : formatCurrency(selectedDay.total)}
                 </span>
                 <button
                   onClick={() => setSelectedDay(null)}
@@ -379,7 +381,7 @@ export function BillsCalendar() {
                           ? "text-emerald-400"
                           : "text-amber-400"
                       }`}>
-                        {formatCurrency(bill.value)}
+                        {privacy.hideValues ? "•••••" : formatCurrency(bill.value)}
                       </p>
                       <p className={`text-[10px] ${
                         bill.isPastDue
@@ -397,28 +399,34 @@ export function BillsCalendar() {
             </div>
           )}
 
-          {/* Next Due Alert */}
-          {data.summary.nextDue && !selectedDay && (
-            <div className="p-4 sm:p-6 border-t border-[var(--border-color)]">
-              <div className="flex items-center gap-3 bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
-                <Clock className="w-5 h-5 text-amber-400 shrink-0" />
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs text-amber-400">Próximo vencimento</p>
-                  <p className="text-sm font-medium text-[var(--text-primary)] truncate">
-                    {data.summary.nextDue.description}
-                  </p>
-                </div>
-                <div className="text-right shrink-0">
-                  <p className="text-sm font-bold text-amber-400">
-                    {formatCurrency(data.summary.nextDue.value)}
-                  </p>
-                  <p className="text-xs text-[var(--text-dimmed)]">
-                    Dia {data.summary.nextDue.day}
-                  </p>
+          {/* Next Due Alert — only show if within reminderDays window */}
+          {data.summary.nextDue && !selectedDay && (() => {
+            const today = new Date().getDate();
+            const daysUntilDue = data.summary.nextDue!.day - today;
+            const withinWindow = daysUntilDue >= 0 && daysUntilDue <= notifications.reminderDays;
+            if (!withinWindow) return null;
+            return (
+              <div className="p-4 sm:p-6 border-t border-[var(--border-color)]">
+                <div className="flex items-center gap-3 bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
+                  <Clock className="w-5 h-5 text-amber-400 shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-amber-400">Próximo vencimento</p>
+                    <p className="text-sm font-medium text-[var(--text-primary)] truncate">
+                      {data.summary.nextDue!.description}
+                    </p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-sm font-bold text-amber-400">
+                      {privacy.hideValues ? "•••••" : formatCurrency(data.summary.nextDue!.value)}
+                    </p>
+                    <p className="text-xs text-[var(--text-dimmed)]">
+                      Dia {data.summary.nextDue!.day}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
         </>
       )}
     </div>

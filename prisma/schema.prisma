@@ -21,6 +21,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  generalSettings      Json?
+  notificationSettings Json?
+  privacySettings      Json?
+
   transactions         Transaction[]
   investments          Investment[]
   creditCards          CreditCard[]

@@ -2,6 +2,7 @@
 
 import { TrendingUp, TrendingDown, Wallet, ArrowUp, ArrowDown } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { usePreferences } from "@/contexts";
 import type { MonthlySummary } from "@/types";
 
 interface SummaryCardsProps {
@@ -9,6 +10,7 @@ interface SummaryCardsProps {
 }
 
 export function SummaryCards({ summary }: SummaryCardsProps) {
+  const { privacy } = usePreferences();
   const { income, expense, balance, incomeChange, expenseChange } = summary;
 
   return (
@@ -21,7 +23,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
               Receitas do mês
             </p>
             <p className="text-2xl sm:text-3xl font-bold text-white">
-              {formatCurrency(income)}
+              {privacy.hideValues ? "•••••" : formatCurrency(income)}
             </p>
           </div>
           <div className="p-2 sm:p-3 bg-white/20 rounded-lg sm:rounded-xl">
@@ -50,7 +52,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
               Despesas do mês
             </p>
             <p className="text-2xl sm:text-3xl font-bold text-white">
-              {formatCurrency(expense)}
+              {privacy.hideValues ? "•••••" : formatCurrency(expense)}
             </p>
           </div>
           <div className="p-2 sm:p-3 bg-white/20 rounded-lg sm:rounded-xl">
@@ -89,7 +91,7 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
               Saldo do mês
             </p>
             <p className="text-2xl sm:text-3xl font-bold text-white">
-              {formatCurrency(balance)}
+              {privacy.hideValues ? "•••••" : formatCurrency(balance)}
             </p>
           </div>
           <div className="p-2 sm:p-3 bg-white/20 rounded-lg sm:rounded-xl">

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Navbar, Footer } from "@/components/layout";
-import { ThemeProvider, UserProvider, AppearanceProvider } from "@/contexts";
+import { ThemeProvider, UserProvider, AppearanceProvider, PreferencesProvider } from "@/contexts";
 import { SessionProvider } from "@/components/providers/session-provider";
+import { AutoLockGuard } from "@/components/providers/auto-lock-guard";
 
 export const metadata: Metadata = {
   title: "FinControl - Controle Financeiro Pessoal",
@@ -24,9 +25,13 @@ export default function RootLayout({
           <UserProvider>
             <AppearanceProvider>
               <ThemeProvider>
-                <Navbar />
-                <main className="flex-1">{children}</main>
-                <Footer />
+                <PreferencesProvider>
+                  <AutoLockGuard>
+                    <Navbar />
+                    <main className="flex-1">{children}</main>
+                    <Footer />
+                  </AutoLockGuard>
+                </PreferencesProvider>
               </ThemeProvider>
             </AppearanceProvider>
           </UserProvider>

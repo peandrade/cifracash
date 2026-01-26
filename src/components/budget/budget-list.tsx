@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Trash2, AlertTriangle, CheckCircle, TrendingUp } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { usePreferences } from "@/contexts";
 import { CATEGORY_COLORS } from "@/lib/constants";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import type { BudgetWithSpent } from "@/app/api/budgets/route";
@@ -29,18 +30,20 @@ function getStatusIcon(percentage: number) {
   return <CheckCircle className="w-4 h-4 text-emerald-400" />;
 }
 
-function getStatusText(percentage: number, remaining: number): string {
+function getStatusText(percentage: number, remaining: number, hideValues: boolean): string {
+  const fmt = (v: number) => hideValues ? "•••••" : formatCurrency(v);
   if (percentage >= 100) {
-    return `Excedido em ${formatCurrency(Math.abs(remaining))}`;
+    return `Excedido em ${fmt(Math.abs(remaining))}`;
   }
   if (percentage >= 80) {
-    return `Restam ${formatCurrency(remaining)}`;
+    return `Restam ${fmt(remaining)}`;
   }
-  return `Restam ${formatCurrency(remaining)}`;
+  return `Restam ${fmt(remaining)}`;
 }
 
 export function BudgetList({ budgets, onDelete, isDeleting }: BudgetListProps) {
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const { privacy, general } = usePreferences();
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -95,7 +98,7 @@ export function BudgetList({ budgets, onDelete, isDeleting }: BudgetListProps) {
                             : "text-emerald-400"
                         }`}
                       >
-                        {getStatusText(budget.percentage, budget.remaining)}
+                        {getStatusText(budget.percentage, budget.remaining, privacy.hideValues)}
                       </span>
                     </div>
                   </div>
@@ -104,14 +107,20 @@ export function BudgetList({ budgets, onDelete, isDeleting }: BudgetListProps) {
                 <div className="flex items-center gap-2">
                   <div className="text-right">
                     <p className="text-sm font-semibold text-[var(--text-primary)]">
-                      {formatCurrency(budget.spent)}
+                      {privacy.hideValues ? "•••••" : formatCurrency(budget.spent)}
                     </p>
                     <p className="text-xs text-[var(--text-dimmed)]">
-                      de {formatCurrency(budget.limit)}
+                      de {privacy.hideValues ? "•••••" : formatCurrency(budget.limit)}
                     </p>
                   </div>
                   <button
-                    onClick={() => setDeleteId(budget.id)}
+                    onClick={() => {
+                      if (!general.confirmBeforeDelete) {
+                        onDelete(budget.id);
+                        return;
+                      }
+                      setDeleteId(budget.id);
+                    }}
                     className="p-1.5 opacity-0 group-hover:opacity-100 hover:bg-red-500/10 rounded-lg transition-all"
                     title="Remover orçamento"
                   >

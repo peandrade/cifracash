@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Calendar, Check, Trash2, ShoppingBag, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { usePreferences } from "@/contexts";
 import {
   formatMonthYear,
   getInvoiceStatusLabel,
@@ -43,8 +44,13 @@ export function InvoiceDetail({
   isLoading,
 }: InvoiceDetailProps) {
   const [deleteConfirm, setDeleteConfirm] = useState<Purchase | null>(null);
+  const { privacy, general } = usePreferences();
 
   const handleDeleteClick = (purchase: Purchase) => {
+    if (!general.confirmBeforeDelete) {
+      onDeletePurchase(purchase.id);
+      return;
+    }
     setDeleteConfirm(purchase);
   };
 
@@ -98,7 +104,7 @@ export function InvoiceDetail({
 
         <div className="rounded-xl p-3 sm:p-4 mb-4 sm:mb-6" style={{ backgroundColor: "var(--bg-hover)" }}>
           <p className="text-xs sm:text-sm" style={{ color: "var(--text-muted)" }}>Total da Fatura</p>
-          <p className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--text-primary)" }}>{formatCurrency(0)}</p>
+          <p className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--text-primary)" }}>{privacy.hideValues ? "•••••" : formatCurrency(0)}</p>
         </div>
 
         <div className="text-center py-6 sm:py-8">
@@ -194,7 +200,7 @@ export function InvoiceDetail({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-3 sm:mb-4">
           <div>
             <p className="text-xs sm:text-sm" style={{ color: "var(--text-muted)" }}>Total da Fatura</p>
-            <p className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--text-primary)" }}>{formatCurrency(selectedInvoice.total)}</p>
+            <p className="text-2xl sm:text-3xl font-bold" style={{ color: "var(--text-primary)" }}>{privacy.hideValues ? "•••••" : formatCurrency(selectedInvoice.total)}</p>
           </div>
           {selectedInvoice.status !== "paid" && selectedInvoice.total > 0 && (
             <button
@@ -275,7 +281,7 @@ export function InvoiceDetail({
                 </div>
 
                 <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                  <p className="font-medium text-xs sm:text-base" style={{ color: "var(--text-primary)" }}>{formatCurrency(purchase.value)}</p>
+                  <p className="font-medium text-xs sm:text-base" style={{ color: "var(--text-primary)" }}>{privacy.hideValues ? "•••••" : formatCurrency(purchase.value)}</p>
                   <button
                     onClick={() => handleDeleteClick(purchase)}
                     className="p-1.5 sm:opacity-0 sm:group-hover:opacity-100 hover:bg-red-500/20 active:bg-red-500/30 rounded-lg transition-all"

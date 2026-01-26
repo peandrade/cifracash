@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { Plus, Repeat, RefreshCw, Trash2, Check, AlertCircle, Zap } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { usePreferences } from "@/contexts";
+import { useFeedback } from "@/hooks/use-feedback";
 import { CATEGORY_COLORS } from "@/lib/constants";
 import { RecurringExpenseModal } from "./recurring-expense-modal";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -34,6 +36,8 @@ export function RecurringSection({ onExpenseLaunched }: RecurringSectionProps) {
   const [isLaunching, setIsLaunching] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const { privacy, general } = usePreferences();
+  const feedback = useFeedback();
 
   const fetchExpenses = useCallback(async () => {
     try {
@@ -69,6 +73,7 @@ export function RecurringSection({ onExpenseLaunched }: RecurringSectionProps) {
       });
 
       if (response.ok) {
+        feedback.success();
         await fetchExpenses();
         setIsModalOpen(false);
       }
@@ -96,6 +101,24 @@ export function RecurringSection({ onExpenseLaunched }: RecurringSectionProps) {
       setIsDeleting(false);
       setDeleteId(null);
     }
+  };
+
+  const handleDeleteExpense = (id: string) => {
+    if (!general.confirmBeforeDelete) {
+      (async () => {
+        setIsDeleting(true);
+        try {
+          const response = await fetch(`/api/recurring-expenses/${id}`, { method: "DELETE" });
+          if (response.ok) await fetchExpenses();
+        } catch (error) {
+          console.error("Erro ao deletar despesa recorrente:", error);
+        } finally {
+          setIsDeleting(false);
+        }
+      })();
+      return;
+    }
+    setDeleteId(id);
   };
 
   const handleLaunchAll = async () => {
@@ -196,13 +219,13 @@ export function RecurringSection({ onExpenseLaunched }: RecurringSectionProps) {
               <div className="bg-[var(--bg-hover)] rounded-xl p-3 text-center">
                 <p className="text-xs text-[var(--text-dimmed)] mb-1">Total Mensal</p>
                 <p className="text-lg font-bold text-[var(--text-primary)]">
-                  {formatCurrency(summary.totalMonthly)}
+                  {privacy.hideValues ? "•••••" : formatCurrency(summary.totalMonthly)}
                 </p>
               </div>
               <div className="bg-[var(--bg-hover)] rounded-xl p-3 text-center">
                 <p className="text-xs text-[var(--text-dimmed)] mb-1">Pendente</p>
                 <p className={`text-lg font-bold ${summary.totalPending > 0 ? "text-amber-400" : "text-emerald-400"}`}>
-                  {formatCurrency(summary.totalPending)}
+                  {privacy.hideValues ? "•••••" : formatCurrency(summary.totalPending)}
                 </p>
               </div>
             </div>
@@ -244,8 +267,9 @@ export function RecurringSection({ onExpenseLaunched }: RecurringSectionProps) {
                       key={expense.id}
                       expense={expense}
                       onLaunch={() => handleLaunchSingle(expense.id)}
-                      onDelete={() => setDeleteId(expense.id)}
+                      onDelete={() => handleDeleteExpense(expense.id)}
                       isLaunching={isLaunching}
+                      hideValues={privacy.hideValues}
                     />
                   ))}
                 </div>
@@ -261,8 +285,9 @@ export function RecurringSection({ onExpenseLaunched }: RecurringSectionProps) {
                     <ExpenseItem
                       key={expense.id}
                       expense={expense}
-                      onDelete={() => setDeleteId(expense.id)}
+                      onDelete={() => handleDeleteExpense(expense.id)}
                       isLaunching={isLaunching}
+                      hideValues={privacy.hideValues}
                     />
                   ))}
                 </div>
@@ -297,11 +322,13 @@ function ExpenseItem({
   onLaunch,
   onDelete,
   isLaunching,
+  hideValues,
 }: {
   expense: RecurringExpenseWithStatus;
   onLaunch?: () => void;
   onDelete: () => void;
   isLaunching: boolean;
+  hideValues: boolean;
 }) {
   const categoryColor = CATEGORY_COLORS[expense.category] || "#8B5CF6";
   const isLaunched = expense.isLaunchedThisMonth;
@@ -336,7 +363,7 @@ function ExpenseItem({
 
         <div className="flex items-center gap-2">
           <span className="font-semibold text-[var(--text-primary)]">
-            {formatCurrency(expense.value)}
+            {hideValues ? "•••••" : formatCurrency(expense.value)}
           </span>
 
           {!isLaunched && onLaunch && (

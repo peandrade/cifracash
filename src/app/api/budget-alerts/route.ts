@@ -26,6 +26,16 @@ export async function GET() {
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
 
+    // Get user preferences for threshold
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { notificationSettings: true },
+    });
+    const notifSettings = user?.notificationSettings as Record<string, unknown> | null;
+    const budgetThreshold = typeof notifSettings?.budgetThreshold === "number"
+      ? notifSettings.budgetThreshold
+      : 80;
+
     const startOfMonth = new Date(year, month - 1, 1);
     const endOfMonth = new Date(year, month, 0, 23, 59, 59);
 
@@ -112,13 +122,15 @@ export async function GET() {
       let alertLevel: "warning" | "danger" | "exceeded" | null = null;
       let message = "";
 
+      const dangerThreshold = budgetThreshold + (100 - budgetThreshold) / 2;
+
       if (percentage >= 100) {
         alertLevel = "exceeded";
         message = `Orçamento excedido em ${Math.round(percentage - 100)}%`;
-      } else if (percentage >= 90) {
+      } else if (percentage >= dangerThreshold) {
         alertLevel = "danger";
         message = `Atenção! ${Math.round(100 - percentage)}% restante`;
-      } else if (percentage >= 80) {
+      } else if (percentage >= budgetThreshold) {
         alertLevel = "warning";
         message = `${Math.round(100 - percentage)}% restante do orçamento`;
       }

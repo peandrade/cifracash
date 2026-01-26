@@ -2,6 +2,7 @@
 
 import { TrendingUp, TrendingDown, Wallet, PieChart } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { usePreferences } from "@/contexts";
 import type { InvestmentSummary } from "@/types";
 
 interface InvestmentSummaryCardsProps {
@@ -9,6 +10,7 @@ interface InvestmentSummaryCardsProps {
 }
 
 export function InvestmentSummaryCards({ summary }: InvestmentSummaryCardsProps) {
+  const { privacy } = usePreferences();
   const { totalInvested, currentValue, profitLoss, profitLossPercent, totalAssets } = summary;
   const isPositive = profitLoss >= 0;
 
@@ -29,7 +31,7 @@ export function InvestmentSummaryCards({ summary }: InvestmentSummaryCardsProps)
               Total Investido
             </p>
             <p className="text-lg sm:text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
-              {formatCurrency(totalInvested)}
+              {privacy.hideValues ? "•••••" : formatCurrency(totalInvested)}
             </p>
           </div>
           <div className="p-2 sm:p-3 bg-blue-500/20 rounded-lg sm:rounded-xl">
@@ -49,7 +51,7 @@ export function InvestmentSummaryCards({ summary }: InvestmentSummaryCardsProps)
               Valor Atual
             </p>
             <p className="text-lg sm:text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
-              {formatCurrency(currentValue)}
+              {privacy.hideValues ? "•••••" : formatCurrency(currentValue)}
             </p>
           </div>
           <div className="p-2 sm:p-3 bg-primary-medium rounded-lg sm:rounded-xl">
@@ -69,7 +71,7 @@ export function InvestmentSummaryCards({ summary }: InvestmentSummaryCardsProps)
               Rentabilidade
             </p>
             <p className={`text-lg sm:text-2xl font-bold ${isPositive ? "text-emerald-400" : "text-red-400"}`}>
-              {isPositive ? "+" : ""}{formatCurrency(profitLoss)}
+              {privacy.hideValues ? "•••••" : `${isPositive ? "+" : ""}${formatCurrency(profitLoss)}`}
             </p>
           </div>
           <div className={`p-2 sm:p-3 rounded-lg sm:rounded-xl ${isPositive ? "bg-emerald-500/20" : "bg-red-500/20"}`}>

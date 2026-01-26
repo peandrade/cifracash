@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Plus, RefreshCw, ShoppingCart, CreditCard, Layers } from "lucide-react";
 import { useCardStore } from "@/store/card-store";
+import { useFeedback } from "@/hooks/use-feedback";
 import {
   SummaryCards,
   CardList,
@@ -48,6 +49,8 @@ function CartoesContent() {
     getAllCardsInvoicePreview,
     getCardInvoices,
   } = useCardStore();
+
+  const feedback = useFeedback();
 
   useEffect(() => {
     fetchCards();
@@ -94,6 +97,7 @@ function CartoesContent() {
     setIsSubmitting(true);
     try {
       await addCard(data);
+      feedback.success();
     } finally {
       setIsSubmitting(false);
     }
@@ -103,6 +107,7 @@ function CartoesContent() {
     setIsSubmitting(true);
     try {
       await addPurchase(data);
+      feedback.success();
     } finally {
       setIsSubmitting(false);
     }

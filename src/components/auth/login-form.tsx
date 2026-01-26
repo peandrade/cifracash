@@ -32,7 +32,28 @@ export function LoginForm() {
       if (result?.error) {
         setError("Email ou senha incorretos");
       } else {
-        router.push(callbackUrl);
+        const hasExplicitCallback = searchParams.has("callbackUrl");
+        if (hasExplicitCallback) {
+          router.push(callbackUrl);
+        } else {
+          try {
+            const prefsRes = await fetch("/api/user/preferences");
+            if (prefsRes.ok) {
+              const prefs = await prefsRes.json();
+              const pageMap: Record<string, string> = {
+                dashboard: "/",
+                cards: "/cartoes",
+                investments: "/investimentos",
+              };
+              const target = pageMap[prefs.general?.defaultPage] || "/";
+              router.push(target);
+            } else {
+              router.push("/");
+            }
+          } catch {
+            router.push("/");
+          }
+        }
         router.refresh();
       }
     } catch {

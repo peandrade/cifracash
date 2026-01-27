@@ -21,8 +21,8 @@ interface MonthlyChartProps {
 
 const PERIOD_OPTIONS: { value: EvolutionPeriod; label: string }[] = [
   { value: "1w", label: "1 Semana" },
-  { value: "15d", label: "15 Dias" },
-  { value: "1m", label: "1 Mês" },
+  { value: "1m", label: "30 Dias" },
+  { value: "3m", label: "3 Meses" },
   { value: "6m", label: "6 Meses" },
   { value: "1y", label: "1 Ano" },
 ];

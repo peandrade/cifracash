@@ -220,8 +220,8 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
 
     const periodConfig: Record<EvolutionPeriod, { days?: number; months?: number; groupBy: "day" | "month" }> = {
       "1w": { days: 7, groupBy: "day" },
-      "15d": { days: 15, groupBy: "day" },
       "1m": { days: 30, groupBy: "day" },
+      "3m": { months: 3, groupBy: "month" },
       "6m": { months: 6, groupBy: "month" },
       "1y": { months: 12, groupBy: "month" },
     };

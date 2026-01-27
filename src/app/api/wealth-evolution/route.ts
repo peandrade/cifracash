@@ -24,8 +24,17 @@ export async function GET(request: NextRequest) {
 
     const now = new Date();
     let startDate: Date;
+    const groupByDay = period === "1w" || period === "1m";
 
     switch (period) {
+      case "1w":
+        startDate = new Date(now);
+        startDate.setDate(startDate.getDate() - 7);
+        break;
+      case "1m":
+        startDate = new Date(now);
+        startDate.setDate(startDate.getDate() - 30);
+        break;
       case "3m":
         startDate = new Date(now.getFullYear(), now.getMonth() - 3, 1);
         break;
@@ -34,12 +43,6 @@ export async function GET(request: NextRequest) {
         break;
       case "1y":
         startDate = new Date(now.getFullYear() - 1, now.getMonth(), 1);
-        break;
-      case "2y":
-        startDate = new Date(now.getFullYear() - 2, now.getMonth(), 1);
-        break;
-      case "all":
-        startDate = new Date(2020, 0, 1);
         break;
       default:
         startDate = new Date(now.getFullYear() - 1, now.getMonth(), 1);
@@ -118,46 +121,76 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const months: string[] = [];
-    const current = new Date(startDate);
-    while (current <= now) {
-      months.push(`${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, "0")}`);
-      current.setMonth(current.getMonth() + 1);
+    const periods: string[] = [];
+    const dataByPeriod: Record<string, WealthDataPoint> = {};
+    const dayNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
+    if (groupByDay) {
+      // Group by day for short periods
+      const current = new Date(startDate);
+      current.setHours(0, 0, 0, 0);
+
+      while (current <= now) {
+        const key = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, "0")}-${String(current.getDate()).padStart(2, "0")}`;
+        periods.push(key);
+
+        const label = period === "1w"
+          ? `${dayNames[current.getDay()]} ${current.getDate()}`
+          : `${String(current.getDate()).padStart(2, "0")}/${String(current.getMonth() + 1).padStart(2, "0")}`;
+
+        dataByPeriod[key] = {
+          month: key,
+          label,
+          transactionBalance: initialTransactionBalance,
+          investmentValue: initialInvestmentValue,
+          cardDebt: 0,
+          totalWealth: 0,
+          goalsSaved: 0,
+        };
+
+        current.setDate(current.getDate() + 1);
+      }
+    } else {
+      // Group by month for longer periods
+      const current = new Date(startDate);
+      while (current <= now) {
+        const key = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, "0")}`;
+        periods.push(key);
+
+        const monthLabel = new Date(current.getFullYear(), current.getMonth()).toLocaleDateString("pt-BR", {
+          month: "short",
+          year: "2-digit",
+        });
+
+        dataByPeriod[key] = {
+          month: key,
+          label: monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1),
+          transactionBalance: initialTransactionBalance,
+          investmentValue: initialInvestmentValue,
+          cardDebt: 0,
+          totalWealth: 0,
+          goalsSaved: 0,
+        };
+
+        current.setMonth(current.getMonth() + 1);
+      }
     }
 
-    const dataByMonth: Record<string, WealthDataPoint> = {};
-
+    // Process transactions
     let runningTransactionBalance = initialTransactionBalance;
-    let runningInvestmentValue = initialInvestmentValue;
-
-    for (const month of months) {
-      const [year, monthNum] = month.split("-").map(Number);
-      const monthLabel = new Date(year, monthNum - 1).toLocaleDateString("pt-BR", {
-        month: "short",
-        year: "2-digit",
-      });
-
-      dataByMonth[month] = {
-        month,
-        label: monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1),
-        transactionBalance: runningTransactionBalance,
-        investmentValue: runningInvestmentValue,
-        cardDebt: 0,
-        totalWealth: 0,
-        goalsSaved: 0,
-      };
-    }
-
-    runningTransactionBalance = initialTransactionBalance;
-    for (const month of months) {
-      const [year, monthNum] = month.split("-").map(Number);
-
-      const monthTransactions = transactions.filter((t) => {
+    for (const key of periods) {
+      const filteredTransactions = transactions.filter((t) => {
         const d = new Date(t.date);
-        return d.getFullYear() === year && d.getMonth() + 1 === monthNum;
+        if (groupByDay) {
+          const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+          return dateKey === key;
+        } else {
+          const [year, monthNum] = key.split("-").map(Number);
+          return d.getFullYear() === year && d.getMonth() + 1 === monthNum;
+        }
       });
 
-      for (const t of monthTransactions) {
+      for (const t of filteredTransactions) {
         if (t.type === "income") {
           runningTransactionBalance += t.value;
         } else {
@@ -165,19 +198,24 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      dataByMonth[month].transactionBalance = runningTransactionBalance;
+      dataByPeriod[key].transactionBalance = runningTransactionBalance;
     }
 
-    runningInvestmentValue = initialInvestmentValue;
-    for (const month of months) {
-      const [year, monthNum] = month.split("-").map(Number);
-
-      const monthOperations = operations.filter((op) => {
+    // Process operations
+    let runningInvestmentValue = initialInvestmentValue;
+    for (const key of periods) {
+      const filteredOperations = operations.filter((op) => {
         const d = new Date(op.date);
-        return d.getFullYear() === year && d.getMonth() + 1 === monthNum;
+        if (groupByDay) {
+          const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+          return dateKey === key;
+        } else {
+          const [year, monthNum] = key.split("-").map(Number);
+          return d.getFullYear() === year && d.getMonth() + 1 === monthNum;
+        }
       });
 
-      for (const op of monthOperations) {
+      for (const op of filteredOperations) {
         if (op.type === "buy" || op.type === "deposit") {
           runningInvestmentValue += op.total;
         } else if (op.type === "sell" || op.type === "withdraw") {
@@ -185,49 +223,45 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      dataByMonth[month].investmentValue = runningInvestmentValue;
+      dataByPeriod[key].investmentValue = runningInvestmentValue;
     }
 
-    for (const invoice of invoices) {
-      const month = `${invoice.year}-${String(invoice.month).padStart(2, "0")}`;
-      if (dataByMonth[month]) {
+    // Process card debt
+    for (const key of periods) {
+      let keyDate: Date;
 
-        const unpaid = invoice.total - invoice.paidAmount;
-        if (unpaid > 0) {
-          dataByMonth[month].cardDebt += unpaid;
-        }
+      if (groupByDay) {
+        const [year, month, day] = key.split("-").map(Number);
+        keyDate = new Date(year, month - 1, day);
+      } else {
+        const [year, month] = key.split("-").map(Number);
+        keyDate = new Date(year, month - 1);
       }
-    }
-
-    for (const month of months) {
-
-      const [year, monthNum] = month.split("-").map(Number);
 
       const relevantInvoices = invoices.filter((inv) => {
         const invDate = new Date(inv.year, inv.month - 1);
-        const monthDate = new Date(year, monthNum - 1);
-        return invDate <= monthDate && inv.status !== "paid";
+        return invDate <= keyDate && inv.status !== "paid";
       });
 
-      dataByMonth[month].cardDebt = relevantInvoices.reduce(
+      dataByPeriod[key].cardDebt = relevantInvoices.reduce(
         (sum, inv) => sum + Math.max(inv.total - inv.paidAmount, 0),
         0
       );
     }
 
+    // Add goals saved
     const totalGoalsSaved = goals.reduce((sum, g) => sum + g.currentValue, 0);
-
-    for (const month of months) {
-      dataByMonth[month].goalsSaved = totalGoalsSaved;
+    for (const key of periods) {
+      dataByPeriod[key].goalsSaved = totalGoalsSaved;
     }
 
-    for (const month of months) {
-      const d = dataByMonth[month];
-
+    // Calculate total wealth
+    for (const key of periods) {
+      const d = dataByPeriod[key];
       d.totalWealth = d.transactionBalance + d.investmentValue + d.goalsSaved - d.cardDebt;
     }
 
-    const evolution = months.map((m) => dataByMonth[m]);
+    const evolution = periods.map((p) => dataByPeriod[p]);
 
     const current_data = evolution[evolution.length - 1] || {
       transactionBalance: 0,
@@ -237,12 +271,12 @@ export async function GET(request: NextRequest) {
       goalsSaved: 0,
     };
 
-    const previousMonth = evolution[evolution.length - 2];
-    const wealthChange = previousMonth
-      ? current_data.totalWealth - previousMonth.totalWealth
+    const previousPeriod = evolution[evolution.length - 2];
+    const wealthChange = previousPeriod
+      ? current_data.totalWealth - previousPeriod.totalWealth
       : 0;
-    const wealthChangePercent = previousMonth && previousMonth.totalWealth !== 0
-      ? ((current_data.totalWealth - previousMonth.totalWealth) / Math.abs(previousMonth.totalWealth)) * 100
+    const wealthChangePercent = previousPeriod && previousPeriod.totalWealth !== 0
+      ? ((current_data.totalWealth - previousPeriod.totalWealth) / Math.abs(previousPeriod.totalWealth)) * 100
       : 0;
 
     return NextResponse.json({

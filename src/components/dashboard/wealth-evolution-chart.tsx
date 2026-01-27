@@ -12,9 +12,20 @@ import {
 } from "recharts";
 import { ChevronDown, TrendingUp, TrendingDown, Wallet, RefreshCw } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
-import { useTheme } from "@/contexts";
+import { useTheme, usePreferences } from "@/contexts";
 
-type WealthPeriod = "3m" | "6m" | "1y" | "2y" | "all";
+type WealthPeriod = "1w" | "1m" | "3m" | "6m" | "1y";
+
+// Helper function to map defaultPeriod to WealthPeriod
+function mapDefaultPeriodToWealth(defaultPeriod: string): WealthPeriod {
+  const periodMap: Record<string, WealthPeriod> = {
+    week: "1w",
+    month: "1m",
+    quarter: "3m",
+    year: "1y",
+  };
+  return periodMap[defaultPeriod] || "1y";
+}
 
 interface WealthDataPoint {
   month: string;
@@ -43,11 +54,11 @@ interface WealthData {
 }
 
 const PERIOD_OPTIONS: { value: WealthPeriod; label: string }[] = [
+  { value: "1w", label: "1 Semana" },
+  { value: "1m", label: "30 Dias" },
   { value: "3m", label: "3 Meses" },
   { value: "6m", label: "6 Meses" },
   { value: "1y", label: "1 Ano" },
-  { value: "2y", label: "2 Anos" },
-  { value: "all", label: "Tudo" },
 ];
 
 interface TooltipPayload {
@@ -112,7 +123,10 @@ function ChartTooltip({
 
 export function WealthEvolutionChart() {
   const { theme } = useTheme();
-  const [period, setPeriod] = useState<WealthPeriod>("1y");
+  const { general } = usePreferences();
+  const [period, setPeriod] = useState<WealthPeriod>(() =>
+    mapDefaultPeriodToWealth(general.defaultPeriod)
+  );
   const [data, setData] = useState<WealthData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -134,6 +148,11 @@ export function WealthEvolutionChart() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Update period when defaultPeriod preference changes
+  useEffect(() => {
+    setPeriod(mapDefaultPeriodToWealth(general.defaultPeriod));
+  }, [general.defaultPeriod]);
 
   const axisTickColor = theme === "dark" ? "#9CA3AF" : "#4B5563";
 

@@ -20,8 +20,8 @@ const pages = [
 
 const periods = [
   { id: "week", name: "Última semana" },
-  { id: "month", name: "Este mês" },
-  { id: "quarter", name: "Últimos 3 meses" },
+  { id: "month", name: "30 dias" },
+  { id: "quarter", name: "3 meses" },
   { id: "year", name: "Este ano" },
 ];
 

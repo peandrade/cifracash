@@ -5,6 +5,7 @@ import { Calendar, CalendarDays, Target, LayoutList, X } from "lucide-react";
 import { useTransactionStore } from "@/store/transaction-store";
 import { useFeedback } from "@/hooks/use-feedback";
 import { useTemplateStore } from "@/store/template-store";
+import { usePreferences } from "@/contexts";
 import { getMonthYearLabel } from "@/lib/constants";
 import { SummaryCards, MonthlyChart, CategoryChart, TransactionList, WealthEvolutionChart, QuickStats } from "@/components/dashboard";
 import { FinancialHealthScore } from "@/components/dashboard/financial-health-score";
@@ -16,11 +17,25 @@ import { QuickActionButtons, TemplateSection, TemplateModal } from "@/components
 import { CollapsibleSection } from "@/components/ui/collapsible-section";
 import type { CreateTransactionInput, EvolutionPeriod, TransactionType, TransactionTemplate } from "@/types";
 
+// Helper function to map defaultPeriod to EvolutionPeriod
+function mapDefaultPeriodToEvolution(defaultPeriod: string): EvolutionPeriod {
+  const periodMap: Record<string, EvolutionPeriod> = {
+    week: "1w",
+    month: "1m",
+    quarter: "3m",
+    year: "1y",
+  };
+  return periodMap[defaultPeriod] || "6m";
+}
+
 export default function DashboardPage() {
+  const { general } = usePreferences();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [evolutionPeriod, setEvolutionPeriod] = useState<EvolutionPeriod>("6m");
+  const [evolutionPeriod, setEvolutionPeriod] = useState<EvolutionPeriod>(() =>
+    mapDefaultPeriodToEvolution(general.defaultPeriod)
+  );
   const [budgetRefreshTrigger, setBudgetRefreshTrigger] = useState(0);
 
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -47,6 +62,11 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchTransactions();
   }, [fetchTransactions]);
+
+  // Update evolution period when defaultPeriod preference changes
+  useEffect(() => {
+    setEvolutionPeriod(mapDefaultPeriodToEvolution(general.defaultPeriod));
+  }, [general.defaultPeriod]);
 
   const summary = getSummary();
   const categoryData = getCategoryData();

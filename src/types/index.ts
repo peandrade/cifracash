@@ -63,7 +63,7 @@ export interface CategoryData {
   color: string;
 }
 
-export type EvolutionPeriod = "1w" | "15d" | "1m" | "6m" | "1y";
+export type EvolutionPeriod = "1w" | "1m" | "3m" | "6m" | "1y";
 
 export interface MonthlyEvolution {
   month: string;

@@ -89,6 +89,21 @@ Ordem dos componentes:
 5. **CollapsibleSection "Transacoes"** — TemplateSection + TransactionList
 6. **QuickActionButtons** — FAB flutuante (+ receita / + despesa)
 
+### Graficos do Dashboard
+
+**MonthlyChart (Evolucao Financeira):**
+- Mostra receitas vs despesas ao longo do tempo
+- Periodos: 1w (7 dias), 1m (30 dias), 3m, 6m, 1y
+- Agrupamento: por dia (≤30 dias) ou por mes (>30 dias)
+- Type: `EvolutionPeriod = "1w" | "1m" | "3m" | "6m" | "1y"`
+
+**WealthEvolutionChart (Evolucao Patrimonial):**
+- Calcula patrimonio total = saldo + investido + metas - dividas
+- Mostra 4 linhas: saldo (transacoes), investido (operations), metas (goals), dividas (invoices)
+- Periodos: mesmos do MonthlyChart
+- Agrupamento: por dia para 1w/1m, por mes para 3m/6m/1y
+- API: `/api/wealth-evolution?period={period}`
+
 ## Theming
 
 - CSS variables em globals.css (--bg-primary, --card-bg, --text-primary, --border-color, etc.)
@@ -107,16 +122,82 @@ Ordem dos componentes:
 - Icones sempre via `lucide-react`
 - Formatacao monetaria via `formatCurrency()` de `@/lib/utils`
 - Formularios com React Hook Form + Zod schema validation
+- **Prisma Client:** Singleton pattern em `@/lib/prisma` com connection pooling e cleanup handlers
+- **Connection Pooling:** DATABASE_URL usa PgBouncer (porta 6543) com limite de 5 conexões
+
+## Preferencias do Usuario
+
+O contexto `PreferencesContext` gerencia configuracoes do usuario:
+
+**General Settings:**
+- `defaultPage`: Pagina inicial (dashboard, cards, investments)
+- `defaultPeriod`: Periodo padrao dos graficos (week, month, quarter, year)
+- `defaultSort`: Ordenacao padrao (recent, oldest, highest, lowest)
+- `confirmBeforeDelete`: Confirmacao antes de excluir
+
+**Notification Settings:** Alertas de orcamento, lembretes de contas, relatorios
+
+**Privacy Settings:** Ocultar valores, auto-lock
+
+Os graficos do dashboard respeitam `defaultPeriod`:
+- "week" → 1 semana (7 dias, agrupado por dia)
+- "month" → 30 dias (agrupado por dia)
+- "quarter" → 3 meses (agrupado por mes)
+- "year" → 1 ano (agrupado por mes)
+
+Opcoes disponiveis nos graficos: **1 Semana, 30 Dias, 3 Meses, 6 Meses, 1 Ano**
 
 ## Variaveis de Ambiente
 
 ```
-DATABASE_URL          # Supabase PostgreSQL
-DIRECT_URL            # Direct DB connection
+# Database (com connection pooling)
+DATABASE_URL="postgresql://user:pass@host:6543/db?pgbouncer=true&connection_limit=5"
+DIRECT_URL="postgresql://user:pass@host:5432/db"  # Direct connection (migrations)
+
 BRAPI_API_KEY         # Cotacoes de acoes
 NEXTAUTH_SECRET       # Auth secret
 NEXTAUTH_URL          # Auth callback URL
 RESEND_API_KEY        # Email service
+```
+
+**Notas importantes:**
+- DATABASE_URL usa porta **6543** (PgBouncer pooler) com `connection_limit=5`
+- DIRECT_URL usa porta **5432** (conexao direta para migrations)
+
+## APIs Importantes
+
+### `/api/wealth-evolution?period={period}`
+
+Calcula evolucao patrimonial ao longo do tempo.
+
+**Logica:**
+1. Busca transacoes, operacoes, faturas e metas desde `startDate`
+2. Calcula saldos iniciais (tudo antes de `startDate`)
+3. Cria pontos de dados:
+   - **Por dia** se period = "1w" ou "1m" (7 ou 30 pontos)
+   - **Por mes** se period = "3m", "6m" ou "1y"
+4. Para cada ponto, calcula acumulado:
+   - `transactionBalance`: saldo de transacoes (income - expense)
+   - `investmentValue`: valor investido (buy/deposit - sell/withdraw)
+   - `goalsSaved`: soma de todas as metas (valor atual)
+   - `cardDebt`: dividas de faturas nao pagas ate aquela data
+   - `totalWealth`: transactionBalance + investmentValue + goalsSaved - cardDebt
+
+**Retorno:**
+```typescript
+{
+  evolution: WealthDataPoint[],  // Array de pontos
+  summary: {
+    currentWealth: number,
+    transactionBalance: number,
+    investmentValue: number,
+    goalsSaved: number,
+    cardDebt: number,
+    wealthChange: number,         // vs periodo anterior
+    wealthChangePercent: number
+  },
+  period: string
+}
 ```
 
 ## Comandos

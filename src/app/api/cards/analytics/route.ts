@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { startOfMonth, endOfMonth, subMonths, format, differenceInDays } from "date-fns";
+import { startOfMonth, endOfMonth, subMonths, addMonths, format, differenceInDays } from "date-fns";
 
 interface CardSpendingByCategory {
   category: string;
@@ -87,29 +87,44 @@ export async function GET() {
       }))
       .sort((a, b) => b.total - a.total);
 
-    // === MONTHLY SPENDING TREND ===
+    // === MONTHLY SPENDING TREND (2 previous + current + 3 future = 6 months) ===
     const monthlySpending: CardMonthlySpending[] = [];
 
-    for (let i = 5; i >= 0; i--) {
-      const monthDate = subMonths(now, i);
-      const monthStart = startOfMonth(monthDate);
-      const monthEnd = endOfMonth(monthDate);
+    // Range: -2 (2 months ago) to +3 (3 months ahead)
+    for (let i = -2; i <= 3; i++) {
+      const monthDate = i < 0 ? subMonths(now, Math.abs(i)) : i > 0 ? addMonths(now, i) : now;
       const monthKey = format(monthDate, "yyyy-MM");
       const monthLabel = format(monthDate, "MMM", {
         locale: require("date-fns/locale/pt-BR").ptBR,
       });
+      const targetMonth = monthDate.getMonth() + 1;
+      const targetYear = monthDate.getFullYear();
 
       const cardBreakdown: CardMonthlySpending["cardBreakdown"] = [];
 
       for (const card of creditCards) {
-        const monthPurchases = card.invoices.flatMap((inv) =>
-          inv.purchases.filter((p) => {
-            const purchaseDate = new Date(p.date);
-            return purchaseDate >= monthStart && purchaseDate <= monthEnd;
-          })
-        );
+        let cardTotal = 0;
 
-        const cardTotal = monthPurchases.reduce((sum, p) => sum + p.value, 0);
+        if (i <= 0) {
+          // Past and current months: sum actual purchases made in that month
+          const monthStart = startOfMonth(monthDate);
+          const monthEnd = endOfMonth(monthDate);
+          const monthPurchases = card.invoices.flatMap((inv) =>
+            inv.purchases.filter((p) => {
+              const purchaseDate = new Date(p.date);
+              return purchaseDate >= monthStart && purchaseDate <= monthEnd;
+            })
+          );
+          cardTotal = monthPurchases.reduce((sum, p) => sum + p.value, 0);
+        } else {
+          // Future months: use invoice total (includes installments)
+          const invoice = card.invoices.find(
+            (inv) => inv.month === targetMonth && inv.year === targetYear
+          );
+          if (invoice) {
+            cardTotal = invoice.total;
+          }
+        }
 
         if (cardTotal > 0) {
           cardBreakdown.push({

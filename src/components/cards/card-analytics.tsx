@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react";
 import {
-  CreditCard,
   AlertTriangle,
   TrendingUp,
   RefreshCw,
   PieChart,
   Clock,
   AlertCircle,
+  CreditCard,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { getCategoryColor } from "@/lib/constants";
@@ -169,165 +169,99 @@ export function CardAnalytics() {
         </div>
       )}
 
-      {/* Summary */}
-      <div className="bg-[var(--bg-secondary)] rounded-xl sm:rounded-2xl border border-[var(--border-color)] p-4 sm:p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-2 bg-primary-soft rounded-lg">
-            <CreditCard className="w-5 h-5 text-primary-color" />
-          </div>
-          <h3 className="text-base sm:text-lg font-semibold text-[var(--text-primary)]">
-            Resumo de Cartões
-          </h3>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-          <div className="bg-[var(--bg-hover)] rounded-xl p-3 text-center">
-            <p className="text-xs text-[var(--text-dimmed)]">Limite Total</p>
-            <p className="text-base sm:text-lg font-bold text-[var(--text-primary)]">
-              {fmt(data.summary.totalLimit)}
-            </p>
-          </div>
-          <div className="bg-[var(--bg-hover)] rounded-xl p-3 text-center">
-            <p className="text-xs text-[var(--text-dimmed)]">Usado</p>
-            <p className="text-base sm:text-lg font-bold text-red-400">
-              {fmt(data.summary.totalUsed)}
-            </p>
-          </div>
-          <div className="bg-[var(--bg-hover)] rounded-xl p-3 text-center">
-            <p className="text-xs text-[var(--text-dimmed)]">Uso do Limite</p>
-            <p
-              className={`text-base sm:text-lg font-bold ${
-                data.summary.usagePercentage >= 80
-                  ? "text-red-400"
-                  : data.summary.usagePercentage >= 50
-                  ? "text-amber-400"
-                  : "text-emerald-400"
-              }`}
-            >
-              {data.summary.usagePercentage.toFixed(0)}%
-            </p>
-          </div>
-          <div className="bg-[var(--bg-hover)] rounded-xl p-3 text-center">
-            <p className="text-xs text-[var(--text-dimmed)]">Média Mensal</p>
-            <p className="text-base sm:text-lg font-bold text-primary-color">
-              {fmt(data.summary.averageMonthlySpending)}
-            </p>
-          </div>
-        </div>
-
-        {/* Usage bar */}
-        <div className="mt-4">
-          <div className="flex justify-between text-xs mb-1">
-            <span className="text-[var(--text-dimmed)]">Uso do limite total</span>
-            <span
-              className={
-                data.summary.usagePercentage >= 80
-                  ? "text-red-400"
-                  : data.summary.usagePercentage >= 50
-                  ? "text-amber-400"
-                  : "text-emerald-400"
-              }
-            >
-              {fmt(data.summary.totalUsed)} / {fmt(data.summary.totalLimit)}
-            </span>
-          </div>
-          <div className="h-2 bg-[var(--bg-hover)] rounded-full overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all ${
-                data.summary.usagePercentage >= 80
-                  ? "bg-red-500"
-                  : data.summary.usagePercentage >= 50
-                  ? "bg-amber-500"
-                  : "bg-emerald-500"
-              }`}
-              style={{ width: `${Math.min(data.summary.usagePercentage, 100)}%` }}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Monthly Spending Trend */}
-      <div className="bg-[var(--bg-secondary)] rounded-xl sm:rounded-2xl border border-[var(--border-color)] p-4 sm:p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-2 bg-blue-500/10 rounded-lg">
-            <TrendingUp className="w-5 h-5 text-blue-400" />
-          </div>
-          <h3 className="text-base sm:text-lg font-semibold text-[var(--text-primary)]">
-            Evolução Mensal
-          </h3>
-        </div>
-
-        <div className="flex items-end justify-between h-32 gap-2">
-          {data.monthlySpending.map((month) => (
-            <div key={month.month} className="flex-1 flex flex-col items-center gap-1">
-              <div className="w-full h-24 flex items-end justify-center">
-                <div
-                  className="w-full max-w-[40px] bg-primary-gradient rounded-t transition-all"
-                  style={{
-                    height: `${maxMonthlySpending > 0 ? (month.total / maxMonthlySpending) * 100 : 0}%`,
-                    minHeight: month.total > 0 ? "4px" : "0px",
-                  }}
-                />
-              </div>
-              <span className="text-[10px] sm:text-xs text-[var(--text-dimmed)] capitalize">
-                {month.monthLabel}
-              </span>
-              <span className="text-[10px] text-[var(--text-muted)] hidden sm:block">
-                {fmt(month.total)}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Spending by Category */}
-      {data.spendingByCategory.length > 0 && (
+      {/* Grid: Monthly Spending Trend + Spending by Category */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Monthly Spending Trend */}
         <div className="bg-[var(--bg-secondary)] rounded-xl sm:rounded-2xl border border-[var(--border-color)] p-4 sm:p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-emerald-500/10 rounded-lg">
-              <PieChart className="w-5 h-5 text-emerald-400" />
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-500/10 rounded-lg">
+                <TrendingUp className="w-5 h-5 text-blue-400" />
+              </div>
+              <h3 className="text-base sm:text-lg font-semibold text-[var(--text-primary)]">
+                Evolução Mensal
+              </h3>
             </div>
-            <h3 className="text-base sm:text-lg font-semibold text-[var(--text-primary)]">
-              Gastos por Categoria
-            </h3>
+            <div className="text-right">
+              <p className="text-xs text-[var(--text-dimmed)]">Média mensal</p>
+              <p className="text-sm font-bold text-primary-color">
+                {fmt(data.summary.averageMonthlySpending)}
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            {data.spendingByCategory.slice(0, 6).map((cat) => (
-              <div key={cat.category} className="flex items-center gap-3">
-                <div
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-medium"
-                  style={{ backgroundColor: `${getCategoryColor(cat.category)}20`, color: getCategoryColor(cat.category) }}
-                >
-                  {cat.category.charAt(0)}
+          <div className="flex items-end justify-between h-48 gap-2 mt-4">
+            {data.monthlySpending.map((month) => (
+              <div key={month.month} className="flex-1 flex flex-col items-center gap-1">
+                <div className="w-full h-36 flex items-end justify-center">
+                  <div
+                    className="w-full max-w-[40px] bg-primary-gradient rounded-t transition-all"
+                    style={{
+                      height: `${maxMonthlySpending > 0 ? (month.total / maxMonthlySpending) * 100 : 0}%`,
+                      minHeight: month.total > 0 ? "4px" : "0px",
+                    }}
+                  />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-[var(--text-primary)] truncate">
-                      {cat.category}
-                    </span>
-                    <span className="text-sm font-medium text-[var(--text-primary)]">
-                      {fmt(cat.total)}
-                    </span>
-                  </div>
-                  <div className="h-1.5 bg-[var(--bg-hover)] rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full"
-                      style={{
-                        width: `${cat.percentage}%`,
-                        backgroundColor: getCategoryColor(cat.category),
-                      }}
-                    />
-                  </div>
-                </div>
-                <span className="text-xs text-[var(--text-dimmed)] w-12 text-right">
-                  {cat.percentage.toFixed(0)}%
+                <span className="text-[10px] sm:text-xs text-[var(--text-dimmed)] capitalize">
+                  {month.monthLabel}
+                </span>
+                <span className="text-[10px] text-[var(--text-muted)] hidden sm:block">
+                  {fmt(month.total)}
                 </span>
               </div>
             ))}
           </div>
         </div>
-      )}
+
+        {/* Spending by Category */}
+        {data.spendingByCategory.length > 0 && (
+          <div className="bg-[var(--bg-secondary)] rounded-xl sm:rounded-2xl border border-[var(--border-color)] p-4 sm:p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-emerald-500/10 rounded-lg">
+                <PieChart className="w-5 h-5 text-emerald-400" />
+              </div>
+              <h3 className="text-base sm:text-lg font-semibold text-[var(--text-primary)]">
+                Gastos por Categoria
+              </h3>
+            </div>
+
+            <div className="space-y-2">
+              {data.spendingByCategory.slice(0, 6).map((cat) => (
+                <div key={cat.category} className="flex items-center gap-3">
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-medium"
+                    style={{ backgroundColor: `${getCategoryColor(cat.category)}20`, color: getCategoryColor(cat.category) }}
+                  >
+                    {cat.category.charAt(0)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm text-[var(--text-primary)] truncate">
+                        {cat.category}
+                      </span>
+                      <span className="text-sm font-medium text-[var(--text-primary)]">
+                        {fmt(cat.total)}
+                      </span>
+                    </div>
+                    <div className="h-1.5 bg-[var(--bg-hover)] rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full"
+                        style={{
+                          width: `${cat.percentage}%`,
+                          backgroundColor: getCategoryColor(cat.category),
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <span className="text-xs text-[var(--text-dimmed)] w-12 text-right">
+                    {cat.percentage.toFixed(0)}%
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

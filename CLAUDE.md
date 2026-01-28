@@ -24,7 +24,7 @@ app/                  # App Router (pages + API routes)
   cartoes/            # Credit cards page
   investimentos/      # Investments page
   relatorios/         # Reports page
-  api/                # ~45 API routes (REST)
+  api/                # ~46 API routes (REST)
   page.tsx            # Dashboard principal
 components/           # 15 pastas, ~77 componentes
   auth/               # Auth forms
@@ -41,7 +41,7 @@ components/           # 15 pastas, ~77 componentes
   quick-transaction/  # FAB + templates
   recurring/          # Recurring expenses
   reports/            # Report generation
-  ui/                 # Base UI (buttons, inputs, collapsible, etc.)
+  ui/                 # Base UI (buttons, inputs, collapsible, modal, etc.)
 contexts/             # 5 contexts (theme, user, sidebar, preferences, appearance)
 hooks/                # use-feedback
 lib/                  # 13 utils (auth, prisma, email, pdf, excel, quotes, rates, etc.)
@@ -104,6 +104,27 @@ Ordem dos componentes:
 - Agrupamento: por dia para 1w/1m, por mes para 3m/6m/1y
 - API: `/api/wealth-evolution?period={period}`
 
+## Pagina de Cartoes (cartoes/page.tsx)
+
+Ordem dos componentes:
+1. **Header** — titulo + botoes (Atualizar, Nova Compra, Novo Cartao)
+2. **SummaryCards** — 4 cards: Limite Total, Disponivel, Fatura Atual, Proxima Fatura
+3. **View Mode Tabs** — "Todos os Cartoes" / "Por Cartao"
+4. **Grid 2 colunas:**
+   - CardList (lista de cartoes)
+   - InvoicePreviewChart (previsao de faturas)
+5. **InvoiceDetail** — detalhes da fatura (apenas em modo "Por Cartao")
+6. **CardAnalytics** — alertas + grid (Evolucao Mensal + Gastos por Categoria)
+
+### CardAnalytics
+
+- **Alertas:** pagamento proximo, fatura fechando, uso alto do limite
+- **Evolucao Mensal:** grafico de barras (2 meses anteriores + atual + 3 futuros)
+  - Meses passados: soma compras realizadas
+  - Meses futuros: total da fatura (inclui parcelas)
+  - Mostra media mensal no header
+- **Gastos por Categoria:** top 6 categorias com barras de progresso
+
 ## Theming
 
 - CSS variables em globals.css (--bg-primary, --card-bg, --text-primary, --border-color, etc.)
@@ -146,6 +167,21 @@ Os graficos do dashboard respeitam `defaultPeriod`:
 - "year" → 1 ano (agrupado por mes)
 
 Opcoes disponiveis nos graficos: **1 Semana, 30 Dias, 3 Meses, 6 Meses, 1 Ano**
+
+## Seguranca - Modo Discreto
+
+O modo discreto (`hideValues`) oculta valores financeiros com "•••••".
+
+**Comportamento ao desativar:**
+- Requer confirmacao de senha via modal
+- API: `POST /api/auth/verify-password` com `{ password }` retorna `{ valid: boolean }`
+- Apos verificar senha, sessao fica "desbloqueada" (estado React `sessionUnlocked`)
+- Na mesma sessao, pode ligar/desligar sem pedir senha novamente
+- Ao recarregar pagina ou fazer logout, volta a exigir senha
+
+**Arquivos:**
+- `src/app/conta/privacidade/page.tsx` — toggle com modal de senha
+- `src/app/api/auth/verify-password/route.ts` — validacao com bcrypt
 
 ## Variaveis de Ambiente
 
@@ -200,30 +236,39 @@ Calcula evolucao patrimonial ao longo do tempo.
 }
 ```
 
-## Tasks Pendentes
+### `/api/cards/analytics`
 
-### [IDEA] Exigir senha para desativar modo discreto
+Retorna analytics de cartoes de credito.
 
-**Objetivo:** Ao desabilitar `hideValues` em `/conta/privacidade`, exigir a senha da conta para confirmar. Isso impede que outra pessoa com acesso ao dispositivo revele os valores financeiros.
+**Retorno:**
+```typescript
+{
+  spendingByCategory: CardSpendingByCategory[],  // Gastos por categoria (ultimos 6 meses)
+  monthlySpending: CardMonthlySpending[],        // 6 meses: 2 anteriores + atual + 3 futuros
+  alerts: CardAlert[],                           // Alertas de pagamento, fechamento, uso alto
+  summary: {
+    totalCards: number,
+    totalLimit: number,
+    totalUsed: number,
+    usagePercentage: number,
+    averageMonthlySpending: number,
+    totalSpendingLast6Months: number
+  }
+}
+```
 
-**Fluxo proposto:**
-1. Usuario clica no toggle para desativar o modo discreto
-2. Abre um mini modal pedindo a senha da conta
-3. Frontend envia `POST /api/auth/verify-password` com `{ password }`
-4. API valida o hash com `bcrypt.compare()` contra `user.password` no banco
-5. Se valido: desativa `hideValues` e fecha o modal
-6. Se invalido: exibe erro "Senha incorreta" e mantem o modo discreto ativo
+**Logica de monthlySpending:**
+- Meses passados/atual: soma compras realizadas no mes
+- Meses futuros: usa `invoice.total` (inclui parcelas de compras parceladas)
 
-**Arquivos envolvidos:**
-- `src/app/conta/privacidade/page.tsx` — adicionar modal de confirmacao no toggle de hideValues
-- `src/app/api/auth/verify-password/route.ts` — nova API route (POST) que recebe `{ password }`, busca o usuario autenticado via `auth()`, compara com `bcrypt.compare()` e retorna `{ valid: boolean }`
-- `src/components/ui/` — possivel componente `PasswordConfirmModal` reutilizavel
+### `/api/auth/verify-password`
 
-**Detalhes tecnicos:**
-- Usar `bcrypt.compare(password, user.password)` server-side (nunca client-side)
-- O modal deve ter input type="password", botao confirmar e botao cancelar
-- Rate limiting opcional para evitar brute force (ex: max 5 tentativas por minuto)
-- O desbloqueio desativa hideValues normalmente via `updatePrivacy()` — sem necessidade de estado de sessao, pois o usuario pode reativar manualmente quando quiser
+Verifica senha do usuario autenticado.
+
+**Request:** `POST { password: string }`
+**Response:** `{ valid: boolean }`
+
+Usado para confirmar acoes sensiveis (ex: desativar modo discreto).
 
 ## Comandos
 

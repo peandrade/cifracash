@@ -13,14 +13,32 @@ import {
   AlertCircle,
   CheckCircle,
   Loader2,
+  Lock,
 } from "lucide-react";
 import { usePreferences } from "@/contexts";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalDescription,
+  ModalBody,
+  ModalFooter,
+} from "@/components/ui/modal";
 
 export default function PrivacidadePage() {
   const router = useRouter();
   const { privacy, updatePrivacy, isLoading, isSaving } = usePreferences();
   const [showDeleteAccount, setShowDeleteAccount] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
+
+  // Verify password modal state (for disabling hide values)
+  const [showVerifyPasswordModal, setShowVerifyPasswordModal] = useState(false);
+  const [verifyPassword, setVerifyPassword] = useState("");
+  const [verifyPasswordError, setVerifyPasswordError] = useState("");
+  const [isVerifyingPassword, setIsVerifyingPassword] = useState(false);
+  const [showVerifyPassword, setShowVerifyPassword] = useState(false);
+  const [sessionUnlocked, setSessionUnlocked] = useState(false); // Unlock for current session after password verification
 
   // Change password state
   const [currentPassword, setCurrentPassword] = useState("");
@@ -107,6 +125,68 @@ export default function PrivacidadePage() {
     setPasswordSuccess("");
   };
 
+  // Handle hide values toggle - requires password when disabling (only on first time per session)
+  const handleHideValuesToggle = () => {
+    if (privacy.hideValues) {
+      // Disabling hide values
+      if (sessionUnlocked) {
+        // Already verified password this session - no need to ask again
+        updatePrivacy({ hideValues: false });
+      } else {
+        // First time this session - require password confirmation
+        setShowVerifyPasswordModal(true);
+      }
+    } else {
+      // Enabling hide values - no password required
+      updatePrivacy({ hideValues: true });
+    }
+  };
+
+  const handleVerifyPassword = async () => {
+    if (!verifyPassword) {
+      setVerifyPasswordError("Digite sua senha");
+      return;
+    }
+
+    setIsVerifyingPassword(true);
+    setVerifyPasswordError("");
+
+    try {
+      const res = await fetch("/api/auth/verify-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: verifyPassword }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setVerifyPasswordError(data.error || "Erro ao verificar senha");
+        return;
+      }
+
+      if (data.valid) {
+        // Password is correct - disable hide values and unlock session
+        setSessionUnlocked(true);
+        updatePrivacy({ hideValues: false });
+        closeVerifyPasswordModal();
+      } else {
+        setVerifyPasswordError("Senha incorreta");
+      }
+    } catch {
+      setVerifyPasswordError("Erro ao verificar senha. Tente novamente.");
+    } finally {
+      setIsVerifyingPassword(false);
+    }
+  };
+
+  const closeVerifyPasswordModal = () => {
+    setShowVerifyPasswordModal(false);
+    setVerifyPassword("");
+    setVerifyPasswordError("");
+    setShowVerifyPassword(false);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--bg-primary)" }}>
@@ -172,7 +252,7 @@ export default function PrivacidadePage() {
                 </div>
               </div>
               <button
-                onClick={() => updatePrivacy({ hideValues: !privacy.hideValues })}
+                onClick={handleHideValuesToggle}
                 className={`relative w-14 h-8 rounded-full transition-colors ${
                   privacy.hideValues ? "bg-violet-500" : "bg-[var(--bg-hover)]"
                 }`}
@@ -455,6 +535,74 @@ export default function PrivacidadePage() {
           </div>
         </div>
       </div>
+
+      {/* Modal de verificação de senha para desativar modo discreto */}
+      <Modal open={showVerifyPasswordModal} onOpenChange={(open) => !open && closeVerifyPasswordModal()}>
+        <ModalContent className="sm:max-w-md">
+          <ModalHeader>
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-xl bg-violet-500/10">
+                <Lock className="w-5 h-5 text-violet-400" />
+              </div>
+              <div>
+                <ModalTitle>Confirmar senha</ModalTitle>
+                <ModalDescription>
+                  Digite sua senha para desativar o modo discreto
+                </ModalDescription>
+              </div>
+            </div>
+          </ModalHeader>
+          <ModalBody>
+            {verifyPasswordError && (
+              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-2 mb-4">
+                <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+                <span className="text-red-500 text-sm">{verifyPasswordError}</span>
+              </div>
+            )}
+            <div className="relative">
+              <input
+                type={showVerifyPassword ? "text" : "password"}
+                placeholder="Digite sua senha"
+                value={verifyPassword}
+                onChange={(e) => setVerifyPassword(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleVerifyPassword()}
+                autoFocus
+                className="w-full p-4 pr-12 rounded-xl bg-[var(--bg-hover)] border border-[var(--border-color)] text-[var(--text-primary)] placeholder:text-[var(--text-dimmed)] focus:outline-none focus:border-violet-500"
+              />
+              <button
+                type="button"
+                onClick={() => setShowVerifyPassword(!showVerifyPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:opacity-80"
+              >
+                {showVerifyPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <button
+              onClick={closeVerifyPasswordModal}
+              disabled={isVerifyingPassword}
+              className="px-4 py-2.5 rounded-xl border border-[var(--border-color)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-all disabled:opacity-50"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleVerifyPassword}
+              disabled={isVerifyingPassword || !verifyPassword}
+              className="px-4 py-2.5 rounded-xl bg-violet-500 text-white hover:bg-violet-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              {isVerifyingPassword ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Verificando...
+                </>
+              ) : (
+                "Confirmar"
+              )}
+            </button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }

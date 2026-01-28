@@ -14,7 +14,6 @@ import {
   PurchaseModal,
 } from "@/components/cards";
 import { CardAnalytics } from "@/components/cards/card-analytics";
-import { formatCurrency } from "@/lib/utils";
 import type {
   CreditCard as CardType,
   CreateCardInput,
@@ -140,16 +139,6 @@ function CartoesContent() {
     setSelectedInvoice(invoice);
   };
 
-  const getNextInvoiceWithValue = (card: CardType) => {
-    const invoices = card.invoices || [];
-
-    const sorted = [...invoices].sort((a, b) => {
-      if (a.year !== b.year) return a.year - b.year;
-      return a.month - b.month;
-    });
-    return sorted.find((inv) => inv.total > 0 && inv.status !== "paid");
-  };
-
   if (isLoading && cards.length === 0) {
     return (
       <div
@@ -218,10 +207,10 @@ function CartoesContent() {
           </div>
         </header>
 
-        {}
+        {/* Summary Cards */}
         <SummaryCards summary={summary} />
 
-        {}
+        {/* View Mode Tabs */}
         <div className="flex items-center gap-2 mb-6">
           <button
             onClick={() => setViewMode("all")}
@@ -283,95 +272,6 @@ function CartoesContent() {
             onDeletePurchase={handleDeletePurchase}
             isLoading={isLoading}
           />
-        )}
-
-        {}
-        {viewMode === "all" && (
-          <div
-            className="backdrop-blur rounded-2xl p-6 transition-colors duration-300"
-            style={{
-              backgroundColor: "var(--card-bg)",
-              borderWidth: "1px",
-              borderStyle: "solid",
-              borderColor: "var(--border-color)"
-            }}
-          >
-            <h3 className="text-lg font-semibold mb-4" style={{ color: "var(--text-primary)" }}>
-              Resumo de Todos os Cartões
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {cards.map((card) => {
-
-                const nextInvoice = getNextInvoiceWithValue(card);
-                const invoiceTotal = nextInvoice?.total || 0;
-                const usagePercent = card.limit > 0 ? (invoiceTotal / card.limit) * 100 : 0;
-
-                return (
-                  <div
-                    key={card.id}
-                    onClick={() => handleSelectCard(card)}
-                    className="p-4 rounded-xl cursor-pointer transition-all"
-                    style={{ backgroundColor: "var(--bg-hover)" }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--bg-hover-strong)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "var(--bg-hover)"; }}
-                  >
-                    <div className="flex items-center gap-3 mb-3">
-                      <div
-                        className="w-10 h-7 rounded-md flex items-center justify-center"
-                        style={{ backgroundColor: card.color }}
-                      >
-                        <CreditCard className="w-4 h-4 text-white" />
-                      </div>
-                      <div>
-                        <p className="font-medium" style={{ color: "var(--text-primary)" }}>{card.name}</p>
-                        {card.lastDigits && (
-                          <p className="text-xs" style={{ color: "var(--text-dimmed)" }}>•••• {card.lastDigits}</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-end mb-2">
-                      <div>
-                        <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-                          {nextInvoice
-                            ? `Fatura ${nextInvoice.month}/${nextInvoice.year}`
-                            : "Próxima Fatura"}
-                        </p>
-                        <p className="font-semibold text-lg" style={{ color: "var(--text-primary)" }}>
-                          {formatCurrency(invoiceTotal)}
-                        </p>
-                      </div>
-                      <p className="text-xs" style={{ color: "var(--text-dimmed)" }}>
-                        Vence dia {card.dueDay}
-                      </p>
-                    </div>
-
-                    {}
-                    {card.limit > 0 && (
-                      <div className="mt-2">
-                        <div className="flex justify-between text-xs mb-1" style={{ color: "var(--text-dimmed)" }}>
-                          <span>Limite: {formatCurrency(card.limit)}</span>
-                          <span>{usagePercent.toFixed(0)}%</span>
-                        </div>
-                        <div className="w-full rounded-full h-1.5" style={{ backgroundColor: "var(--bg-hover)" }}>
-                          <div
-                            className="h-full rounded-full transition-all"
-                            style={{
-                              width: `${Math.min(usagePercent, 100)}%`,
-                              backgroundColor: usagePercent > 80
-                                ? "#EF4444"
-                                : usagePercent > 50
-                                  ? "#F59E0B"
-                                  : card.color,
-                            }}
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
         )}
 
         {}

@@ -51,7 +51,7 @@ export class CardRepository extends BaseRepository {
   async findById(id: string, userId: string, includeInvoices = false) {
     const result = await this.db.creditCard.findFirst({
       where: { id, userId },
-      include: includeInvoices ? { invoices: { orderBy: { year: "desc", month: "desc" } } } : undefined,
+      include: includeInvoices ? { invoices: { orderBy: [{ year: "desc" }, { month: "desc" }] } } : undefined,
     });
 
     if (!result) return null;
@@ -72,7 +72,7 @@ export class CardRepository extends BaseRepository {
 
     const results = await this.db.creditCard.findMany({
       where,
-      include: includeInvoices ? { invoices: { orderBy: { year: "desc", month: "desc" } } } : undefined,
+      include: includeInvoices ? { invoices: { orderBy: [{ year: "desc" }, { month: "desc" }] } } : undefined,
       orderBy: { createdAt: "desc" },
     });
 
@@ -100,7 +100,7 @@ export class CardRepository extends BaseRepository {
 
     const cards = await this.db.creditCard.findMany({
       where,
-      include: includeInvoices ? { invoices: { orderBy: { year: "desc", month: "desc" } } } : undefined,
+      include: includeInvoices ? { invoices: { orderBy: [{ year: "desc" }, { month: "desc" }] } } : undefined,
       orderBy: { createdAt: "desc" },
       skip,
       take,
@@ -223,7 +223,7 @@ export class CardRepository extends BaseRepository {
       where: { id, userId },
       include: {
         invoices: {
-          orderBy: { year: "desc", month: "desc" },
+          orderBy: [{ year: "desc" }, { month: "desc" }],
           include: { purchases: true },
         },
       },

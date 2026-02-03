@@ -30,8 +30,8 @@ export async function POST(request: NextRequest) {
     // Use repository for proper encryption
     const card = await cardRepository.create({
       name,
-      lastDigits: lastDigits || undefined,
-      limit: limit || 0,
+      lastDigits,
+      limit,
       closingDay,
       dueDay,
       color: color || "#8B5CF6",

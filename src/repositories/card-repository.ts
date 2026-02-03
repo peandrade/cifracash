@@ -45,7 +45,12 @@ export class CardRepository extends BaseRepository {
 
     return this.db.creditCard.findMany({
       where,
-      include: includeInvoices ? { invoices: { orderBy: [{ year: "desc" }, { month: "desc" }] } } : undefined,
+      include: includeInvoices ? {
+        invoices: {
+          orderBy: [{ year: "desc" }, { month: "desc" }],
+          include: { purchases: true }
+        }
+      } : undefined,
       orderBy: { createdAt: "desc" },
     });
   }
@@ -88,7 +93,7 @@ export class CardRepository extends BaseRepository {
   async create(data: {
     userId: string;
     name: string;
-    lastDigits?: string;
+    lastDigits: string;
     limit: number;
     closingDay?: number;
     dueDay?: number;

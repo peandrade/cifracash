@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { cachedFetch, getCached, invalidateCache } from "@/lib/fetch-cache";
+import { cachedFetch, getCached, invalidateCache, clearCache } from "@/lib/fetch-cache";
 
 export interface UseFetchOptions {
   /**
@@ -26,7 +26,7 @@ export interface UseFetchReturn<T> {
   data: T | null;
   isLoading: boolean;
   error: string | null;
-  refresh: () => Promise<void>;
+  refresh: (skipCache?: boolean) => Promise<void>;
 }
 
 /**
@@ -81,6 +81,11 @@ export function useFetch<T>(
 
     try {
       const actualUrl = getUrl();
+
+      // Clear cache for this URL if skipping cache
+      if (skipCache) {
+        clearCache(`GET:${actualUrl}`);
+      }
 
       // Use cached fetch with TTL (or 0 to skip cache)
       const result = await cachedFetch<T>(actualUrl, {}, skipCache ? 0 : cacheTtl);

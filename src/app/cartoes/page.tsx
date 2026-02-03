@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { Plus, RefreshCw, ShoppingCart, CreditCard, Layers, AlertTriangle } from "lucide-react";
 import { useCardStore } from "@/store/card-store";
-import { useFeedback, useCardsAnalytics } from "@/hooks";
+import { useFeedback } from "@/hooks";
 import {
   SummaryCards,
   CardList,
@@ -37,8 +37,9 @@ function CartoesContent() {
   const [isAlertsOpen, setIsAlertsOpen] = useState(false);
   const alertsRef = useRef<HTMLDivElement>(null);
 
-  // Use cards analytics hook
-  const { data: analyticsData } = useCardsAnalytics();
+  // Get analytics from store (updates automatically)
+  const getAnalytics = useCardStore((state) => state.getAnalytics);
+  const analyticsData = getAnalytics();
 
   const {
     cards,

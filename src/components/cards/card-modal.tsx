@@ -25,11 +25,11 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!name || !closingDay || !dueDay) return;
+    if (!name || !lastDigits || lastDigits.length !== 4 || !limit || parseFloat(limit) <= 0 || !closingDay || !dueDay) return;
 
     await onSave({
       name,
-      lastDigits: lastDigits || undefined,
+      lastDigits,
       limit: limit ? parseFloat(limit) : 0,
       closingDay: parseInt(closingDay),
       dueDay: parseInt(dueDay),
@@ -92,7 +92,7 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
           {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
-              Últimos 4 dígitos (opcional)
+              Últimos 4 dígitos *
             </label>
             <input
               type="text"
@@ -100,6 +100,7 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
               onChange={(e) => setLastDigits(e.target.value.replace(/\D/g, "").slice(0, 4))}
               placeholder="0000"
               maxLength={4}
+              required
               className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 px-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)]"
             />
           </div>
@@ -107,7 +108,7 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
           {}
           <div>
             <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
-              Limite (opcional)
+              Limite *
             </label>
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-dimmed)]">R$</span>
@@ -115,9 +116,16 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
                 value={limit}
                 onChange={setLimit}
                 placeholder="0,00"
-                className="w-full bg-[var(--bg-hover)] border border-[var(--border-color-strong)] rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:border-primary-color focus:ring-1 focus:ring-[var(--color-primary)]"
+                className={`w-full bg-[var(--bg-hover)] border rounded-xl py-3 pl-12 pr-4 text-[var(--text-primary)] placeholder-[var(--text-dimmed)] focus:outline-none focus:ring-1 ${
+                  limit !== "" && parseFloat(limit) <= 0
+                    ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                    : "border-[var(--border-color-strong)] focus:border-primary-color focus:ring-[var(--color-primary)]"
+                }`}
               />
             </div>
+            {limit !== "" && parseFloat(limit) <= 0 && (
+              <p className="text-red-500 text-sm mt-1">O limite deve ser maior que 0</p>
+            )}
           </div>
 
           {}
@@ -210,7 +218,7 @@ export function CardModal({ isOpen, onClose, onSave, isSubmitting }: CardModalPr
             </button>
             <button
               type="submit"
-              disabled={isSubmitting || !name}
+              disabled={isSubmitting || !name || lastDigits.length !== 4 || !limit || parseFloat(limit) <= 0}
               className="flex-1 py-3 px-4 rounded-xl font-medium text-white transition-all shadow-lg disabled:opacity-50"
               style={{ backgroundColor: color }}
             >

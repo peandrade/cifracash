@@ -169,7 +169,7 @@ export function WealthEvolutionChart() {
         </div>
         <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
           <button
-            onClick={refresh}
+            onClick={() => refresh()}
             disabled={isLoading}
             className="p-1.5 sm:p-2 hover:bg-white/10 rounded-lg transition-colors"
             title="Atualizar"

@@ -178,9 +178,8 @@ export const updateRecurringExpenseSchema = createRecurringExpenseSchema.partial
 
 export const createCreditCardSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
-  lastDigits: z.string().length(4, "Últimos 4 dígitos são obrigatórios"),
-  brand: z.string().min(1, "Bandeira é obrigatória"),
-  limit: z.number().positive("Limite deve ser positivo"),
+  lastDigits: z.string().length(4, "Informe os 4 últimos dígitos do cartão"),
+  limit: z.number().positive("O limite deve ser maior que 0"),
   closingDay: z.number().min(1).max(31, "Dia de fechamento deve estar entre 1 e 31"),
   dueDay: z.number().min(1).max(31, "Dia de vencimento deve estar entre 1 e 31"),
   color: z.string().optional(),

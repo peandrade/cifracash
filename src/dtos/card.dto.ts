@@ -14,7 +14,6 @@
 export interface CreateCardRequest {
   name: string;
   lastDigits: string;
-  brand: string;
   limit: number;
   closingDay: number;
   dueDay: number;

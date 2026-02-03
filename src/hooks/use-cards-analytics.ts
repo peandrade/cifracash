@@ -13,8 +13,14 @@ export type {
   CardsSummary,
 } from "@/types/api-responses";
 
-export function useCardsAnalytics(): UseFetchReturn<CardsAnalyticsData> {
+interface UseCardsAnalyticsOptions {
+  enabled?: boolean;
+}
+
+export function useCardsAnalytics(options: UseCardsAnalyticsOptions = {}): UseFetchReturn<CardsAnalyticsData> {
+  const { enabled = true } = options;
   return useFetch<CardsAnalyticsData>("/api/cards/analytics", {
     errorMessage: "Erro ao buscar analytics de cartoes",
+    immediate: enabled,
   });
 }

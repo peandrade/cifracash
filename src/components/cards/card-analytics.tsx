@@ -2,7 +2,6 @@
 
 import {
   TrendingUp,
-  RefreshCw,
   PieChart,
   Clock,
   AlertCircle,
@@ -11,36 +10,28 @@ import {
 import { formatCurrency } from "@/lib/utils";
 import { getCategoryColor } from "@/lib/constants";
 import { usePreferences } from "@/contexts";
-import { useCardsAnalytics } from "@/hooks";
+import { useCardStore } from "@/store/card-store";
 import type {
   CardSpendingByCategory,
   CardMonthlySpending,
   CardAlert,
-  CardsAnalyticsData,
-} from "@/hooks";
+  CardAnalyticsData,
+} from "@/store/card-store";
 
 const HIDDEN = "•••••";
 
 // Re-export types for backwards compatibility
-export type { CardSpendingByCategory, CardMonthlySpending, CardAlert };
-export type CardAnalyticsData = CardsAnalyticsData;
+export type { CardSpendingByCategory, CardMonthlySpending, CardAlert, CardAnalyticsData };
 
 export function CardAnalytics() {
-  const { data, isLoading } = useCardsAnalytics();
+  // Get analytics directly from store (updates automatically like InvoicePreviewChart)
+  const getAnalytics = useCardStore((state) => state.getAnalytics);
+  const data = getAnalytics();
+
   const { privacy } = usePreferences();
   const fmt = (v: number) => (privacy.hideValues ? HIDDEN : formatCurrency(v));
 
-  if (isLoading) {
-    return (
-      <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)] p-6">
-        <div className="flex items-center justify-center py-8">
-          <RefreshCw className="w-6 h-6 text-[var(--text-dimmed)] animate-spin" />
-        </div>
-      </div>
-    );
-  }
-
-  if (!data) return null;
+  if (!data || data.monthlySpending.length === 0) return null;
 
   const maxMonthlySpending = Math.max(...data.monthlySpending.map((m) => m.total));
 

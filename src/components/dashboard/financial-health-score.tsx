@@ -90,7 +90,7 @@ export function FinancialHealthScore() {
             </div>
           </div>
           <button
-            onClick={refresh}
+            onClick={() => refresh()}
             className="p-2 hover:bg-white/20 rounded-lg transition-colors"
             title="Atualizar"
             aria-label="Atualizar score financeiro"

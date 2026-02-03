@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import {
   decryptRecord,
   encryptRecord,
@@ -10,6 +10,57 @@ import {
 const globalForPrisma = globalThis as unknown as {
   prisma: ReturnType<typeof createPrismaClient> | undefined;
 };
+
+/**
+ * Retry configuration for database operations.
+ */
+const RETRY_CONFIG = {
+  maxRetries: 3,
+  baseDelay: 100, // ms
+  retryableCodes: ["P1017", "P2024", "P1001", "P1002", "P1008", "P1011"],
+};
+
+/**
+ * Check if an error is retryable (connection issues).
+ */
+function isRetryableError(error: unknown): boolean {
+  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    return RETRY_CONFIG.retryableCodes.includes(error.code);
+  }
+  if (error instanceof Prisma.PrismaClientInitializationError) {
+    return true;
+  }
+  // Check for connection reset errors
+  if (error instanceof Error) {
+    const message = error.message.toLowerCase();
+    return (
+      message.includes("connection") ||
+      message.includes("closed") ||
+      message.includes("reset") ||
+      message.includes("timeout")
+    );
+  }
+  return false;
+}
+
+/**
+ * Execute a query with automatic retry on connection errors.
+ */
+async function withRetry<T>(
+  operation: () => Promise<T>,
+  retries = RETRY_CONFIG.maxRetries
+): Promise<T> {
+  try {
+    return await operation();
+  } catch (error) {
+    if (retries > 0 && isRetryableError(error)) {
+      const delay = RETRY_CONFIG.baseDelay * (RETRY_CONFIG.maxRetries - retries + 1);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      return withRetry(operation, retries - 1);
+    }
+    throw error;
+  }
+}
 
 /**
  * Map Prisma model names to our EncryptedModel type.
@@ -133,35 +184,40 @@ function encryptData(data: any, modelName: string, isUpdate = false): any {
 function createPrismaClient() {
   const baseClient = new PrismaClient({
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL,
+      },
+    },
   });
 
   return baseClient.$extends({
     query: {
       $allModels: {
         async findFirst({ model, args, query }) {
-          const result = await query(args);
+          const result = await withRetry(() => query(args));
           return decryptResult(result, model);
         },
         async findUnique({ model, args, query }) {
-          const result = await query(args);
+          const result = await withRetry(() => query(args));
           return decryptResult(result, model);
         },
         async findMany({ model, args, query }) {
-          const result = await query(args);
+          const result = await withRetry(() => query(args));
           return decryptResult(result, model);
         },
         async create({ model, args, query }) {
           if (args.data) {
             args.data = encryptData(args.data, model);
           }
-          const result = await query(args);
+          const result = await withRetry(() => query(args));
           return decryptResult(result, model);
         },
         async update({ model, args, query }) {
           if (args.data) {
             args.data = encryptData(args.data, model, true);
           }
-          const result = await query(args);
+          const result = await withRetry(() => query(args));
           return decryptResult(result, model);
         },
         async upsert({ model, args, query }) {
@@ -171,7 +227,7 @@ function createPrismaClient() {
           if (args.update) {
             args.update = encryptData(args.update, model, true);
           }
-          const result = await query(args);
+          const result = await withRetry(() => query(args));
           return decryptResult(result, model);
         },
         async createMany({ model, args, query }) {
@@ -182,13 +238,28 @@ function createPrismaClient() {
               args.data = encryptData(args.data, model);
             }
           }
-          return query(args);
+          return withRetry(() => query(args));
         },
         async updateMany({ model, args, query }) {
           if (args.data) {
             args.data = encryptData(args.data, model, true);
           }
-          return query(args);
+          return withRetry(() => query(args));
+        },
+        async delete({ args, query }) {
+          return withRetry(() => query(args));
+        },
+        async deleteMany({ args, query }) {
+          return withRetry(() => query(args));
+        },
+        async count({ args, query }) {
+          return withRetry(() => query(args));
+        },
+        async aggregate({ args, query }) {
+          return withRetry(() => query(args));
+        },
+        async groupBy({ args, query }) {
+          return withRetry(() => query(args));
         },
       },
     },

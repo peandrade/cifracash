@@ -19,6 +19,50 @@ interface PurchaseResponse {
   card: CreditCard;
 }
 
+// Analytics types (calculated locally)
+export interface CardSpendingByCategory {
+  category: string;
+  total: number;
+  percentage: number;
+  transactionCount: number;
+}
+
+export interface CardMonthlySpending {
+  month: string;
+  monthLabel: string;
+  total: number;
+  cardBreakdown: {
+    cardId: string;
+    cardName: string;
+    cardColor: string;
+    total: number;
+  }[];
+}
+
+export interface CardAlert {
+  type: "payment_due" | "high_usage" | "closing_soon";
+  cardId: string;
+  cardName: string;
+  cardColor: string;
+  message: string;
+  value?: number;
+  daysUntil?: number;
+}
+
+export interface CardAnalyticsData {
+  spendingByCategory: CardSpendingByCategory[];
+  monthlySpending: CardMonthlySpending[];
+  alerts: CardAlert[];
+  summary: {
+    totalCards: number;
+    totalLimit: number;
+    totalUsed: number;
+    usagePercentage: number;
+    averageMonthlySpending: number;
+    totalSpendingLast6Months: number;
+  };
+}
+
 interface CardStore {
   // State
   cards: CreditCard[];
@@ -45,6 +89,7 @@ interface CardStore {
   getAllCardsInvoicePreview: (months?: number) => InvoicePreview[];
   getCurrentInvoice: (cardId: string) => Invoice | null;
   getCardInvoices: (cardId: string) => Invoice[];
+  getAnalytics: () => CardAnalyticsData;
 }
 
 // ============================================
@@ -426,5 +471,208 @@ export const useCardStore = create<CardStore>((set, get) => ({
       if (a.year !== b.year) return a.year - b.year;
       return a.month - b.month;
     });
+  },
+
+  getAnalytics: (): CardAnalyticsData => {
+    const { cards } = get();
+    const now = new Date();
+    const currentDay = now.getDate();
+    const currentMonth = now.getMonth() + 1;
+    const currentYear = now.getFullYear();
+
+    // Collect all purchases from all invoices
+    const allPurchases: { category: string; value: number; date: Date; cardId: string; cardName: string; cardColor: string }[] = [];
+    const unpaidByCard: Record<string, number> = {};
+
+    cards.forEach((card) => {
+      card.invoices?.forEach((invoice) => {
+        // Track unpaid amounts
+        if (invoice.status !== "paid") {
+          const debt = invoice.total - (invoice.paidAmount || 0);
+          unpaidByCard[card.id] = (unpaidByCard[card.id] || 0) + debt;
+        }
+
+        // Collect purchases
+        invoice.purchases?.forEach((purchase) => {
+          allPurchases.push({
+            category: purchase.category,
+            value: purchase.value,
+            date: new Date(purchase.date),
+            cardId: card.id,
+            cardName: card.name,
+            cardColor: card.color,
+          });
+        });
+      });
+    });
+
+    // === SPENDING BY CATEGORY (last 6 months) ===
+    const sixMonthsAgo = new Date(currentYear, currentMonth - 7, 1);
+    const recentPurchases = allPurchases.filter((p) => p.date >= sixMonthsAgo);
+
+    const categoryAggregates: Record<string, { total: number; count: number }> = {};
+    recentPurchases.forEach((p) => {
+      if (!categoryAggregates[p.category]) {
+        categoryAggregates[p.category] = { total: 0, count: 0 };
+      }
+      categoryAggregates[p.category].total += p.value;
+      categoryAggregates[p.category].count += 1;
+    });
+
+    const totalCategorySpending = Object.values(categoryAggregates).reduce((sum, cat) => sum + cat.total, 0);
+
+    const spendingByCategory: CardSpendingByCategory[] = Object.entries(categoryAggregates)
+      .map(([category, data]) => ({
+        category,
+        total: data.total,
+        percentage: totalCategorySpending > 0 ? (data.total / totalCategorySpending) * 100 : 0,
+        transactionCount: data.count,
+      }))
+      .sort((a, b) => b.total - a.total);
+
+    // === MONTHLY SPENDING (2 months back + current + 3 future) ===
+    const monthlySpending: CardMonthlySpending[] = [];
+    const monthNames = ["", "jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+
+    for (let i = -2; i <= 3; i++) {
+      let month = currentMonth + i;
+      let year = currentYear;
+
+      while (month <= 0) {
+        month += 12;
+        year -= 1;
+      }
+      while (month > 12) {
+        month -= 12;
+        year += 1;
+      }
+
+      const monthKey = `${year}-${String(month).padStart(2, "0")}`;
+      const monthLabel = monthNames[month];
+
+      const cardBreakdown: CardMonthlySpending["cardBreakdown"] = [];
+
+      cards.forEach((card) => {
+        let cardTotal = 0;
+
+        if (i <= 0) {
+          // Past and current: sum purchases in this month
+          card.invoices?.forEach((invoice) => {
+            invoice.purchases?.forEach((purchase) => {
+              const purchaseDate = new Date(purchase.date);
+              if (purchaseDate.getMonth() + 1 === month && purchaseDate.getFullYear() === year) {
+                cardTotal += purchase.value;
+              }
+            });
+          });
+        } else {
+          // Future: use invoice total
+          const invoice = card.invoices?.find((inv) => inv.month === month && inv.year === year);
+          if (invoice) {
+            cardTotal = invoice.total;
+          }
+        }
+
+        if (cardTotal > 0) {
+          cardBreakdown.push({
+            cardId: card.id,
+            cardName: card.name,
+            cardColor: card.color,
+            total: cardTotal,
+          });
+        }
+      });
+
+      monthlySpending.push({
+        month: monthKey,
+        monthLabel,
+        total: cardBreakdown.reduce((sum, c) => sum + c.total, 0),
+        cardBreakdown,
+      });
+    }
+
+    // === ALERTS ===
+    const alerts: CardAlert[] = [];
+
+    cards.forEach((card) => {
+      // Find current month invoice
+      const currentInvoice = card.invoices?.find(
+        (inv) => inv.month === currentMonth && inv.year === currentYear
+      );
+
+      // Payment due alert
+      if (currentInvoice && currentInvoice.status !== "paid") {
+        const dueDate = new Date(currentInvoice.dueDate);
+        const daysUntilDue = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+        if (daysUntilDue >= 0 && daysUntilDue <= 5 && currentInvoice.total > (currentInvoice.paidAmount || 0)) {
+          alerts.push({
+            type: "payment_due",
+            cardId: card.id,
+            cardName: card.name,
+            cardColor: card.color,
+            message: daysUntilDue === 0 ? "Fatura vence HOJE!" : `Fatura vence em ${daysUntilDue} dia${daysUntilDue !== 1 ? "s" : ""}`,
+            value: currentInvoice.total - (currentInvoice.paidAmount || 0),
+            daysUntil: daysUntilDue,
+          });
+        }
+      }
+
+      // Closing soon alert
+      const daysUntilClosing = card.closingDay >= currentDay
+        ? card.closingDay - currentDay
+        : 30 - currentDay + card.closingDay;
+
+      if (daysUntilClosing <= 3) {
+        alerts.push({
+          type: "closing_soon",
+          cardId: card.id,
+          cardName: card.name,
+          cardColor: card.color,
+          message: daysUntilClosing === 0 ? "Fatura fecha HOJE!" : `Fatura fecha em ${daysUntilClosing} dia${daysUntilClosing !== 1 ? "s" : ""}`,
+          daysUntil: daysUntilClosing,
+        });
+      }
+
+      // High usage alert
+      const usedLimit = unpaidByCard[card.id] || 0;
+      const usagePercent = card.limit > 0 ? (usedLimit / card.limit) * 100 : 0;
+
+      if (usagePercent >= 80) {
+        alerts.push({
+          type: "high_usage",
+          cardId: card.id,
+          cardName: card.name,
+          cardColor: card.color,
+          message: `Uso do limite em ${usagePercent.toFixed(0)}%`,
+          value: usedLimit,
+        });
+      }
+    });
+
+    // Sort alerts by priority
+    alerts.sort((a, b) => {
+      const priority = { payment_due: 0, closing_soon: 1, high_usage: 2 };
+      return priority[a.type] - priority[b.type];
+    });
+
+    // === SUMMARY ===
+    const totalLimit = cards.reduce((sum, card) => sum + card.limit, 0);
+    const totalUsed = Object.values(unpaidByCard).reduce((sum, debt) => sum + debt, 0);
+    const averageMonthlySpending = monthlySpending.reduce((sum, m) => sum + m.total, 0) / monthlySpending.length;
+
+    return {
+      spendingByCategory,
+      monthlySpending,
+      alerts,
+      summary: {
+        totalCards: cards.length,
+        totalLimit,
+        totalUsed,
+        usagePercentage: totalLimit > 0 ? (totalUsed / totalLimit) * 100 : 0,
+        averageMonthlySpending,
+        totalSpendingLast6Months: totalCategorySpending,
+      },
+    };
   },
 }));

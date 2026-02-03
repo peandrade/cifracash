@@ -51,8 +51,8 @@ export interface Purchase {
 
 export interface CreateCardInput {
   name: string;
-  lastDigits?: string;
-  limit?: number;
+  lastDigits: string;
+  limit: number;
   closingDay: number;
   dueDay: number;
   color?: string;

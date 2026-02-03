@@ -58,6 +58,7 @@ export function setCache<T>(key: string, data: T, ttl: number = DEFAULT_TTL): vo
 export function clearCache(pattern?: string): void {
   if (!pattern) {
     cache.clear();
+    inFlightRequests.clear();
     return;
   }
 
@@ -67,7 +68,10 @@ export function clearCache(pattern?: string): void {
       keysToDelete.push(key);
     }
   });
-  keysToDelete.forEach((key) => cache.delete(key));
+  keysToDelete.forEach((key) => {
+    cache.delete(key);
+    inFlightRequests.delete(key);
+  });
 }
 
 /**

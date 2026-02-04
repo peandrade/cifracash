@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import {
   Wallet,
@@ -10,12 +11,14 @@ import {
   ArrowDownRight,
   ChevronRight,
   PiggyBank,
+  Eye,
   EyeOff,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { usePreferences } from "@/contexts";
 import { useDashboardSummary } from "@/hooks";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SetupPinModal, VerifyPinModal } from "@/components/privacy";
 
 // Local interface for the component's expected data shape
 interface DashboardSummary {
@@ -53,10 +56,33 @@ interface DashboardSummary {
 
 export function QuickStats() {
   const { data: hookData, isLoading } = useDashboardSummary();
-  const { privacy } = usePreferences();
+  const { privacy, toggleHideValues, setSessionUnlocked, updatePrivacy, refreshPinStatus } = usePreferences();
+  const [showSetupPinModal, setShowSetupPinModal] = useState(false);
+  const [showVerifyPinModal, setShowVerifyPinModal] = useState(false);
 
   // Cast to local interface (API returns compatible structure)
   const data = hookData as unknown as DashboardSummary | null;
+
+  const handleToggleVisibility = () => {
+    const result = toggleHideValues();
+    if (result.needsSetupPin) {
+      setShowSetupPinModal(true);
+    } else if (result.needsPin) {
+      setShowVerifyPinModal(true);
+    }
+  };
+
+  const handlePinSetupSuccess = async () => {
+    await refreshPinStatus();
+    updatePrivacy({ hideValues: true });
+    setShowSetupPinModal(false);
+  };
+
+  const handlePinVerified = () => {
+    setSessionUnlocked(true);
+    updatePrivacy({ hideValues: false });
+    setShowVerifyPinModal(false);
+  };
 
   if (isLoading) {
     return (
@@ -142,14 +168,18 @@ export function QuickStats() {
             <div className="p-2 sm:p-2 rounded-lg bg-primary-medium flex-shrink-0">
               <PiggyBank className="w-5 h-5 sm:w-5 sm:h-5 text-primary-color" />
             </div>
-            {privacy.hideValues && (
-              <div
-                className="p-1.5 rounded-lg flex-shrink-0"
-                title="Modo discreto ativo"
-              >
+            <button
+              onClick={handleToggleVisibility}
+              className="p-1.5 rounded-lg flex-shrink-0 hover:bg-white/10 transition-colors"
+              title={privacy.hideValues ? "Mostrar valores" : "Ocultar valores"}
+              aria-label={privacy.hideValues ? "Mostrar valores" : "Ocultar valores"}
+            >
+              {privacy.hideValues ? (
                 <EyeOff className="w-4 h-4 text-[var(--text-muted)]" />
-              </div>
-            )}
+              ) : (
+                <Eye className="w-4 h-4 text-[var(--text-muted)]" />
+              )}
+            </button>
           </div>
           <p className="text-xs sm:text-sm text-[var(--text-muted)] mb-1 truncate">Patrimônio Total</p>
           <p className="text-lg sm:text-xl font-bold text-[var(--text-primary)] truncate">
@@ -219,6 +249,20 @@ export function QuickStats() {
           );
         })}
       </div>
+
+      {/* Modal de configuração de PIN */}
+      <SetupPinModal
+        open={showSetupPinModal}
+        onClose={() => setShowSetupPinModal(false)}
+        onSuccess={handlePinSetupSuccess}
+      />
+
+      {/* Modal de verificação de PIN */}
+      <VerifyPinModal
+        open={showVerifyPinModal}
+        onClose={() => setShowVerifyPinModal(false)}
+        onVerified={handlePinVerified}
+      />
     </div>
   );
 }

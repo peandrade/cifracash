@@ -28,7 +28,12 @@ export class CardRepository extends BaseRepository {
   async findById(id: string, userId: string, includeInvoices = false) {
     return this.db.creditCard.findFirst({
       where: { id, userId },
-      include: includeInvoices ? { invoices: { orderBy: [{ year: "desc" }, { month: "desc" }] } } : undefined,
+      include: includeInvoices ? {
+        invoices: {
+          orderBy: [{ year: "desc" }, { month: "desc" }],
+          include: { purchases: true }
+        }
+      } : undefined,
     });
   }
 

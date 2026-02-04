@@ -33,9 +33,14 @@ interface PreferencesContextType {
   privacy: PrivacyPreferences;
   isLoading: boolean;
   isSaving: boolean;
+  sessionUnlocked: boolean;
+  hasPin: boolean;
   updateGeneral: (updated: Partial<GeneralPreferences>) => Promise<void>;
   updateNotifications: (updated: Partial<NotificationPreferences>) => Promise<void>;
   updatePrivacy: (updated: Partial<PrivacyPreferences>) => Promise<void>;
+  setSessionUnlocked: (unlocked: boolean) => void;
+  toggleHideValues: () => { needsPin: boolean; needsSetupPin: boolean };
+  refreshPinStatus: () => Promise<void>;
 }
 
 const defaultGeneral: GeneralPreferences = {
@@ -71,6 +76,25 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
   const [privacy, setPrivacy] = useState<PrivacyPreferences>(defaultPrivacy);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [sessionUnlocked, setSessionUnlocked] = useState(false);
+  const [hasPin, setHasPin] = useState(false);
+
+  const fetchPinStatus = useCallback(async () => {
+    if (status !== "authenticated") return;
+    try {
+      const response = await fetch("/api/user/discrete-pin");
+      if (response.ok) {
+        const data = await response.json();
+        setHasPin(data.hasPin);
+      }
+    } catch (error) {
+      console.error("Erro ao verificar status do PIN:", error);
+    }
+  }, [status]);
+
+  const refreshPinStatus = useCallback(async () => {
+    await fetchPinStatus();
+  }, [fetchPinStatus]);
 
   const fetchPreferences = useCallback(async () => {
     if (status !== "authenticated") {
@@ -79,9 +103,13 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const response = await fetch("/api/user/preferences");
-      if (response.ok) {
-        const data = await response.json();
+      const [prefsResponse] = await Promise.all([
+        fetch("/api/user/preferences"),
+        fetchPinStatus(),
+      ]);
+
+      if (prefsResponse.ok) {
+        const data = await prefsResponse.json();
         setGeneral(data.general);
         setNotifications(data.notifications);
         setPrivacy(data.privacy);
@@ -91,7 +119,7 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, [status]);
+  }, [status, fetchPinStatus]);
 
   useEffect(() => {
     fetchPreferences();
@@ -151,6 +179,34 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Toggle hide values - returns what action is needed
+  const toggleHideValues = useCallback(() => {
+    if (privacy.hideValues) {
+      // Trying to show values (disable hide mode)
+      if (sessionUnlocked) {
+        // Already verified this session - just toggle
+        updatePrivacy({ hideValues: false });
+        return { needsPin: false, needsSetupPin: false };
+      } else if (hasPin) {
+        // Has PIN configured - need to verify it
+        return { needsPin: true, needsSetupPin: false };
+      } else {
+        // No PIN configured - need to set one up first
+        return { needsPin: false, needsSetupPin: true };
+      }
+    } else {
+      // Trying to hide values (enable hide mode)
+      if (hasPin) {
+        // Has PIN - just enable
+        updatePrivacy({ hideValues: true });
+        return { needsPin: false, needsSetupPin: false };
+      } else {
+        // No PIN - need to set one up first
+        return { needsPin: false, needsSetupPin: true };
+      }
+    }
+  }, [privacy.hideValues, sessionUnlocked, hasPin]);
+
   return (
     <PreferencesContext.Provider
       value={{
@@ -159,9 +215,14 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
         privacy,
         isLoading,
         isSaving,
+        sessionUnlocked,
+        hasPin,
         updateGeneral,
         updateNotifications,
         updatePrivacy,
+        setSessionUnlocked,
+        toggleHideValues,
+        refreshPinStatus,
       }}
     >
       {children}

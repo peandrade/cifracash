@@ -13,6 +13,7 @@ model User {
   name                 String?
   email                String                @unique
   password             String
+  discretePin          String?
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
   image                String?
@@ -28,6 +29,7 @@ model User {
   recurringExpenses    RecurringExpense[]
   transactionTemplates TransactionTemplate[]
   transactions         Transaction[]
+  feedbacks            Feedback[]
 
   @@map("users")
 }
@@ -302,4 +304,33 @@ enum GoalCategory {
   education
   retirement
   other
+}
+
+enum FeedbackType {
+  bug
+  suggestion
+  other
+}
+
+enum FeedbackStatus {
+  pending
+  reviewing
+  resolved
+  closed
+}
+
+model Feedback {
+  id          String         @id @default(cuid())
+  type        FeedbackType
+  description String
+  attachments String[]
+  status      FeedbackStatus @default(pending)
+  userId      String
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@map("feedbacks")
 }

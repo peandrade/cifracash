@@ -102,7 +102,8 @@ function getEncryptedModel(modelName: string): EncryptedModel | null {
 }
 
 /**
- * Decrypt nested relations in a result.
+ * Decrypt nested relations in a result recursively.
+ * Handles multiple levels of nesting (e.g., creditCard -> invoices -> purchases).
  */
 function decryptRelations(record: Record<string, unknown>): Record<string, unknown> {
   if (!USE_ENCRYPTION || !record) return record;
@@ -115,11 +116,15 @@ function decryptRelations(record: Record<string, unknown>): Record<string, unkno
       const encryptedModel = MODEL_MAP[relationModel];
       if (encryptedModel) {
         if (Array.isArray(value)) {
-          result[key] = value.map((item) =>
-            decryptRecord(item as Record<string, unknown>, encryptedModel)
-          );
+          // Decrypt each item and recursively process nested relations
+          result[key] = value.map((item) => {
+            const decrypted = decryptRecord(item as Record<string, unknown>, encryptedModel);
+            return decryptRelations(decrypted);
+          });
         } else if (typeof value === "object") {
-          result[key] = decryptRecord(value as Record<string, unknown>, encryptedModel);
+          // Decrypt and recursively process nested relations
+          const decrypted = decryptRecord(value as Record<string, unknown>, encryptedModel);
+          result[key] = decryptRelations(decrypted);
         }
       }
     }

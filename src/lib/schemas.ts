@@ -44,6 +44,10 @@ export const goalTypeSchema = z.enum([
   "other",
 ]);
 
+export const feedbackTypeSchema = z.enum(["bug", "suggestion", "other"]);
+
+export const feedbackStatusSchema = z.enum(["pending", "reviewing", "resolved", "closed"]);
+
 // ============================================
 // Transaction Schemas
 // ============================================
@@ -295,6 +299,23 @@ export const updateInvoiceSchema = z.object({
 
 export type InvoiceStatus = z.infer<typeof invoiceStatusSchema>;
 export type UpdateInvoiceInput = z.infer<typeof updateInvoiceSchema>;
+
+// ============================================
+// Feedback Schemas
+// ============================================
+
+export const createFeedbackSchema = z.object({
+  type: feedbackTypeSchema,
+  description: z
+    .string()
+    .min(10, "Descrição deve ter pelo menos 10 caracteres")
+    .max(2000, "Descrição deve ter no máximo 2000 caracteres"),
+  attachments: z.array(z.string().url()).max(3, "Máximo de 3 anexos").optional().default([]),
+});
+
+export type FeedbackType = z.infer<typeof feedbackTypeSchema>;
+export type FeedbackStatus = z.infer<typeof feedbackStatusSchema>;
+export type CreateFeedbackInput = z.infer<typeof createFeedbackSchema>;
 
 // ============================================
 // Helpers para validação em API routes

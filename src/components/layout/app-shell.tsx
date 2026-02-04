@@ -7,6 +7,7 @@ import { Sun, Moon } from "lucide-react";
 import { useTheme, useUser, useSidebar } from "@/contexts";
 import { Sidebar } from "./sidebar";
 import { BottomTabs } from "./bottom-tabs";
+import { FeedbackButton } from "@/components/feedback";
 
 const authRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
 
@@ -112,6 +113,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </div>
       <BottomTabs />
+      <FeedbackButton />
     </>
   );
 }

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, TrendingUp, TrendingDown, Zap, X } from "lucide-react";
 import { FabActionPanel } from "./fab-action-panel";
+import { useFab } from "@/contexts";
 import type { TransactionType, TransactionTemplate } from "@/types";
 
 interface QuickActionButtonsProps {
@@ -13,6 +14,12 @@ interface QuickActionButtonsProps {
 export function QuickActionButtons({ onQuickAdd, onUseTemplate }: QuickActionButtonsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isTemplatesOpen, setIsTemplatesOpen] = useState(false);
+  const { setExpanded } = useFab();
+
+  // Sync expanded state with context
+  useEffect(() => {
+    setExpanded(isExpanded);
+  }, [isExpanded, setExpanded]);
 
   const handleToggle = () => {
     setIsExpanded(!isExpanded);

@@ -10,10 +10,11 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from "recharts";
-import { ChevronDown, TrendingUp, TrendingDown, Wallet, RefreshCw, EyeOff } from "lucide-react";
+import { ChevronDown, TrendingUp, TrendingDown, Wallet, RefreshCw, Eye, EyeOff } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { useTheme, usePreferences } from "@/contexts";
 import { useWealthEvolution } from "@/hooks";
+import { SetupPinModal, VerifyPinModal } from "@/components/privacy";
 import type { WealthDataPoint } from "@/hooks";
 import type { EvolutionPeriod } from "@/types";
 import { Skeleton, SkeletonChart } from "@/components/ui/skeleton";
@@ -104,13 +105,36 @@ function ChartTooltip({
 
 export function WealthEvolutionChart() {
   const { theme } = useTheme();
-  const { general, privacy } = usePreferences();
+  const { general, privacy, toggleHideValues, setSessionUnlocked, updatePrivacy, refreshPinStatus } = usePreferences();
   const descriptionId = useId();
   const [period, setPeriod] = useState<EvolutionPeriod>(() =>
     mapDefaultPeriodToWealth(general.defaultPeriod)
   );
+  const [showSetupPinModal, setShowSetupPinModal] = useState(false);
+  const [showVerifyPinModal, setShowVerifyPinModal] = useState(false);
 
   const { data, isLoading, refresh } = useWealthEvolution(period);
+
+  const handleToggleVisibility = () => {
+    const result = toggleHideValues();
+    if (result.needsSetupPin) {
+      setShowSetupPinModal(true);
+    } else if (result.needsPin) {
+      setShowVerifyPinModal(true);
+    }
+  };
+
+  const handlePinSetupSuccess = async () => {
+    await refreshPinStatus();
+    updatePrivacy({ hideValues: true });
+    setShowSetupPinModal(false);
+  };
+
+  const handlePinVerified = () => {
+    setSessionUnlocked(true);
+    updatePrivacy({ hideValues: false });
+    setShowVerifyPinModal(false);
+  };
 
   // Update period when defaultPeriod preference changes
   useEffect(() => {
@@ -168,6 +192,18 @@ export function WealthEvolutionChart() {
           </h3>
         </div>
         <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+          <button
+            onClick={handleToggleVisibility}
+            className="p-1.5 sm:p-2 hover:bg-white/10 rounded-lg transition-colors"
+            title={privacy.hideValues ? "Mostrar valores" : "Ocultar valores"}
+            aria-label={privacy.hideValues ? "Mostrar valores" : "Ocultar valores"}
+          >
+            {privacy.hideValues ? (
+              <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" aria-hidden="true" />
+            ) : (
+              <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400" aria-hidden="true" />
+            )}
+          </button>
           <button
             onClick={() => refresh()}
             disabled={isLoading}
@@ -412,6 +448,20 @@ export function WealthEvolutionChart() {
           </p>
         </div>
       </div>
+
+      {/* Modal de configuração de PIN */}
+      <SetupPinModal
+        open={showSetupPinModal}
+        onClose={() => setShowSetupPinModal(false)}
+        onSuccess={handlePinSetupSuccess}
+      />
+
+      {/* Modal de verificação de PIN */}
+      <VerifyPinModal
+        open={showVerifyPinModal}
+        onClose={() => setShowVerifyPinModal(false)}
+        onVerified={handlePinVerified}
+      />
     </div>
   );
 }

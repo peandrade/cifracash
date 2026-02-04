@@ -9,36 +9,42 @@ import {
   AutoLockSection,
   ChangePasswordSection,
   DeleteAccountSection,
-  VerifyPasswordModal,
+  SetupPinModal,
+  VerifyPinModal,
+  PinManagementSection,
 } from "@/components/privacy";
 
 export default function PrivacidadePage() {
   const router = useRouter();
-  const { privacy, updatePrivacy, isLoading, isSaving } = usePreferences();
+  const { privacy, updatePrivacy, isLoading, isSaving, toggleHideValues, setSessionUnlocked, hasPin, refreshPinStatus } = usePreferences();
 
-  // Session unlock state - allows toggling hide values without password after first verification
-  const [sessionUnlocked, setSessionUnlocked] = useState(false);
-  const [showVerifyPasswordModal, setShowVerifyPasswordModal] = useState(false);
+  const [showSetupPinModal, setShowSetupPinModal] = useState(false);
+  const [showVerifyPinModal, setShowVerifyPinModal] = useState(false);
 
-  // Handle hide values toggle - requires password when disabling (only on first time per session)
+  // Handle hide values toggle - requires PIN when disabling (only on first time per session)
   const handleHideValuesToggle = () => {
-    if (privacy.hideValues) {
-      // Disabling hide values
-      if (sessionUnlocked) {
-        // Already verified password this session - no need to ask again
-        updatePrivacy({ hideValues: false });
-      } else {
-        // First time this session - require password confirmation
-        setShowVerifyPasswordModal(true);
-      }
-    } else {
-      // Enabling hide values - no password required
-      updatePrivacy({ hideValues: true });
+    const result = toggleHideValues();
+    if (result.needsSetupPin) {
+      setShowSetupPinModal(true);
+    } else if (result.needsPin) {
+      setShowVerifyPinModal(true);
     }
   };
 
-  const handlePasswordVerified = () => {
+  const handlePinSetupSuccess = async () => {
+    await refreshPinStatus();
+    updatePrivacy({ hideValues: true });
+    setShowSetupPinModal(false);
+  };
+
+  const handlePinVerified = () => {
     setSessionUnlocked(true);
+    updatePrivacy({ hideValues: false });
+    setShowVerifyPinModal(false);
+  };
+
+  const handlePinDeleted = async () => {
+    await refreshPinStatus();
     updatePrivacy({ hideValues: false });
   };
 
@@ -96,6 +102,13 @@ export default function PrivacidadePage() {
             onToggle={handleHideValuesToggle}
           />
 
+          {/* Gerenciamento de PIN */}
+          <PinManagementSection
+            hasPin={hasPin}
+            onPinCreated={refreshPinStatus}
+            onPinDeleted={handlePinDeleted}
+          />
+
           {/* Bloqueio Automático */}
           <AutoLockSection
             enabled={privacy.autoLock}
@@ -112,11 +125,18 @@ export default function PrivacidadePage() {
         </div>
       </div>
 
-      {/* Modal de verificação de senha para desativar modo discreto */}
-      <VerifyPasswordModal
-        open={showVerifyPasswordModal}
-        onClose={() => setShowVerifyPasswordModal(false)}
-        onVerified={handlePasswordVerified}
+      {/* Modal de configuração de PIN */}
+      <SetupPinModal
+        open={showSetupPinModal}
+        onClose={() => setShowSetupPinModal(false)}
+        onSuccess={handlePinSetupSuccess}
+      />
+
+      {/* Modal de verificação de PIN */}
+      <VerifyPinModal
+        open={showVerifyPinModal}
+        onClose={() => setShowVerifyPinModal(false)}
+        onVerified={handlePinVerified}
       />
     </div>
   );

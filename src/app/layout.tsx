@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppShell } from "@/components/layout";
-import { ThemeProvider, UserProvider, AppearanceProvider, PreferencesProvider, SidebarProvider } from "@/contexts";
+import { ThemeProvider, UserProvider, AppearanceProvider, PreferencesProvider, SidebarProvider, FabProvider } from "@/contexts";
 import { SessionProvider } from "@/components/providers/session-provider";
 import { AutoLockGuard } from "@/components/providers/auto-lock-guard";
 import { ToastProvider } from "@/components/ui/toast";
@@ -29,9 +29,11 @@ export default function RootLayout({
                 <ToastProvider>
                   <PreferencesProvider>
                     <SidebarProvider>
-                      <AutoLockGuard>
-                        <AppShell>{children}</AppShell>
-                      </AutoLockGuard>
+                      <FabProvider>
+                        <AutoLockGuard>
+                          <AppShell>{children}</AppShell>
+                        </AutoLockGuard>
+                      </FabProvider>
                     </SidebarProvider>
                   </PreferencesProvider>
                 </ToastProvider>

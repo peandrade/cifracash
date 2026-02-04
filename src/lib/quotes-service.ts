@@ -163,7 +163,7 @@ async function fetchSingleBrapiQuote(
       };
     }
 
-    const data: BrapiResponse = await response.json();
+    const data = (await response.json()) as BrapiResponse;
 
     if (data.error || !data.results || data.results.length === 0) {
       return {
@@ -307,7 +307,7 @@ async function fetchCoinGeckoQuotes(tickers: string[]): Promise<QuoteResult[]> {
       throw new Error(`CoinGecko error: ${response.status}`);
     }
 
-    const data: CoinGeckoPrice = await response.json();
+    const data = (await response.json()) as CoinGeckoPrice;
 
     for (const { ticker, coinId } of validTickers) {
       if (data[coinId]) {

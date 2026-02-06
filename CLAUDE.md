@@ -302,135 +302,95 @@ npx prisma generate   # Generate client
 
 ---
 
-## Melhorias Futuras
+## Ideias Futuras (Backlog)
 
-### Calculadora de IR sobre Investimentos (Pendente)
+### 1. Simuladores Financeiros
+Calculadoras interativas para tomada de decisao:
 
-**Objetivo:** Substituir a seção de proventos (dividendos) na página de investimentos por uma calculadora/resumo de Imposto de Renda sobre operações de renda variável.
+| Simulador | Descricao |
+|-----------|-----------|
+| Aposentadoria | Quanto investir por mes para aposentar com X |
+| Financiamento vs A Vista | Custo total com juros vs investir e comprar depois |
+| Reserva de Emergencia | Calcula quanto precisa baseado nas despesas fixas |
+| Comparador de Investimentos | CDB vs Tesouro vs LCI — qual rende mais liquido |
 
-**Localização:** Página `/investimentos` — trocar o componente de proventos pelo novo componente de IR.
+### 2. Detector de Assinaturas
+Identifica cobrancas recorrentes automaticamente:
+- Escaneia transacoes buscando padroes (Netflix, Spotify, iCloud)
+- Mostra custo total mensal/anual de assinaturas
+- Alerta sobre aumentos de preco
+- Sugere cancelar assinaturas pouco usadas
 
-**Regras fiscais a implementar:**
+### 3. Previsao de Fluxo de Caixa
+Projecao dos proximos 30/60/90 dias:
+- Considera: saldo atual + receitas esperadas - despesas fixas - faturas
+- Grafico mostrando quando o saldo ficara baixo
+- Alertas: "Em 15 dias voce tera saldo negativo"
 
-| Tipo de Ativo | Alíquota Swing Trade | Alíquota Day Trade | Isenção mensal de vendas |
-|---------------|---------------------|--------------------|--------------------------|
-| Ações | 15% | 20% | R$ 20.000 (somente swing trade) |
-| FIIs | 20% | 20% | Sem isenção |
-| ETFs | 15% | 20% | Sem isenção |
-| Cripto | 15% | 15% | R$ 35.000 |
+### 4. Importacao de Extrato Bancario
+Reduz friccao de entrada manual:
+- Upload de arquivo OFX/CSV (formato padrao dos bancos BR)
+- Parser que extrai transacoes
+- Sugestao automatica de categoria baseada na descricao
+- Review antes de confirmar importacao
 
-**Funcionalidades:**
-1. **Resumo mensal de IR** — calcula imposto devido no mês baseado nas operações de venda
-2. **Controle de prejuízo acumulado** — prejuízos podem ser compensados em meses futuros (mesmo tipo de ativo)
-3. **Isenção automática** — detecta se vendas do mês ficaram abaixo do limite de isenção
-4. **Cálculo de preço médio** — usa operações de compra para calcular preço médio ponderado
-5. **Indicador de DARF** — mostra se há imposto a pagar e o valor
+### 5. Regras de Economia Automatica
+Automatiza aportes em metas:
+- **Arredondamento:** Gastou R$ 47,30 -> arredonda para R$ 50, diferenca vai pra meta
+- **% da renda:** 10% de toda receita vai para reserva de emergencia
+- **Sobra do mes:** Saldo positivo no fim do mes vai para meta
 
-**Dados necessários (já existem no sistema):**
-- `Operation` — operações de compra/venda com data, quantidade, preço e tipo
-- `Investment` — tipo do ativo (stock, fii, etf, crypto)
-- Preço médio pode ser calculado a partir das operações de compra
+### 6. Insights Automaticos
+Frases geradas baseadas nos dados:
+- "Voce gastou 23% mais em alimentacao este mes"
+- "Seu maior gasto recorrente e o aluguel (35% da renda)"
+- "Se mantiver esse ritmo, vai estourar o orcamento em 5 dias"
 
-**Escopo inicial (simplificado):**
-- Cálculo baseado nas operações de venda já registradas
-- Preço médio ponderado de compra
-- Compensação de prejuízo entre meses (mesmo tipo)
-- Sem DARF automático (apenas mostra valor devido)
-- Sem tratamento de eventos corporativos (desdobramento, bonificação)
+### 7. Comparativo Anual
+Nova secao em relatorios:
+- Comparacao mes a mes do ano atual vs anterior
+- Identifica tendencias de longo prazo
 
-**Componentes a criar:**
-- `TaxSummaryCard` — card com resumo do IR do mês atual
-- `TaxMonthlyBreakdown` — detalhamento por tipo de ativo
-- API: `GET /api/investments/tax?month={YYYY-MM}` — calcula IR do mês
+### 8. Widget PWA
+- Widget com saldo atual para home screen
+- Atalho para adicionar despesa rapida
+- Notificacoes push para alertas
 
-**Notas:**
-- Day trade vs swing trade: operação de compra e venda do mesmo ativo no mesmo dia = day trade
-- IR retido na fonte (IRRF): 0,005% swing trade, 1% day trade (descontado do imposto devido)
-- DARF código 6015 (ações/ETFs), 6800 (FIIs), sem código específico para crypto (usa ganho de capital)
+### 9. Integracao com IA
 
-### Conversão de Moeda para Exibição (Pendente)
+**Assistente Financeiro (Chat):**
+- Perguntas em linguagem natural: "Quanto gastei em restaurantes?"
+- LLM recebe contexto financeiro e responde de forma conversacional
+- Stack: Claude API ou OpenAI + Vercel AI SDK
 
-**Objetivo:** Permitir que o usuário escolha a moeda de exibição (USD, EUR, GBP, etc.). Todos os valores continuam armazenados em BRL no banco — a conversão é apenas visual, usando taxa de câmbio atualizada.
+**Auto-Categorizacao Inteligente:**
+- Ao adicionar transacao, IA sugere categoria baseada na descricao
+- Usa embeddings ou LLM leve (Claude Haiku / GPT-4o-mini)
+- Reduz friccao, usuario so confirma
 
-**Abordagem:** Conversão de exibição (display-only). Não altera modelo de dados nem lógica de cálculos.
+**Insights Mensais Personalizados:**
+- Resumo inteligente no inicio do mes
+- "Voce gastou 15% mais que dezembro, principalmente em lazer"
+- Dicas personalizadas baseadas nos padroes
 
-**O que muda:**
+**Detector de Anomalias:**
+- Alerta sobre gastos fora do padrao
+- "Compra de R$ 2.500 em Eletronicos - 5x acima do seu padrao"
 
-1. **`formatCurrency()` em `src/lib/utils.ts`:**
-   - Recebe moeda e locale como parâmetros opcionais (default: BRL/pt-BR)
-   - Multiplica o valor pela taxa de câmbio antes de formatar
-   - Ex: `formatCurrency(100, { currency: "USD", rate: 0.18 })` → `$18.00`
+**OCR de Recibos:**
+- Foto do recibo -> extrai valor, data, estabelecimento
+- Stack: Claude Vision ou GPT-4 Vision
 
-2. **Preferência do usuário:**
-   - Novo campo `displayCurrency` em `User.settings.general` (default: "BRL")
-   - Adicionado ao `PreferencesContext` para acesso global
-   - Seletor de moeda na página `/conta/geral`
-
-3. **API de câmbio:**
-   - API: `GET /api/rates/exchange` — retorna taxas BRL → outras moedas
-   - Fonte: exchangerate.host (gratuito, sem key) ou Open Exchange Rates
-   - Cache de 1h (`CACHE_DURATIONS.RATES`)
-   - Fallback: se API falhar, exibe em BRL com aviso
-
-4. **Componentes:**
-   - Nenhum componente precisa mudar individualmente — todos já usam `formatCurrency()`
-   - Basta que `formatCurrency()` consulte a moeda/taxa do contexto
-
-**Moedas suportadas (inicial):**
-
-| Moeda | Locale | Símbolo |
-|-------|--------|---------|
-| BRL | pt-BR | R$ |
-| USD | en-US | $ |
-| EUR | de-DE | € |
-| GBP | en-GB | £ |
-
-**Limitações:**
-- Valores são aproximados (câmbio varia diariamente)
-- Relatórios exportados usam a moeda de exibição no momento da exportação
-- Cálculo de IR sempre em BRL (legislação brasileira)
-
-### Internacionalização — i18n (Pendente)
-
-**Objetivo:** Permitir troca de idioma da interface entre Português, Inglês e Espanhol via botão de seleção.
-
-**Stack:** `next-intl` (lib padrão para i18n com App Router)
-
-**Estrutura de traduções:**
+**Arquitetura sugerida:**
 ```
-messages/
-  pt.json     # Português (padrão)
-  en.json     # English
-  es.json     # Español
+src/
+  app/api/chat/route.ts       # Streaming endpoint
+  components/chat/
+    chat-panel.tsx            # UI do chat
+    chat-message.tsx          # Bolhas de mensagem
+    chat-input.tsx            # Input com envio
+  lib/ai/
+    context-builder.ts        # Monta contexto financeiro
+    prompts.ts                # System prompts
 ```
 
-**Preferência do usuário:**
-- Novo campo `language` em `User.settings.general` (default: "pt")
-- Seletor de idioma na página `/conta/geral` e/ou na sidebar
-- Persistido no banco + localStorage para carregamento rápido
-
-**O que precisa ser traduzido:**
-
-| Área | Estimativa | Exemplos |
-|------|-----------|----------|
-| Componentes (~77) | ~400 strings | Títulos, labels, botões, placeholders, tooltips |
-| API routes (~46) | ~100 strings | Mensagens de erro e sucesso |
-| Validações Zod | ~50 strings | Mensagens de erro dos schemas |
-| Constantes (`constants.ts`) | ~80 strings | Categorias, meses, tipos de investimento, metas |
-| Formatação de datas | Global | `pt-BR` → locale dinâmico |
-
-**Passos para implementar:**
-1. Instalar: `npm install next-intl`
-2. Configurar `next-intl` no App Router (provider, middleware de locale)
-3. Criar `messages/pt.json` extraindo todas as strings existentes
-4. Traduzir para `en.json` e `es.json`
-5. Substituir strings hardcoded por `t("chave")` em cada componente
-6. Adaptar `formatCurrency()` e `formatDate()` para usar locale dinâmico
-7. Traduzir categorias padrão e constantes
-8. Adicionar seletor de idioma na UI
-
-**Notas:**
-- Categorias criadas pelo usuário não são traduzidas (são texto livre)
-- Cálculo de IR e regras fiscais permanecem em contexto brasileiro
-- Datas e números devem respeitar o locale (ex: `1,234.56` em inglês vs `1.234,56` em português)
-- Componente de seleção: dropdown/popover com bandeiras + nome do idioma

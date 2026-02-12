@@ -86,7 +86,7 @@ function emailBranding(title: string, subtitle: string): string {
                 </tr>
               </table>
               <h1 style="color: #ffffff; font-size: 28px; font-weight: 700; margin: 20px 0 0 0; letter-spacing: -0.5px;">
-                FinControl
+                CifraCash
               </h1>
               <p style="color: rgba(255,255,255,0.8); font-size: 14px; margin: 8px 0 0 0;">
                 ${title}
@@ -107,10 +107,10 @@ function emailFooter(): string {
                 <tr>
                   <td style="text-align: center;">
                     <p style="color: #52525b; font-size: 12px; margin: 0 0 8px 0;">
-                      Este é um email automático do FinControl.
+                      Este é um email automático do CifraCash.
                     </p>
                     <p style="color: #3f3f46; font-size: 11px; margin: 0;">
-                      © ${currentYear} FinControl. Todos os direitos reservados.
+                      © ${currentYear} CifraCash. Todos os direitos reservados.
                     </p>
                   </td>
                 </tr>

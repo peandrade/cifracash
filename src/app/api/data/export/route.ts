@@ -23,7 +23,7 @@ export async function GET() {
     const csv = "\uFEFF" + [header, ...rows].join("\r\n");
 
     const today = new Date().toISOString().split("T")[0];
-    const filename = `fincontrol-transacoes-${today}.csv`;
+    const filename = `cifracash-transacoes-${today}.csv`;
 
     return new NextResponse(csv, {
       status: 200,

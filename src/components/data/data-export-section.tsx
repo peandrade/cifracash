@@ -32,7 +32,7 @@ export function DataExportSection() {
         res.headers
           .get("Content-Disposition")
           ?.match(/filename="(.+)"/)?.[1] ||
-        "fincontrol-transactions.csv";
+        "cifracash-transactions.csv";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

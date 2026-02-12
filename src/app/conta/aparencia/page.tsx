@@ -301,7 +301,7 @@ export default function AparenciaPage() {
                       fontSize: `${16 * fontSizes[settings.fontSize].multiplier}px`,
                     }}
                   >
-                    FinControl
+                    CifraCash
                   </p>
                   <p
                     className="text-[var(--text-dimmed)]"

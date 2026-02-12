@@ -138,7 +138,7 @@ export function RegisterForm() {
           className="text-2xl font-bold"
           style={{ color: "var(--text-primary)" }}
         >
-          FinControl
+          CifraCash
         </h1>
         <p style={{ color: "var(--text-muted)" }} className="mt-2">
           {t("registerTitle")}

@@ -4,7 +4,7 @@ import { useMemo, useId } from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { useTranslations } from "next-intl";
 import { useCurrency } from "@/contexts/currency-context";
-import { useTheme, usePreferences } from "@/contexts";
+import { usePreferences } from "@/contexts";
 
 const HIDDEN = "•••••";
 import type { CategoryData } from "@/types";
@@ -16,7 +16,6 @@ interface CategoryChartProps {
 export function CategoryChart({ data }: CategoryChartProps) {
   const t = useTranslations("dashboard");
   const { formatCurrency } = useCurrency();
-  const { theme } = useTheme();
   const { privacy } = usePreferences();
   const descriptionId = useId();
 
@@ -29,13 +28,6 @@ export function CategoryChart({ data }: CategoryChartProps) {
     () => data.reduce((sum, item) => sum + item.value, 0),
     [data]
   );
-
-  const tooltipStyle = {
-    backgroundColor: theme === "dark" ? "#1f2937" : "#ffffff",
-    border: theme === "dark" ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)",
-    borderRadius: "8px",
-    color: theme === "dark" ? "#f3f4f6" : "#1f2937",
-  };
 
   return (
     <div
@@ -76,9 +68,14 @@ export function CategoryChart({ data }: CategoryChartProps) {
               </Pie>
               <Tooltip
                 formatter={(value) => [privacy.hideValues ? HIDDEN : formatCurrency(Number(value)), "Valor"]}
-                contentStyle={tooltipStyle}
-                labelStyle={{ color: theme === "dark" ? "#9CA3AF" : "#6B7280" }}
-                itemStyle={{ color: theme === "dark" ? "#f3f4f6" : "#1f2937" }}
+                contentStyle={{
+                  backgroundColor: "var(--card-bg)",
+                  border: "1px solid var(--border-color)",
+                  borderRadius: "8px",
+                  color: "var(--text-primary)",
+                }}
+                labelStyle={{ color: "#6B7280" }}
+                itemStyle={{ color: "var(--text-primary)" }}
               />
             </PieChart>
           </ResponsiveContainer>

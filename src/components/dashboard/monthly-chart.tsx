@@ -12,7 +12,7 @@ import {
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCurrency } from "@/contexts/currency-context";
-import { useTheme, usePreferences } from "@/contexts";
+import { usePreferences } from "@/contexts";
 
 const HIDDEN = "•••••";
 import type { MonthlyEvolution, EvolutionPeriod } from "@/types";
@@ -86,13 +86,10 @@ export function MonthlyChart({ data, period, onPeriodChange }: MonthlyChartProps
   const t = useTranslations("dashboard");
   const tp = useTranslations("periods");
   const { formatCurrency } = useCurrency();
-  const { theme } = useTheme();
   const { privacy } = usePreferences();
   const descriptionId = useId();
   const PERIOD_OPTIONS = PERIOD_KEYS.map(p => ({ value: p.value, label: tp(p.key) }));
   const currentPeriodLabel = PERIOD_OPTIONS.find(p => p.value === period)?.label || tp("6m");
-
-  const axisTickColor = theme === "dark" ? "#9CA3AF" : "#4B5563";
 
   // Calculate totals for accessibility description
   const totalIncome = data.reduce((sum, d) => sum + d.income, 0);
@@ -108,21 +105,6 @@ export function MonthlyChart({ data, period, onPeriodChange }: MonthlyChartProps
         borderColor: "var(--border-color)"
       }}
     >
-      <style>{`
-        .period-select {
-          -webkit-appearance: none;
-          -moz-appearance: none;
-          appearance: none;
-          background-image: none;
-        }
-        .period-select::-ms-expand {
-          display: none;
-        }
-        .period-select option {
-          background-color: ${theme === "dark" ? "#1f2937" : "#ffffff"};
-          color: ${theme === "dark" ? "#f3f4f6" : "#1f2937"};
-        }
-      `}</style>
       <div className="flex items-center justify-between mb-1 gap-2">
         <h3 className="text-base sm:text-lg font-semibold truncate" style={{ color: "var(--text-primary)" }}>
           {t("financialEvolution")}
@@ -131,7 +113,7 @@ export function MonthlyChart({ data, period, onPeriodChange }: MonthlyChartProps
           <select
             value={period}
             onChange={(e) => onPeriodChange(e.target.value as EvolutionPeriod)}
-            className="period-select appearance-none cursor-pointer px-2 sm:px-3 py-1 sm:py-1.5 pr-6 sm:pr-8 rounded-lg text-xs sm:text-sm font-medium transition-colors"
+            className="appearance-none cursor-pointer px-2 sm:px-3 py-1 sm:py-1.5 pr-6 sm:pr-8 rounded-lg text-xs sm:text-sm font-medium transition-colors"
             style={{
               backgroundColor: "var(--bg-hover)",
               color: "var(--text-primary)",
@@ -176,12 +158,12 @@ export function MonthlyChart({ data, period, onPeriodChange }: MonthlyChartProps
               dataKey="month"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: axisTickColor, fontSize: 12 }}
+              tick={{ fill: "#6B7280", fontSize: 12 }}
             />
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fill: axisTickColor, fontSize: 12 }}
+              tick={{ fill: "#6B7280", fontSize: 12 }}
               tickFormatter={(value) =>
                 privacy.hideValues ? "•••" : `${(value / 1000).toFixed(0)}k`
               }

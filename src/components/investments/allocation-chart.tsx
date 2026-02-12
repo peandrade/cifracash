@@ -3,7 +3,6 @@
 import { useMemo, useId } from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { useTranslations } from "next-intl";
-import { useTheme } from "@/contexts";
 import { useCurrency } from "@/contexts/currency-context";
 import type { AllocationData } from "@/types";
 
@@ -14,7 +13,6 @@ interface AllocationChartProps {
 export function AllocationChart({ data }: AllocationChartProps) {
   const t = useTranslations("investments");
   const tc = useTranslations("common");
-  const { theme } = useTheme();
   const { formatCurrency } = useCurrency();
   const descriptionId = useId();
 
@@ -27,13 +25,6 @@ export function AllocationChart({ data }: AllocationChartProps) {
     () => data.reduce((sum, item) => sum + item.value, 0),
     [data]
   );
-
-  const tooltipStyle = {
-    backgroundColor: theme === "dark" ? "#1f2937" : "#ffffff",
-    border: theme === "dark" ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)",
-    borderRadius: "8px",
-    color: theme === "dark" ? "#f3f4f6" : "#1f2937",
-  };
 
   return (
     <div
@@ -72,9 +63,14 @@ export function AllocationChart({ data }: AllocationChartProps) {
               </Pie>
               <Tooltip
                 formatter={(value) => [formatCurrency(Number(value)), tc("value")]}
-                contentStyle={tooltipStyle}
-                labelStyle={{ color: theme === "dark" ? "#9CA3AF" : "#6B7280" }}
-                itemStyle={{ color: theme === "dark" ? "#f3f4f6" : "#1f2937" }}
+                contentStyle={{
+                  backgroundColor: "var(--card-bg)",
+                  border: "1px solid var(--border-color)",
+                  borderRadius: "8px",
+                  color: "var(--text-primary)",
+                }}
+                labelStyle={{ color: "#6B7280" }}
+                itemStyle={{ color: "var(--text-primary)" }}
               />
             </PieChart>
           </ResponsiveContainer>

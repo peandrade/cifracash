@@ -51,7 +51,7 @@ function MobileHeader() {
                 : "linear-gradient(to right, #0f172a, #475569)",
             }}
           >
-            FinControl
+            CifraCash
           </span>
         </Link>
 

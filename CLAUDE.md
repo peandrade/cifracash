@@ -1,4 +1,4 @@
-# FinControl — Contexto do Projeto
+# CifraCash — Contexto do Projeto
 
 Sistema de gestão financeira pessoal. Interface em português (pt-BR).
 
@@ -398,7 +398,7 @@ src/
 
 **Estrutura recomendada (dentro do projeto):**
 ```
-fincontrol/
+cifracash/
   src/
   tests/
     unit/              # Vitest - funcoes puras

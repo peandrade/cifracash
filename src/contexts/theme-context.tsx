@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 
 type Theme = "light" | "dark";
 
@@ -19,49 +19,37 @@ const ThemeContext = createContext<ThemeContextType>({
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>("dark");
   const [mounted, setMounted] = useState(false);
-  const isTransitioning = useRef(false);
 
+  // Inicialização
   useEffect(() => {
-    const savedTheme = localStorage.getItem("fincontrol-theme") as Theme | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
+    const saved = localStorage.getItem("cifracash-theme") as Theme | null;
+    if (saved) {
+      setTheme(saved);
     } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
       setTheme("light");
     }
     setMounted(true);
   }, []);
 
+  // Aplica tema no DOM (apenas na inicialização)
   useEffect(() => {
     if (!mounted) return;
 
-    const root = document.documentElement;
-
-    // Add transition class before changing theme
-    if (!isTransitioning.current) {
-      root.classList.add("theme-transitioning");
-    }
-
-    root.classList.remove("light", "dark");
-    root.classList.add(theme);
-
-    localStorage.setItem("fincontrol-theme", theme);
-
-    // Remove transition class after animation completes
-    const timeout = setTimeout(() => {
-      root.classList.remove("theme-transitioning");
-      isTransitioning.current = false;
-    }, 450);
-
-    return () => clearTimeout(timeout);
+    document.documentElement.classList.remove("light", "dark");
+    document.documentElement.classList.add(theme);
+    localStorage.setItem("cifracash-theme", theme);
   }, [theme, mounted]);
 
   const toggleTheme = useCallback(() => {
-    isTransitioning.current = true;
-    const root = document.documentElement;
-    root.classList.add("theme-transitioning");
+    const newTheme = theme === "dark" ? "light" : "dark";
 
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  }, []);
+    // 1. Aplica classe no DOM primeiro (CSS variables mudam instantaneamente)
+    document.documentElement.classList.remove("light", "dark");
+    document.documentElement.classList.add(newTheme);
+
+    // 2. Depois atualiza estado React (componentes re-renderizam)
+    setTheme(newTheme);
+  }, [theme]);
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, mounted }}>

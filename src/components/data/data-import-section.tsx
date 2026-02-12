@@ -57,7 +57,7 @@ export function DataImportSection() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "fincontrol-import-template.xlsx";
+      a.download = "cifracash-import-template.xlsx";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

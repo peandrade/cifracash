@@ -76,16 +76,6 @@ body {
   color: var(--text-primary);
 }
 
-/* ===== TRANSIÇÃO SUAVE DE TEMA ===== */
-/* Classe aplicada durante a transição de tema */
-.theme-transitioning,
-.theme-transitioning *,
-.theme-transitioning *::before,
-.theme-transitioning *::after {
-  transition-property: background-color, border-color, color, fill, stroke, box-shadow, opacity !important;
-  transition-duration: 0.4s !important;
-  transition-timing-function: ease !important;
-}
 
 /* Prevent horizontal overflow on all elements */
 * {

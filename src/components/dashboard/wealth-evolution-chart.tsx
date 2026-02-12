@@ -13,7 +13,7 @@ import {
 import { ChevronDown, TrendingUp, TrendingDown, Wallet, RefreshCw, Eye, EyeOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCurrency } from "@/contexts/currency-context";
-import { useTheme, usePreferences } from "@/contexts";
+import { usePreferences } from "@/contexts";
 import { useWealthEvolution } from "@/hooks";
 import { SetupPinModal, VerifyPinModal } from "@/components/privacy";
 import type { WealthDataPoint } from "@/hooks";
@@ -117,7 +117,6 @@ export function WealthEvolutionChart({ refreshTrigger = 0 }: WealthEvolutionChar
   const tc = useTranslations("common");
   const tp = useTranslations("periods");
   const { formatCurrency } = useCurrency();
-  const { theme } = useTheme();
   const { general, privacy, toggleHideValues, setSessionUnlocked, updatePrivacy, refreshPinStatus } = usePreferences();
   const descriptionId = useId();
   const PERIOD_OPTIONS = PERIOD_KEYS.map(p => ({ value: p.value, label: tp(p.key) }));
@@ -155,8 +154,6 @@ export function WealthEvolutionChart({ refreshTrigger = 0 }: WealthEvolutionChar
     setPeriod(mapDefaultPeriodToWealth(general.defaultPeriod));
   }, [general.defaultPeriod]);
 
-  const axisTickColor = theme === "dark" ? "#9CA3AF" : "#4B5563";
-
   const summary = data?.summary || {
     currentWealth: 0,
     transactionBalance: 0,
@@ -179,21 +176,6 @@ export function WealthEvolutionChart({ refreshTrigger = 0 }: WealthEvolutionChar
         borderColor: "var(--border-color)",
       }}
     >
-      <style>{`
-        .wealth-period-select {
-          -webkit-appearance: none;
-          -moz-appearance: none;
-          appearance: none;
-          background-image: none;
-        }
-        .wealth-period-select::-ms-expand {
-          display: none;
-        }
-        .wealth-period-select option {
-          background-color: ${theme === "dark" ? "#1f2937" : "#ffffff"};
-          color: ${theme === "dark" ? "#f3f4f6" : "#1f2937"};
-        }
-      `}</style>
 
       {}
       <div className="flex items-center justify-between gap-2 mb-2 sm:mb-1">
@@ -231,7 +213,7 @@ export function WealthEvolutionChart({ refreshTrigger = 0 }: WealthEvolutionChar
             <select
               value={period}
               onChange={(e) => setPeriod(e.target.value as EvolutionPeriod)}
-              className="wealth-period-select appearance-none cursor-pointer px-2 sm:px-3 py-1 sm:py-1.5 pr-6 sm:pr-8 rounded-lg text-xs sm:text-sm font-medium transition-colors"
+              className="appearance-none cursor-pointer px-2 sm:px-3 py-1 sm:py-1.5 pr-6 sm:pr-8 rounded-lg text-xs sm:text-sm font-medium transition-colors"
               style={{
                 backgroundColor: "var(--bg-hover)",
                 color: "var(--text-primary)",
@@ -343,13 +325,13 @@ export function WealthEvolutionChart({ refreshTrigger = 0 }: WealthEvolutionChar
                 dataKey="label"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: axisTickColor, fontSize: 10 }}
+                tick={{ fill: "#6B7280", fontSize: 10 }}
                 interval="preserveStartEnd"
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: axisTickColor, fontSize: 10 }}
+                tick={{ fill: "#6B7280", fontSize: 10 }}
                 tickFormatter={(value) =>
                   privacy.hideValues
                     ? "•••"

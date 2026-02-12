@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     const emailHtml = generatePasswordResetEmail(resetUrl, user.name || undefined);
     await sendEmail({
       to: user.email,
-      subject: "Recuperação de Senha - FinControl",
+      subject: "Recuperação de Senha - CifraCash",
       html: emailHtml,
     });
 

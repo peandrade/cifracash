@@ -103,7 +103,7 @@ export async function generateReportPDF({
   pdf.setTextColor(255, 255, 255);
   pdf.setFontSize(24);
   pdf.setFont("helvetica", "bold");
-  pdf.text("FinControl", margin, 20);
+  pdf.text("CifraCash", margin, 20);
 
   pdf.setFontSize(12);
   pdf.setFont("helvetica", "normal");
@@ -239,7 +239,7 @@ export async function generateReportPDF({
   pdf.setFontSize(8);
   pdf.setFont("helvetica", "normal");
   pdf.text(
-    `Gerado em ${now.toLocaleDateString("pt-BR")} às ${now.toLocaleTimeString("pt-BR")} - FinControl`,
+    `Gerado em ${now.toLocaleDateString("pt-BR")} às ${now.toLocaleTimeString("pt-BR")} - CifraCash`,
     pageWidth / 2,
     pageHeight - 10,
     { align: "center" }

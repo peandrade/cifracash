@@ -90,7 +90,7 @@ function addDropdown(
 
 export async function generateImportTemplate(): Promise<Buffer> {
   const workbook = new ExcelJS.Workbook();
-  workbook.creator = "FinControl";
+  workbook.creator = "CifraCash";
   workbook.created = new Date();
 
   const allCategories = [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES.filter(
@@ -104,7 +104,7 @@ export async function generateImportTemplate(): Promise<Buffer> {
   instrSheet.getColumn(1).width = 80;
 
   const instructions = [
-    ["📋 INSTRUÇÕES DE PREENCHIMENTO - FinControl"],
+    ["📋 INSTRUÇÕES DE PREENCHIMENTO - CifraCash"],
     [""],
     ["Este arquivo contém 5 abas para importação de dados:"],
     [""],

@@ -12,7 +12,7 @@ export async function GET() {
         "Content-Type":
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "Content-Disposition":
-          'attachment; filename="fincontrol-modelo-importacao.xlsx"',
+          'attachment; filename="cifracash-modelo-importacao.xlsx"',
       },
     });
   });

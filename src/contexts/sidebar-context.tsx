@@ -19,7 +19,7 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem("fincontrol-sidebar-collapsed");
+    const saved = localStorage.getItem("cifracash-sidebar-collapsed");
     if (saved === "true") {
       setIsCollapsed(true);
     }
@@ -28,7 +28,7 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!mounted) return;
-    localStorage.setItem("fincontrol-sidebar-collapsed", String(isCollapsed));
+    localStorage.setItem("cifracash-sidebar-collapsed", String(isCollapsed));
   }, [isCollapsed, mounted]);
 
   const toggleSidebar = () => {

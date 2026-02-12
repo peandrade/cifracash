@@ -34,7 +34,7 @@ export async function sendEmail({ to, subject, html }: SendEmailOptions) {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: "FinControl <onboarding@resend.dev>",
+      from: "CifraCash <onboarding@resend.dev>",
       to: [to],
       subject,
       html,
@@ -64,7 +64,7 @@ export function generatePasswordResetEmail(resetUrl: string, userName?: string) 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="dark">
   <meta name="supported-color-schemes" content="dark">
-  <title>Recuperação de Senha - FinControl</title>
+  <title>Recuperação de Senha - CifraCash</title>
   <!--[if mso]>
   <noscript>
     <xml>
@@ -99,7 +99,7 @@ export function generatePasswordResetEmail(resetUrl: string, userName?: string) 
               </table>
 
               <h1 style="color: #ffffff; font-size: 28px; font-weight: 700; margin: 20px 0 0 0; letter-spacing: -0.5px;">
-                FinControl
+                CifraCash
               </h1>
               <p style="color: rgba(255,255,255,0.8); font-size: 14px; margin: 8px 0 0 0;">
                 Suas finanças sob controle
@@ -211,10 +211,10 @@ export function generatePasswordResetEmail(resetUrl: string, userName?: string) 
                 <tr>
                   <td style="text-align: center;">
                     <p style="color: #52525b; font-size: 12px; margin: 0 0 8px 0;">
-                      Este é um email automático do FinControl.
+                      Este é um email automático do CifraCash.
                     </p>
                     <p style="color: #3f3f46; font-size: 11px; margin: 0;">
-                      © ${currentYear} FinControl. Todos os direitos reservados.
+                      © ${currentYear} CifraCash. Todos os direitos reservados.
                     </p>
                   </td>
                 </tr>

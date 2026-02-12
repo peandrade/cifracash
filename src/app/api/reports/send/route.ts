@@ -59,8 +59,8 @@ export async function POST(request: NextRequest) {
           : await buildMonthlyReport(user.id, user.name);
 
         const subject = type === "weekly"
-          ? "📊 Seu Resumo Semanal — FinControl"
-          : "📊 Seu Resumo Mensal — FinControl";
+          ? "📊 Seu Resumo Semanal — CifraCash"
+          : "📊 Seu Resumo Mensal — CifraCash";
 
         await sendEmail({ to: user.email, subject, html });
         sentCount++;

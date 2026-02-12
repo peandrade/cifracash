@@ -5,7 +5,6 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 
 import { useTranslations } from "next-intl";
 import { getInvoiceStatusColor } from "@/lib/card-constants";
 import { useCurrency } from "@/contexts/currency-context";
-import { useTheme } from "@/contexts";
 import type { InvoicePreview } from "@/types/credit-card";
 
 interface InvoicePreviewChartProps {
@@ -23,21 +22,12 @@ const cardStyle = {
 
 export function InvoicePreviewChart({ data, title }: InvoicePreviewChartProps) {
   const { formatCurrency } = useCurrency();
-  const { theme } = useTheme();
   const descriptionId = useId();
   const t = useTranslations("cards");
   const tc = useTranslations("common");
 
   const displayTitle = title || t("invoiceForecast");
-
-  const axisTickColor = theme === "dark" ? "#9CA3AF" : "#4B5563";
   const totalAmount = data.reduce((sum, d) => sum + d.amount, 0);
-  const tooltipStyle = {
-    backgroundColor: theme === "dark" ? "#1f2937" : "#ffffff",
-    border: theme === "dark" ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(0,0,0,0.1)",
-    borderRadius: "12px",
-    padding: "12px",
-  };
 
   if (data.length === 0) {
     return (
@@ -87,13 +77,13 @@ export function InvoicePreviewChart({ data, title }: InvoicePreviewChartProps) {
               dataKey="label"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: axisTickColor, fontSize: 10 }}
+              tick={{ fill: "#6B7280", fontSize: 10 }}
               interval={0}
             />
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fill: axisTickColor, fontSize: 10 }}
+              tick={{ fill: "#6B7280", fontSize: 10 }}
               width={40}
               tickFormatter={(value: number) => {
                 if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
@@ -103,9 +93,14 @@ export function InvoicePreviewChart({ data, title }: InvoicePreviewChartProps) {
               domain={[0, "auto"]}
             />
             <Tooltip
-              contentStyle={tooltipStyle}
-              labelStyle={{ color: theme === "dark" ? "#9CA3AF" : "#6B7280", marginBottom: "4px" }}
-              itemStyle={{ color: theme === "dark" ? "#f3f4f6" : "#1f2937" }}
+              contentStyle={{
+                backgroundColor: "var(--card-bg)",
+                border: "1px solid var(--border-color)",
+                borderRadius: "12px",
+                padding: "12px",
+              }}
+              labelStyle={{ color: "#6B7280", marginBottom: "4px" }}
+              itemStyle={{ color: "var(--text-primary)" }}
               formatter={(value) => [formatCurrency(Number(value)), tc("value")]}
             />
             <Bar dataKey="amount" radius={[4, 4, 0, 0]}>

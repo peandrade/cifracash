@@ -1,5 +1,5 @@
 /**
- * OpenAPI 3.0 Specification for FinControl API
+ * OpenAPI 3.0 Specification for CifraCash API
  *
  * This file contains the complete API documentation.
  * Access the interactive documentation at /api/docs
@@ -10,9 +10,9 @@ import { API_VERSION } from "./api-version";
 export const openApiSpec = {
   openapi: "3.0.3",
   info: {
-    title: "FinControl API",
+    title: "CifraCash API",
     description: `
-API de gestão financeira pessoal do FinControl.
+API de gestão financeira pessoal do CifraCash.
 
 ## Autenticação
 Todas as rotas (exceto as públicas) requerem autenticação via session cookie.
@@ -27,7 +27,7 @@ Todas as rotas (exceto as públicas) requerem autenticação via session cookie.
     `,
     version: API_VERSION,
     contact: {
-      name: "FinControl",
+      name: "CifraCash",
     },
   },
   servers: [

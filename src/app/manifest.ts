@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Gerencie suas financas de forma simples e visual",
     start_url: "/",
     display: "standalone",
-    background_color: "#0f0f1a",
+    background_color: "#121313",
     theme_color: "#8B5CF6",
     icons: [
       {

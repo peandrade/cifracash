@@ -36,6 +36,7 @@
     "date": "Date",
     "description": "Description",
     "category": "Category",
+    "selectCategory": "Select a category",
     "notes": "Notes",
     "notesOptional": "Notes (optional)",
     "notesPlaceholder": "Optional notes...",
@@ -693,7 +694,11 @@
     "insightOnTrack": "On track",
     "insightOnTrackDesc": "{count, plural, one {# goal is} other {# goals are}} on pace for completion",
     "insightAlmostThere": "Almost there!",
-    "insightAlmostThereDesc": "\"{name}\" is close to {percent}%"
+    "insightAlmostThereDesc": "\"{name}\" is close to {percent}%",
+    "contribute": "Contribute",
+    "depositLabel": "Deposit",
+    "withdrawLabel": "Withdraw",
+    "operationType": "Operation type"
   },
   "budget": {
     "title": "Monthly Budget",
@@ -915,6 +920,11 @@
     "fontSizeSmall": "Small",
     "fontSizeNormal": "Normal",
     "fontSizeLarge": "Large",
+    "customCategories": "Custom Categories",
+    "customCategoriesDesc": "Create and manage your categories",
+    "newCategory": "New",
+    "expenseCategories": "Expenses",
+    "incomeCategories": "Income",
     "exportData": "Export Data",
     "exportDataDesc": "Download your transactions and reports",
     "exportCSV": "Export CSV",

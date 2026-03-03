@@ -36,6 +36,7 @@
     "date": "Fecha",
     "description": "Descripción",
     "category": "Categoría",
+    "selectCategory": "Seleccione una categoría",
     "notes": "Observaciones",
     "notesOptional": "Observaciones (opcional)",
     "notesPlaceholder": "Notas opcionales...",
@@ -672,7 +673,11 @@
     "insightOnTrack": "En el camino correcto",
     "insightOnTrackDesc": "{count, plural, one {# meta está} other {# metas están}} en ritmo para completarse",
     "insightAlmostThere": "¡Casi llegas!",
-    "insightAlmostThereDesc": "\"{name}\" está cerca del {percent}%"
+    "insightAlmostThereDesc": "\"{name}\" está cerca del {percent}%",
+    "contribute": "Movimiento",
+    "depositLabel": "Depósito",
+    "withdrawLabel": "Retiro",
+    "operationType": "Tipo de operación"
   },
   "budget": {
     "title": "Presupuesto Mensual",
@@ -894,6 +899,11 @@
     "fontSizeSmall": "Pequeño",
     "fontSizeNormal": "Normal",
     "fontSizeLarge": "Grande",
+    "customCategories": "Categorías Personalizadas",
+    "customCategoriesDesc": "Cree y administre sus categorías",
+    "newCategory": "Nueva",
+    "expenseCategories": "Gastos",
+    "incomeCategories": "Ingresos",
     "exportData": "Exportar Datos",
     "exportDataDesc": "Descargue sus transacciones e informes",
     "exportCSV": "Exportar CSV",

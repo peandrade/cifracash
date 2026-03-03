@@ -44,7 +44,7 @@ const ModalContent = React.forwardRef<
 
         "w-[calc(100%-2rem)] max-w-md max-h-[calc(100vh-2rem)] overflow-y-auto",
 
-        "bg-[#1a1a2e] border border-white/10 rounded-2xl shadow-2xl",
+        "bg-[#1c1d1d] border border-white/10 rounded-2xl shadow-2xl",
 
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",

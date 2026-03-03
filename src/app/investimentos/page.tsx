@@ -328,13 +328,8 @@ export default function InvestmentsPage() {
           <InvestmentSummaryCards summary={summary} />
         </ErrorBoundary>
 
-        {/* Row 1: Alocação + Investimentos */}
+        {/* Row 1: Investimentos + Alocação */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          <div className="lg:col-span-1">
-            <ErrorBoundary>
-              <AllocationChart data={allocation} />
-            </ErrorBoundary>
-          </div>
           <div className="lg:col-span-2 lg:relative">
             <div className="lg:absolute lg:inset-0">
               <InvestmentList
@@ -378,6 +373,11 @@ export default function InvestmentsPage() {
                 }
               />
             </div>
+          </div>
+          <div className="lg:col-span-1">
+            <ErrorBoundary>
+              <AllocationChart data={allocation} />
+            </ErrorBoundary>
           </div>
         </div>
 

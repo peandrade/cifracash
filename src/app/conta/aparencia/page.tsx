@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
@@ -10,6 +11,8 @@ import {
   Check,
   Sun,
   Moon,
+  Tags,
+  Plus,
 } from "lucide-react";
 import {
   useAppearance,
@@ -21,6 +24,9 @@ import {
   type FontWeight,
   type FontSize,
 } from "@/contexts";
+import { useCategoryStore, type Category } from "@/store/category-store";
+import { CategoryList } from "@/components/categories/category-list";
+import { CategoryModal } from "@/components/categories/category-modal";
 
 export default function AparenciaPage() {
   const router = useRouter();
@@ -28,6 +34,59 @@ export default function AparenciaPage() {
   const tc = useTranslations("common");
   const { settings, updateSettings, resetSettings } = useAppearance();
   const { theme, toggleTheme } = useTheme();
+
+  // Category state
+  const [categoryTab, setCategoryTab] = useState<"expense" | "income">("expense");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const {
+    categories,
+    fetchCategories,
+    addCategory,
+    updateCategory,
+    deleteCategory,
+    getExpenseCategories,
+    getIncomeCategories,
+    isLoading: isLoadingCategories,
+  } = useCategoryStore();
+
+  useEffect(() => {
+    if (categories.length === 0) {
+      fetchCategories();
+    }
+  }, [categories.length, fetchCategories]);
+
+  const handleOpenModal = (category?: Category) => {
+    setEditingCategory(category || null);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingCategory(null);
+  };
+
+  const handleSaveCategory = async (data: Parameters<typeof addCategory>[0] | Parameters<typeof updateCategory>[1]) => {
+    setIsSaving(true);
+    try {
+      if (editingCategory) {
+        await updateCategory(editingCategory.id, data as Parameters<typeof updateCategory>[1]);
+      } else {
+        await addCategory({ ...data, type: categoryTab } as Parameters<typeof addCategory>[0]);
+      }
+      handleCloseModal();
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteCategory = async (category: Category) => {
+    await deleteCategory(category.id);
+  };
+
+  const filteredCategories = categoryTab === "expense" ? getExpenseCategories() : getIncomeCategories();
 
   const paletteEntries = Object.entries(colorPalettes) as [ColorPalette, typeof colorPalettes[ColorPalette]][];
   const weightEntries = Object.entries(fontWeights) as [FontWeight, typeof fontWeights[FontWeight]][];
@@ -325,8 +384,83 @@ export default function AparenciaPage() {
               </button>
             </div>
           </div>
+
+          {/* Custom Categories Section */}
+          <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)] p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div
+                  className="p-3 rounded-xl transition-colors duration-300"
+                  style={{ backgroundColor: `${colorPalettes[settings.colorPalette].primary}1A` }}
+                >
+                  <Tags className="w-5 h-5" style={{ color: colorPalettes[settings.colorPalette].primary }} />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-[var(--text-primary)]">{t("customCategories")}</h2>
+                  <p className="text-sm text-[var(--text-dimmed)]">{t("customCategoriesDesc")}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => handleOpenModal()}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-white font-medium transition-all"
+                style={{
+                  background: `linear-gradient(135deg, ${colorPalettes[settings.colorPalette].primary}, ${colorPalettes[settings.colorPalette].secondary})`,
+                }}
+              >
+                <Plus className="w-4 h-4" />
+                <span>{t("newCategory")}</span>
+              </button>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex gap-2 mb-4">
+              <button
+                onClick={() => setCategoryTab("expense")}
+                className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
+                  categoryTab === "expense"
+                    ? "bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg shadow-red-500/25"
+                    : "bg-[var(--bg-hover)] text-[var(--text-muted)] hover:bg-[var(--bg-hover-strong)]"
+                }`}
+              >
+                {t("expenseCategories")}
+              </button>
+              <button
+                onClick={() => setCategoryTab("income")}
+                className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
+                  categoryTab === "income"
+                    ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/25"
+                    : "bg-[var(--bg-hover)] text-[var(--text-muted)] hover:bg-[var(--bg-hover-strong)]"
+                }`}
+              >
+                {t("incomeCategories")}
+              </button>
+            </div>
+
+            {/* Category List */}
+            {isLoadingCategories ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary-color border-t-transparent" />
+              </div>
+            ) : (
+              <CategoryList
+                categories={filteredCategories}
+                onEdit={handleOpenModal}
+                onDelete={handleDeleteCategory}
+                isDeleting={isLoadingCategories}
+              />
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Category Modal */}
+      <CategoryModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSave={handleSaveCategory}
+        isSubmitting={isSaving}
+        category={editingCategory}
+      />
     </div>
   );
 }

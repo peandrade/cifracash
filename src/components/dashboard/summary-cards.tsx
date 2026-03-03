@@ -1,6 +1,6 @@
 "use client";
 
-import { TrendingUp, TrendingDown, Wallet, ArrowUp, ArrowDown } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCurrency } from "@/contexts/currency-context";
 import { usePreferences } from "@/contexts";
@@ -12,106 +12,74 @@ interface SummaryCardsProps {
 
 export function SummaryCards({ summary }: SummaryCardsProps) {
   const t = useTranslations("dashboard");
-  const tc = useTranslations("common");
   const { formatCurrency } = useCurrency();
   const { privacy } = usePreferences();
-  const { income, expense, balance, incomeChange, expenseChange } = summary;
+  const { income, expense, balance } = summary;
+
+  const cardBase = "rounded-xl sm:rounded-2xl p-4 sm:p-6 transition-transform duration-300 ease-out hover:-translate-y-1";
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8 w-full">
       {/* Receitas */}
-      <div className="card-hover bg-gradient-to-br from-emerald-500/90 to-teal-600/90 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-xl shadow-emerald-500/10">
+      <div
+        className={cardBase}
+        style={{
+          background: "linear-gradient(90deg, var(--card-gradient-base) 0%, rgba(16, 185, 129, 0.18) 100%)",
+          boxShadow: "0 4px 20px rgba(16, 185, 129, 0.2)"
+        }}
+      >
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="text-emerald-100 text-xs sm:text-sm font-medium mb-1">
-              {t("income")}
-            </p>
-            <p className="text-xl sm:text-3xl font-bold text-white">
+            <p className="text-xs sm:text-sm font-medium mb-1" style={{ color: "#10b981" }}>{t("income")}</p>
+            <p className="text-xl sm:text-3xl font-bold" style={{ color: "var(--card-text-value)" }}>
               {privacy.hideValues ? "•••••" : formatCurrency(income)}
             </p>
           </div>
-          <div className="p-2.5 sm:p-3 bg-white/20 rounded-xl flex-shrink-0">
-            <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+          <div className="p-2.5 sm:p-3 rounded-xl flex-shrink-0" style={{ background: "rgba(16, 185, 129, 0.2)" }}>
+            <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: "#10b981" }} />
           </div>
-        </div>
-        <div className="mt-3 sm:mt-4 flex items-center gap-1 text-emerald-100 text-xs sm:text-sm">
-          {incomeChange !== undefined && incomeChange >= 0 ? (
-            <ArrowUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
-          ) : (
-            <ArrowDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
-          )}
-          <span>
-            {incomeChange !== undefined
-              ? `${incomeChange >= 0 ? "+" : ""}${incomeChange.toFixed(1)}%`
-              : "+0.0%"}
-            {" "}{tc("vsPrevMonth")}
-          </span>
         </div>
       </div>
 
       {/* Despesas */}
-      <div className="card-hover bg-gradient-to-br from-orange-500/90 to-red-500/90 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-xl shadow-orange-500/10">
+      <div
+        className={cardBase}
+        style={{
+          background: "linear-gradient(90deg, var(--card-gradient-base) 0%, rgba(239, 68, 68, 0.18) 100%)",
+          boxShadow: "0 4px 20px rgba(239, 68, 68, 0.2)"
+        }}
+      >
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="text-orange-100 text-xs sm:text-sm font-medium mb-1">
-              {t("expenses")}
-            </p>
-            <p className="text-xl sm:text-3xl font-bold text-white">
+            <p className="text-xs sm:text-sm font-medium mb-1" style={{ color: "#ef4444" }}>{t("expenses")}</p>
+            <p className="text-xl sm:text-3xl font-bold" style={{ color: "var(--card-text-value)" }}>
               {privacy.hideValues ? "•••••" : formatCurrency(expense)}
             </p>
           </div>
-          <div className="p-2.5 sm:p-3 bg-white/20 rounded-xl flex-shrink-0">
-            <TrendingDown className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+          <div className="p-2.5 sm:p-3 rounded-xl flex-shrink-0" style={{ background: "rgba(239, 68, 68, 0.2)" }}>
+            <TrendingDown className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: "#ef4444" }} />
           </div>
-        </div>
-        <div className="mt-3 sm:mt-4 flex items-center gap-1 text-orange-100 text-xs sm:text-sm">
-          {expenseChange !== undefined && expenseChange <= 0 ? (
-            <ArrowDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
-          ) : (
-            <ArrowUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
-          )}
-          <span>
-            {expenseChange !== undefined
-              ? `${expenseChange >= 0 ? "+" : ""}${expenseChange.toFixed(1)}%`
-              : "+0.0%"}
-            {" "}{tc("vsPrevMonth")}
-          </span>
         </div>
       </div>
 
       {/* Saldo */}
       <div
-        className={`card-hover bg-gradient-to-br ${
-          balance >= 0
-            ? "from-cyan-500/90 to-blue-600/90 shadow-cyan-500/10"
-            : "from-red-600/90 to-rose-700/90 shadow-red-500/10"
-        } rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-xl`}
+        className={cardBase}
+        style={{
+          background: "linear-gradient(90deg, var(--card-gradient-base) 0%, rgba(59, 130, 246, 0.18) 100%)",
+          boxShadow: "0 4px 20px rgba(59, 130, 246, 0.2)"
+        }}
       >
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p
-              className={`text-xs sm:text-sm font-medium mb-1 ${
-                balance >= 0 ? "text-cyan-100" : "text-red-100"
-              }`}
-            >
-              {t("monthBalance")}
-            </p>
-            <p className="text-xl sm:text-3xl font-bold text-white">
+            <p className="text-xs sm:text-sm font-medium mb-1" style={{ color: "#3b82f6" }}>{t("monthBalance")}</p>
+            <p className="text-xl sm:text-3xl font-bold" style={{ color: "var(--card-text-value)" }}>
               {privacy.hideValues ? "•••••" : formatCurrency(balance)}
             </p>
           </div>
-          <div className="p-2.5 sm:p-3 bg-white/20 rounded-xl flex-shrink-0">
-            <Wallet className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+          <div className="p-2.5 sm:p-3 rounded-xl flex-shrink-0" style={{ background: "rgba(59, 130, 246, 0.2)" }}>
+            <Wallet className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: "#3b82f6" }} />
           </div>
-        </div>
-        <div
-          className={`mt-3 sm:mt-4 flex items-center gap-1 text-xs sm:text-sm ${
-            balance >= 0 ? "text-cyan-100" : "text-red-100"
-          }`}
-        >
-          <span>
-            {balance >= 0 ? `✨ ${t("positiveBalance")}` : `⚠️ ${t("negativeBalance")}`}
-          </span>
         </div>
       </div>
     </div>

@@ -30,8 +30,6 @@ interface GoalSectionProps {
   headerExtra?: React.ReactNode;
 }
 
-type OperationType = "deposit" | "withdraw";
-
 export function GoalSection({ onGoalUpdated, headerExtra }: GoalSectionProps) {
   const [data, setData] = useState<GoalData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,7 +37,6 @@ export function GoalSection({ onGoalUpdated, headerExtra }: GoalSectionProps) {
   const [editGoalId, setEditGoalId] = useState<string | null>(null);
   const [deleteGoalId, setDeleteGoalId] = useState<string | null>(null);
   const [contributeGoalId, setContributeGoalId] = useState<string | null>(null);
-  const [operationType, setOperationType] = useState<OperationType>("deposit");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isContributing, setIsContributing] = useState(false);
@@ -167,22 +164,22 @@ export function GoalSection({ onGoalUpdated, headerExtra }: GoalSectionProps) {
     }
   };
 
-  const handleOpenContribute = (goalId: string, type: OperationType) => {
+  const handleOpenContribute = (goalId: string) => {
     setContributeGoalId(goalId);
-    setOperationType(type);
   };
 
-  const handleContribute = async (value: number, notes?: string) => {
+  const handleContribute = async (value: number, notes?: string, operationType?: "deposit" | "withdraw") => {
     if (!contributeGoalId) return;
+    const opType = operationType || "deposit";
     setIsContributing(true);
     try {
       const response = await fetch(`/api/goals/${contributeGoalId}/contribute`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          value: operationType === "withdraw" ? -value : value,
+          value: opType === "withdraw" ? -value : value,
           notes,
-          operationType,
+          operationType: opType,
         }),
       });
 
@@ -317,8 +314,7 @@ export function GoalSection({ onGoalUpdated, headerExtra }: GoalSectionProps) {
                       goal={goal}
                       onEdit={() => setEditGoalId(goal.id)}
                       onDelete={() => handleDeleteGoal(goal.id)}
-                      onDeposit={() => handleOpenContribute(goal.id, "deposit")}
-                      onWithdraw={() => handleOpenContribute(goal.id, "withdraw")}
+                      onContribute={() => handleOpenContribute(goal.id)}
                     />
                   ))}
                 </div>
@@ -337,7 +333,7 @@ export function GoalSection({ onGoalUpdated, headerExtra }: GoalSectionProps) {
                       goal={goal}
                       onEdit={() => setEditGoalId(goal.id)}
                       onDelete={() => handleDeleteGoal(goal.id)}
-                      onWithdraw={() => handleOpenContribute(goal.id, "withdraw")}
+                      onContribute={() => handleOpenContribute(goal.id)}
                     />
                   ))}
                 </div>
@@ -380,7 +376,7 @@ export function GoalSection({ onGoalUpdated, headerExtra }: GoalSectionProps) {
         goalName={contributeGoal?.name || ""}
         remaining={contributeGoal?.remaining || 0}
         currentValue={contributeGoal?.currentValue || 0}
-        operationType={operationType}
+        isCompleted={contributeGoal?.isCompleted || false}
       />
     </>
   );

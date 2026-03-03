@@ -14,110 +14,93 @@ export function InvestmentSummaryCards({ summary }: InvestmentSummaryCardsProps)
   const t = useTranslations("investments");
   const { privacy } = usePreferences();
   const { formatCurrency } = useCurrency();
-  const { totalInvested, currentValue, profitLoss, profitLossPercent, totalAssets } = summary;
+  const { totalInvested, currentValue, profitLoss, totalAssets } = summary;
   const isPositive = profitLoss >= 0;
 
-  const cardStyle = {
-    backgroundColor: "var(--card-bg)",
-    borderWidth: "1px",
-    borderStyle: "solid" as const,
-    borderColor: "var(--border-color)"
-  };
+  const cardBase = "rounded-xl sm:rounded-2xl p-4 sm:p-6 transition-transform duration-300 ease-out hover:-translate-y-1";
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-6 sm:mb-8">
-      {}
-      <div className="backdrop-blur rounded-xl sm:rounded-2xl p-2.5 sm:p-6 transition-colors duration-300 min-w-0" style={cardStyle}>
-        <div className="flex items-start justify-between gap-1">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
+      {/* Total Investido - Azul */}
+      <div
+        className={cardBase}
+        style={{
+          background: "linear-gradient(90deg, var(--card-gradient-base) 0%, rgba(59, 130, 246, 0.18) 100%)",
+          boxShadow: "0 4px 20px rgba(59, 130, 246, 0.2)"
+        }}
+      >
+        <div className="flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] sm:text-sm font-medium mb-0.5 sm:mb-1 truncate" style={{ color: "var(--text-muted)" }}>
+            <p className="text-xs sm:text-sm font-medium mb-1" style={{ color: "#3b82f6" }}>
               {t("totalInvested")}
             </p>
-            <p className="text-sm sm:text-2xl font-bold truncate" style={{ color: "var(--text-primary)" }}>
+            <p className="text-xl sm:text-3xl font-bold" style={{ color: "var(--card-text-value)" }}>
               {privacy.hideValues ? "•••••" : formatCurrency(totalInvested)}
             </p>
+            <p className="text-xs sm:text-sm mt-2" style={{ color: "#3b82f6", opacity: 0.7 }}>
+              {t("capitalApplied")}
+            </p>
           </div>
-          <div className="p-1.5 sm:p-3 bg-blue-500/20 rounded-lg sm:rounded-xl flex-shrink-0">
-            <Wallet className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-blue-400" />
+          <div className="p-2.5 sm:p-3 rounded-xl flex-shrink-0" style={{ background: "rgba(59, 130, 246, 0.2)" }}>
+            <Wallet className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: "#3b82f6" }} />
           </div>
         </div>
-        <p className="mt-1.5 sm:mt-3 text-[9px] sm:text-sm truncate" style={{ color: "var(--text-dimmed)" }}>
-          {t("capitalApplied")}
-        </p>
       </div>
 
-      {}
-      <div className="backdrop-blur rounded-xl sm:rounded-2xl p-2.5 sm:p-6 transition-colors duration-300 min-w-0" style={cardStyle}>
-        <div className="flex items-start justify-between gap-1">
+      {/* Valor Atual - Roxo */}
+      <div
+        className={cardBase}
+        style={{
+          background: "linear-gradient(90deg, var(--card-gradient-base) 0%, rgba(139, 92, 246, 0.18) 100%)",
+          boxShadow: "0 4px 20px rgba(139, 92, 246, 0.2)"
+        }}
+      >
+        <div className="flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] sm:text-sm font-medium mb-0.5 sm:mb-1 truncate" style={{ color: "var(--text-muted)" }}>
+            <p className="text-xs sm:text-sm font-medium mb-1" style={{ color: "#8b5cf6" }}>
               {t("currentValue")}
             </p>
-            <p className="text-sm sm:text-2xl font-bold truncate" style={{ color: "var(--text-primary)" }}>
+            <p className="text-xl sm:text-3xl font-bold" style={{ color: "var(--card-text-value)" }}>
               {privacy.hideValues ? "•••••" : formatCurrency(currentValue)}
             </p>
+            <p className="text-xs sm:text-sm mt-2" style={{ color: "#8b5cf6", opacity: 0.7 }}>
+              {totalAssets} {totalAssets === 1 ? t("asset") : t("assets")}
+            </p>
           </div>
-          <div className="p-1.5 sm:p-3 bg-primary-medium rounded-lg sm:rounded-xl flex-shrink-0">
-            <PieChart className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-primary-color" />
+          <div className="p-2.5 sm:p-3 rounded-xl flex-shrink-0" style={{ background: "rgba(139, 92, 246, 0.2)" }}>
+            <PieChart className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: "#8b5cf6" }} />
           </div>
         </div>
-        <p className="mt-1.5 sm:mt-3 text-[9px] sm:text-sm truncate" style={{ color: "var(--text-dimmed)" }}>
-          {totalAssets} {totalAssets === 1 ? t("asset") : t("assets")}
-        </p>
       </div>
 
-      {}
-      <div className="backdrop-blur rounded-xl sm:rounded-2xl p-2.5 sm:p-6 transition-colors duration-300 min-w-0" style={cardStyle}>
-        <div className="flex items-start justify-between gap-1">
+      {/* Rentabilidade - Verde */}
+      <div
+        className={cardBase}
+        style={{
+          background: "linear-gradient(90deg, var(--card-gradient-base) 0%, rgba(16, 185, 129, 0.18) 100%)",
+          boxShadow: "0 4px 20px rgba(16, 185, 129, 0.2)"
+        }}
+      >
+        <div className="flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] sm:text-sm font-medium mb-0.5 sm:mb-1 truncate" style={{ color: "var(--text-muted)" }}>
+            <p className="text-xs sm:text-sm font-medium mb-1" style={{ color: "#10b981" }}>
               {t("profitability")}
             </p>
-            <p className={`text-sm sm:text-2xl font-bold truncate ${isPositive ? "text-emerald-400" : "text-red-400"}`}>
+            <p className="text-xl sm:text-3xl font-bold" style={{ color: "var(--card-text-value)" }}>
               {privacy.hideValues ? "•••••" : `${isPositive ? "+" : ""}${formatCurrency(profitLoss)}`}
             </p>
+            <p className="text-xs sm:text-sm mt-2" style={{ color: "#10b981", opacity: 0.7 }}>
+              {isPositive ? t("profitTotal") : t("lossTotal")}
+            </p>
           </div>
-          <div className={`p-1.5 sm:p-3 rounded-lg sm:rounded-xl flex-shrink-0 ${isPositive ? "bg-emerald-500/20" : "bg-red-500/20"}`}>
+          <div className="p-2.5 sm:p-3 rounded-xl flex-shrink-0" style={{ background: "rgba(16, 185, 129, 0.2)" }}>
             {isPositive ? (
-              <TrendingUp className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-emerald-400" />
+              <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: "#10b981" }} />
             ) : (
-              <TrendingDown className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-red-400" />
+              <TrendingDown className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: "#10b981" }} />
             )}
           </div>
         </div>
-        <p className={`mt-1.5 sm:mt-3 text-[9px] sm:text-sm truncate ${isPositive ? "text-emerald-400/70" : "text-red-400/70"}`}>
-          {isPositive ? t("profitTotal") : t("lossTotal")}
-        </p>
-      </div>
-
-      {}
-      <div
-        className={`rounded-xl sm:rounded-2xl p-2.5 sm:p-6 min-w-0 ${
-          isPositive
-            ? "bg-gradient-to-br from-emerald-500/90 to-teal-600/90"
-            : "bg-gradient-to-br from-red-500/90 to-orange-600/90"
-        }`}
-      >
-        <div className="flex items-start justify-between gap-1">
-          <div className="min-w-0 flex-1">
-            <p className={`text-[10px] sm:text-sm font-medium mb-0.5 sm:mb-1 truncate ${isPositive ? "text-emerald-100" : "text-red-100"}`}>
-              {t("profitabilityPercent")}
-            </p>
-            <p className="text-sm sm:text-2xl font-bold text-white truncate">
-              {isPositive ? "+" : ""}{profitLossPercent.toFixed(2)}%
-            </p>
-          </div>
-          <div className="p-1.5 sm:p-3 bg-white/20 rounded-lg sm:rounded-xl flex-shrink-0">
-            {isPositive ? (
-              <TrendingUp className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-white" />
-            ) : (
-              <TrendingDown className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-white" />
-            )}
-          </div>
-        </div>
-        <p className={`mt-1.5 sm:mt-3 text-[9px] sm:text-sm truncate ${isPositive ? "text-emerald-100" : "text-red-100"}`}>
-          {isPositive ? t("appreciated") : t("depreciated")}
-        </p>
       </div>
     </div>
   );

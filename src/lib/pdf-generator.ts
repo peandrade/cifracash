@@ -159,7 +159,7 @@ export async function generateReportPDF({
       const chartElement = reportRef.current.querySelector(".recharts-wrapper");
       if (chartElement) {
         const canvas = await html2canvas(chartElement as HTMLElement, {
-          backgroundColor: "#1a1a2e",
+          backgroundColor: "#1c1d1d",
           scale: 2,
         });
         const imgData = canvas.toDataURL("image/png");

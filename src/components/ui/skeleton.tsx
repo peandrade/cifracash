@@ -383,9 +383,8 @@ export function SkeletonInvestmentsPage({ ariaLabel = "Loading investments..." }
         <div className="lg:col-span-2">
           <SkeletonInvestmentList />
         </div>
-        <div className="space-y-6">
+        <div className="lg:col-span-1">
           <SkeletonAllocationChart />
-          <SkeletonChart />
         </div>
       </div>
     </motion.div>

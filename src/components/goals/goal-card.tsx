@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2, Trophy, Calendar, TrendingUp, Pencil, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
+import { Trash2, Trophy, Calendar, TrendingUp, Pencil, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePreferences } from "@/contexts";
 import { useCurrency } from "@/contexts/currency-context";
@@ -11,11 +11,10 @@ interface GoalCardProps {
   goal: GoalWithProgress;
   onEdit?: () => void;
   onDelete: () => void;
-  onDeposit?: () => void;
-  onWithdraw?: () => void;
+  onContribute?: () => void;
 }
 
-export function GoalCard({ goal, onEdit, onDelete, onDeposit, onWithdraw }: GoalCardProps) {
+export function GoalCard({ goal, onEdit, onDelete, onContribute }: GoalCardProps) {
   const t = useTranslations("goals");
   const tc = useTranslations("common");
   const { formatCurrency } = useCurrency();
@@ -64,32 +63,18 @@ export function GoalCard({ goal, onEdit, onDelete, onDeposit, onWithdraw }: Goal
         </div>
 
         <div className="flex items-center gap-1">
-          {/* Deposit button */}
-          {onDeposit && !isCompleted && (
+          {/* Contribute button (deposit/withdraw) */}
+          {onContribute && (
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onDeposit();
+                onContribute();
               }}
               className="p-1.5 hover:bg-emerald-500/20 active:bg-emerald-500/30 rounded-lg transition-all"
-              title={t("depositMoney")}
-              aria-label={t("depositMoney")}
+              title={t("contribute")}
+              aria-label={t("contribute")}
             >
-              <ArrowDownCircle className="w-4 h-4 text-emerald-400" aria-hidden="true" />
-            </button>
-          )}
-          {/* Withdraw button */}
-          {onWithdraw && goal.currentValue > 0 && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onWithdraw();
-              }}
-              className="p-1.5 hover:bg-amber-500/20 active:bg-amber-500/30 rounded-lg transition-all"
-              title={t("withdrawMoney")}
-              aria-label={t("withdrawMoney")}
-            >
-              <ArrowUpCircle className="w-4 h-4 text-amber-400" aria-hidden="true" />
+              <Plus className="w-4 h-4 text-emerald-400" aria-hidden="true" />
             </button>
           )}
           {onEdit && (

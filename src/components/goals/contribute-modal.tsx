@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useId, useEffect } from "react";
-import { X, PiggyBank, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
+import { X, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { CurrencyInput } from "@/components/ui/currency-input";
 import { useCurrency } from "@/contexts/currency-context";
@@ -11,12 +11,12 @@ type OperationType = "deposit" | "withdraw";
 interface ContributeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (value: number, notes?: string) => Promise<void>;
+  onSave: (value: number, notes?: string, operationType?: OperationType) => Promise<void>;
   isSubmitting: boolean;
   goalName: string;
   remaining: number;
   currentValue: number;
-  operationType: OperationType;
+  isCompleted?: boolean;
 }
 
 export function ContributeModal({
@@ -27,31 +27,34 @@ export function ContributeModal({
   goalName,
   remaining,
   currentValue,
-  operationType,
+  isCompleted = false,
 }: ContributeModalProps) {
   const t = useTranslations("goals");
   const tc = useTranslations("common");
   const { formatCurrency, currencySymbol, convertToBRL } = useCurrency();
   const titleId = useId();
+  const [operationType, setOperationType] = useState<OperationType>("deposit");
   const [value, setValue] = useState("");
   const [notes, setNotes] = useState("");
 
   const isDeposit = operationType === "deposit";
   const maxValue = isDeposit ? remaining : currentValue;
 
-  // Reset form when modal opens/closes or operation type changes
+  // Reset form when modal opens/closes
   useEffect(() => {
     if (isOpen) {
       setValue("");
       setNotes("");
+      // If goal is completed, default to withdraw
+      setOperationType(isCompleted ? "withdraw" : "deposit");
     }
-  }, [isOpen, operationType]);
+  }, [isOpen, isCompleted]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!value) return;
 
-    await onSave(convertToBRL(parseFloat(value)), notes || undefined);
+    await onSave(convertToBRL(parseFloat(value)), notes || undefined, operationType);
 
     setValue("");
     setNotes("");
@@ -73,22 +76,13 @@ export function ContributeModal({
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-[var(--border-color-strong)]">
-          <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg ${isDeposit ? "bg-emerald-500/10" : "bg-amber-500/10"}`}>
-              {isDeposit ? (
-                <ArrowDownCircle className="w-5 h-5 text-emerald-400" aria-hidden="true" />
-              ) : (
-                <ArrowUpCircle className="w-5 h-5 text-amber-400" aria-hidden="true" />
-              )}
-            </div>
-            <div>
-              <h2 id={titleId} className="text-lg font-semibold text-[var(--text-primary)]">
-                {isDeposit ? t("depositMoney") : t("withdrawMoney")}
-              </h2>
-              <p className="text-[var(--text-dimmed)] text-sm truncate max-w-[180px]">
-                {goalName}
-              </p>
-            </div>
+          <div>
+            <h2 id={titleId} className="text-lg font-semibold text-[var(--text-primary)]">
+              {t("contribute")}
+            </h2>
+            <p className="text-[var(--text-dimmed)] text-sm truncate max-w-[200px]">
+              {goalName}
+            </p>
           </div>
           <button
             onClick={onClose}
@@ -101,6 +95,39 @@ export function ContributeModal({
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {/* Operation Type Selector */}
+          <div className="flex gap-2" role="group" aria-label={t("operationType")}>
+            <button
+              type="button"
+              onClick={() => setOperationType("deposit")}
+              disabled={isCompleted}
+              aria-pressed={operationType === "deposit"}
+              className={`flex-1 py-3 px-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
+                operationType === "deposit"
+                  ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/25"
+                  : "bg-[var(--bg-hover)] text-[var(--text-muted)] hover:bg-[var(--bg-hover-strong)]"
+              } ${isCompleted ? "opacity-50 cursor-not-allowed" : ""}`}
+            >
+              <ArrowDownCircle className="w-4 h-4" aria-hidden="true" />
+              <span>{t("depositLabel")}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setOperationType("withdraw")}
+              disabled={currentValue <= 0}
+              aria-pressed={operationType === "withdraw"}
+              className={`flex-1 py-3 px-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
+                operationType === "withdraw"
+                  ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/25"
+                  : "bg-[var(--bg-hover)] text-[var(--text-muted)] hover:bg-[var(--bg-hover-strong)]"
+              } ${currentValue <= 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+            >
+              <ArrowUpCircle className="w-4 h-4" aria-hidden="true" />
+              <span>{t("withdrawLabel")}</span>
+            </button>
+          </div>
+
           {/* Info card */}
           <div className="bg-[var(--bg-hover)] rounded-xl p-3 text-center">
             <p className="text-xs text-[var(--text-dimmed)] mb-1">

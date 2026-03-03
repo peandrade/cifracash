@@ -122,7 +122,7 @@ export function BudgetModal({
                 required
               >
                 <option value="" className="bg-[var(--bg-secondary)]">
-                  {tc("selectCategory") || t("selectCategory")}
+                  {tc("selectCategory")}
                 </option>
                 {availableCategories.map((cat) => (
                   <option

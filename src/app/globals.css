@@ -13,9 +13,9 @@
 /* ===== TEMA ESCURO (padrão) ===== */
 :root,
 .dark {
-  --bg-primary: #0f0f1a;
-  --bg-secondary: #1a1a2e;
-  --bg-tertiary: rgba(26, 26, 46, 0.8);
+  --bg-primary: #121313;
+  --bg-secondary: #1c1d1d;
+  --bg-tertiary: rgba(28, 29, 29, 0.8);
   --bg-hover: rgba(255, 255, 255, 0.1);
   --bg-hover-strong: rgba(255, 255, 255, 0.15);
 
@@ -27,10 +27,14 @@
   --border-color: rgba(255, 255, 255, 0.05);
   --border-color-strong: rgba(255, 255, 255, 0.1);
 
-  --card-bg: rgba(26, 26, 46, 0.8);
-  --navbar-bg: rgba(15, 15, 26, 0.8);
+  --card-bg: rgba(28, 29, 29, 0.8);
+  --navbar-bg: rgba(18, 19, 19, 0.8);
 
   --shadow-color: rgba(0, 0, 0, 0.3);
+
+  /* Summary Cards Gradient */
+  --card-gradient-base: #1c1d1d;
+  --card-text-value: #ffffff;
 }
 
 /* ===== TEMA CLARO ===== */
@@ -53,6 +57,10 @@
   --navbar-bg: rgba(248, 250, 252, 0.9);
 
   --shadow-color: rgba(0, 0, 0, 0.1);
+
+  /* Summary Cards Gradient */
+  --card-gradient-base: #ffffff;
+  --card-text-value: #0f172a;
 }
 
 /* Base styles */

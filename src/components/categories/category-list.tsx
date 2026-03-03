@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Pencil, Trash2, Lock } from "lucide-react";
 import { usePreferences } from "@/contexts";
 import { DynamicIcon } from "./icon-picker";
@@ -22,6 +23,8 @@ export function CategoryList({
 }: CategoryListProps) {
   const [deleteConfirm, setDeleteConfirm] = useState<Category | null>(null);
   const { general } = usePreferences();
+  const t = useTranslations("categories");
+  const tc = useTranslations("common");
 
   const handleDeleteClick = (category: Category) => {
     if (!general.confirmBeforeDelete) {
@@ -41,7 +44,7 @@ export function CategoryList({
   if (categories.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-[var(--text-dimmed)]">Nenhuma categoria encontrada</p>
+        <p className="text-[var(--text-dimmed)]">{t("noCategoryFound")}</p>
       </div>
     );
   }
@@ -72,7 +75,7 @@ export function CategoryList({
                 {category.isDefault && (
                   <span className="ml-2 text-xs text-[var(--text-dimmed)] flex items-center gap-1 inline-flex">
                     <Lock className="w-3 h-3" />
-                    Padrão
+                    {t("defaultLabel")}
                   </span>
                 )}
               </div>
@@ -83,16 +86,16 @@ export function CategoryList({
                 <button
                   onClick={() => onEdit(category)}
                   className="p-2 hover:bg-primary-medium rounded-lg transition-colors"
-                  title="Editar"
-                  aria-label={`Editar categoria ${category.name}`}
+                  title={tc("edit")}
+                  aria-label={t("editCategory", { name: category.name })}
                 >
                   <Pencil className="w-4 h-4 text-primary-color" aria-hidden="true" />
                 </button>
                 <button
                   onClick={() => handleDeleteClick(category)}
                   className="p-2 hover:bg-red-500/20 rounded-lg transition-colors"
-                  title="Excluir"
-                  aria-label={`Excluir categoria ${category.name}`}
+                  title={tc("delete")}
+                  aria-label={t("deleteCategory", { name: category.name })}
                 >
                   <Trash2 className="w-4 h-4 text-red-400" aria-hidden="true" />
                 </button>
@@ -107,9 +110,9 @@ export function CategoryList({
         isOpen={!!deleteConfirm}
         onClose={() => setDeleteConfirm(null)}
         onConfirm={handleConfirmDelete}
-        title="Excluir categoria"
-        message={`Tem certeza que deseja excluir a categoria "${deleteConfirm?.name}"? Esta ação não pode ser desfeita.`}
-        confirmText="Excluir"
+        title={t("deleteCategoryTitle")}
+        message={t("deleteCategoryConfirm", { name: deleteConfirm?.name ?? "" })}
+        confirmText={tc("delete")}
         isLoading={isDeleting}
       />
     </>

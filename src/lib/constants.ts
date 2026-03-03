@@ -49,21 +49,15 @@ export const CDI_DAILY_RATE_DEFAULT = 0.055;
 // ============================================
 
 export const EXPENSE_CATEGORIES = [
-  "Aluguel",
-  "Supermercado",
-  "Restaurante",
-  "Delivery",
+  "Alimentação",
   "Transporte",
-  "Luz",
-  "Água",
-  "Internet",
-  "Streaming",
-  "Lazer",
+  "Moradia",
   "Saúde",
   "Educação",
-  "Roupas",
-  "Pix",
-  "Fatura Cartão",
+  "Lazer",
+  "Compras",
+  "Assinaturas",
+  "Pets",
   "Outros",
 ] as const;
 
@@ -71,35 +65,44 @@ export const INCOME_CATEGORIES = [
   "Salário",
   "Freelance",
   "Investimentos",
-  "Dividendos",
-  "Pix",
+  "Vendas",
   "Outros",
 ] as const;
 
 export const CATEGORY_COLORS: Record<string, string> = {
+  // Expense categories (from seed)
+  Alimentação: "#EF4444",
+  Transporte: "#3B82F6",
+  Moradia: "#8B5CF6",
+  Saúde: "#EC4899",
+  Educação: "#10B981",
+  Lazer: "#F59E0B",
+  Compras: "#06B6D4",
+  Assinaturas: "#6366F1",
+  Pets: "#A855F7",
 
+  // Legacy expense categories
   Aluguel: "#8B5CF6",
   Supermercado: "#F59E0B",
   Restaurante: "#EC4899",
   Delivery: "#EF4444",
-  Transporte: "#3B82F6",
   Luz: "#10B981",
   Água: "#06B6D4",
   Internet: "#6366F1",
   Streaming: "#A855F7",
-  Lazer: "#F97316",
-  Saúde: "#14B8A6",
-  Educação: "#8B5CF6",
   Roupas: "#E879F9",
   Pix: "#32BCAD",
   "Fatura Cartão": "#7C3AED",
 
-  Salário: "#22C55E",
-  Freelance: "#84CC16",
-  Investimentos: "#0EA5E9",
-  Dividendos: "#10B981",
+  // Income categories
+  Salário: "#10B981",
+  Freelance: "#3B82F6",
+  Investimentos: "#8B5CF6",
+  Vendas: "#F59E0B",
+  Dividendos: "#22C55E",
 
-  Outros: "#64748B",
+  // Fallback
+  Outros: "#6B7280",
 };
 
 export function getCategoryColor(category: string): string {

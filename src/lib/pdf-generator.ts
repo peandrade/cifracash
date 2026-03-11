@@ -438,7 +438,7 @@ export async function generateReportPDF({
         pdf.setTextColor(...colors.text);
         pdf.setFontSize(9);
         pdf.setFont("helvetica", "normal");
-        const desc = t.description.length > 35 ? t.description.substring(0, 32) + "..." : t.description;
+        const desc = (t.description || "").length > 35 ? (t.description || "").substring(0, 32) + "..." : (t.description || "");
         pdf.text(desc, margin + 12, rowY + 2);
 
         // Date
@@ -490,7 +490,7 @@ export async function generateReportPDF({
         pdf.setTextColor(...colors.text);
         pdf.setFontSize(9);
         pdf.setFont("helvetica", "normal");
-        const desc = t.description.length > 35 ? t.description.substring(0, 32) + "..." : t.description;
+        const desc = (t.description || "").length > 35 ? (t.description || "").substring(0, 32) + "..." : (t.description || "");
         pdf.text(desc, margin + 12, rowY + 2);
 
         // Date

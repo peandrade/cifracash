@@ -17,7 +17,6 @@ import { useTheme, useUser, useSidebar } from "@/contexts";
 import { useTranslations } from "next-intl";
 import { Logo } from "@/components/ui/logo";
 import { AnimatedThemeToggle } from "@/components/ui/animated-theme-toggle";
-import { motion } from "framer-motion";
 
 const authRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
 
@@ -68,18 +67,12 @@ export function Sidebar() {
   };
 
   return (
-    <motion.aside
-      className="fixed left-0 top-0 h-screen z-40 backdrop-blur-xl border-r hidden md:flex flex-col"
+    <aside
+      className="fixed left-0 top-0 h-screen z-40 backdrop-blur-xl border-r hidden md:flex flex-col transition-[width] duration-300 ease-in-out"
       style={{
         backgroundColor: "var(--navbar-bg)",
         borderColor: "var(--border-color)",
-      }}
-      animate={{
         width: isOpen ? "240px" : "64px",
-      }}
-      transition={{
-        duration: 0.3,
-        ease: "easeInOut",
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -88,24 +81,18 @@ export function Sidebar() {
       <div className={`flex items-center h-16 border-b ${!isOpen ? "justify-center" : "px-4"}`} style={{ borderColor: "var(--border-color)" }}>
         <Link href="/" className={`flex items-center ${isOpen ? "gap-3" : ""}`}>
           <Logo size="md" />
-          <motion.span
-            className="text-xl font-bold bg-clip-text text-transparent whitespace-pre"
+          <span
+            className="text-xl font-bold bg-clip-text text-transparent whitespace-pre overflow-hidden transition-all duration-200 ease-in-out"
             style={{
               backgroundImage: !mounted || theme === "dark"
                 ? "linear-gradient(to right, #ffffff, #9ca3af)"
                 : "linear-gradient(to right, #0f172a, #475569)",
-            }}
-            animate={{
               opacity: isOpen ? 1 : 0,
               width: isOpen ? "auto" : 0,
             }}
-            transition={{
-              duration: 0.2,
-              ease: "easeInOut",
-            }}
           >
             CifraCash
-          </motion.span>
+          </span>
         </Link>
       </div>
 
@@ -129,19 +116,15 @@ export function Sidebar() {
               title={!isOpen ? item.label : undefined}
             >
               <Icon className="w-5 h-5 shrink-0" />
-              <motion.span
-                className="whitespace-pre"
-                animate={{
+              <span
+                className="whitespace-pre overflow-hidden transition-all duration-200 ease-in-out"
+                style={{
                   opacity: isOpen ? 1 : 0,
                   width: isOpen ? "auto" : 0,
                 }}
-                transition={{
-                  duration: 0.2,
-                  ease: "easeInOut",
-                }}
               >
                 {item.label}
-              </motion.span>
+              </span>
             </Link>
           );
         })}
@@ -159,19 +142,15 @@ export function Sidebar() {
             isDark={mounted ? theme === "dark" : true}
             onToggle={toggleTheme}
           />
-          <motion.span
-            className="text-sm font-medium whitespace-pre text-[var(--text-muted)]"
-            animate={{
+          <span
+            className="text-sm font-medium whitespace-pre text-[var(--text-muted)] overflow-hidden transition-all duration-200 ease-in-out"
+            style={{
               opacity: isOpen ? 1 : 0,
               width: isOpen ? "auto" : 0,
             }}
-            transition={{
-              duration: 0.2,
-              ease: "easeInOut",
-            }}
           >
             {mounted ? (theme === "dark" ? t("lightTheme") : t("darkTheme")) : t("theme")}
-          </motion.span>
+          </span>
         </div>
 
         {/* User info */}
@@ -190,15 +169,11 @@ export function Sidebar() {
                   {userInitial}
                 </div>
               )}
-              <motion.div
-                className="min-w-0 overflow-hidden"
-                animate={{
+              <div
+                className="min-w-0 overflow-hidden transition-all duration-200 ease-in-out"
+                style={{
                   opacity: isOpen ? 1 : 0,
                   width: isOpen ? "auto" : 0,
-                }}
-                transition={{
-                  duration: 0.2,
-                  ease: "easeInOut",
                 }}
               >
                 <p className="text-sm font-medium text-[var(--text-primary)] truncate whitespace-pre">
@@ -207,7 +182,7 @@ export function Sidebar() {
                 <p className="text-[10px] text-[var(--text-dimmed)] truncate whitespace-pre">
                   {userEmail}
                 </p>
-              </motion.div>
+              </div>
             </div>
 
             {/* Minha Conta */}
@@ -219,19 +194,15 @@ export function Sidebar() {
               title={!isOpen ? t("myAccount") : undefined}
             >
               <User className="w-5 h-5 shrink-0" />
-              <motion.span
-                className="text-sm font-medium whitespace-pre"
-                animate={{
+              <span
+                className="text-sm font-medium whitespace-pre overflow-hidden transition-all duration-200 ease-in-out"
+                style={{
                   opacity: isOpen ? 1 : 0,
                   width: isOpen ? "auto" : 0,
                 }}
-                transition={{
-                  duration: 0.2,
-                  ease: "easeInOut",
-                }}
               >
                 {t("myAccount")}
-              </motion.span>
+              </span>
             </button>
 
             {/* Logout */}
@@ -243,19 +214,15 @@ export function Sidebar() {
               title={!isOpen ? t("logout") : undefined}
             >
               <LogOut className="w-5 h-5 shrink-0" />
-              <motion.span
-                className="text-sm font-medium whitespace-pre"
-                animate={{
+              <span
+                className="text-sm font-medium whitespace-pre overflow-hidden transition-all duration-200 ease-in-out"
+                style={{
                   opacity: isOpen ? 1 : 0,
                   width: isOpen ? "auto" : 0,
                 }}
-                transition={{
-                  duration: 0.2,
-                  ease: "easeInOut",
-                }}
               >
                 {t("logout")}
-              </motion.span>
+              </span>
             </button>
           </>
         )}
@@ -284,6 +251,6 @@ export function Sidebar() {
           </a>
         </div>
       </div>
-    </motion.aside>
+    </aside>
   );
 }

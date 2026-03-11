@@ -302,7 +302,7 @@ export function DataImportSection() {
               disabled={totalValidItems === 0}
               className="flex-1 p-3 rounded-xl bg-blue-500 text-white hover:bg-blue-600 transition-all font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {t("importValidItems").replace("{count}", String(totalValidItems))}
+              {t("importValidItems", { count: totalValidItems })}
             </button>
           </div>
         </div>

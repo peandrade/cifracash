@@ -8,18 +8,16 @@ import {
   TrendingUp,
   CreditCard,
   FileBarChart,
-  Sun,
-  Moon,
   LogOut,
   User,
-  ChevronsLeft,
-  ChevronsRight,
   Github,
   Linkedin,
 } from "lucide-react";
 import { useTheme, useUser, useSidebar } from "@/contexts";
 import { useTranslations } from "next-intl";
 import { Logo } from "@/components/ui/logo";
+import { AnimatedThemeToggle } from "@/components/ui/animated-theme-toggle";
+import { motion } from "framer-motion";
 
 const authRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
 
@@ -29,7 +27,7 @@ export function Sidebar() {
   const { theme, toggleTheme, mounted } = useTheme();
   const { data: session } = useSession();
   const { profile } = useUser();
-  const { isCollapsed, toggleSidebar } = useSidebar();
+  const { setIsHovered, isOpen } = useSidebar();
   const t = useTranslations("nav");
   const tc = useTranslations("common");
 
@@ -70,31 +68,44 @@ export function Sidebar() {
   };
 
   return (
-    <aside
-      className={`fixed left-0 top-0 h-screen z-40 backdrop-blur-xl border-r transition-all duration-300 hidden md:flex flex-col ${
-        isCollapsed ? "w-16" : "w-60"
-      }`}
+    <motion.aside
+      className="fixed left-0 top-0 h-screen z-40 backdrop-blur-xl border-r hidden md:flex flex-col"
       style={{
         backgroundColor: "var(--navbar-bg)",
         borderColor: "var(--border-color)",
       }}
+      animate={{
+        width: isOpen ? "240px" : "64px",
+      }}
+      transition={{
+        duration: 0.3,
+        ease: "easeInOut",
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Logo */}
-      <div className={`flex items-center h-16 border-b ${isCollapsed ? "justify-center px-2" : "px-4"}`} style={{ borderColor: "var(--border-color)" }}>
-        <Link href="/" className={`flex items-center ${isCollapsed ? "" : "gap-3"}`}>
+      <div className={`flex items-center h-16 border-b ${!isOpen ? "justify-center" : "px-4"}`} style={{ borderColor: "var(--border-color)" }}>
+        <Link href="/" className={`flex items-center ${isOpen ? "gap-3" : ""}`}>
           <Logo size="md" />
-          {!isCollapsed && (
-            <span
-              className="text-xl font-bold bg-clip-text text-transparent"
-              style={{
-                backgroundImage: !mounted || theme === "dark"
-                  ? "linear-gradient(to right, #ffffff, #9ca3af)"
-                  : "linear-gradient(to right, #0f172a, #475569)",
-              }}
-            >
-              CifraCash
-            </span>
-          )}
+          <motion.span
+            className="text-xl font-bold bg-clip-text text-transparent whitespace-pre"
+            style={{
+              backgroundImage: !mounted || theme === "dark"
+                ? "linear-gradient(to right, #ffffff, #9ca3af)"
+                : "linear-gradient(to right, #0f172a, #475569)",
+            }}
+            animate={{
+              opacity: isOpen ? 1 : 0,
+              width: isOpen ? "auto" : 0,
+            }}
+            transition={{
+              duration: 0.2,
+              ease: "easeInOut",
+            }}
+          >
+            CifraCash
+          </motion.span>
         </Link>
       </div>
 
@@ -108,17 +119,29 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 rounded-xl font-medium transition-all ${
-                isCollapsed ? "justify-center p-3" : "px-4 py-2.5"
+              className={`flex items-center rounded-xl font-medium transition-colors ${
+                !isOpen ? "justify-center p-3" : "gap-3 px-4 py-2.5"
               } ${
                 isActive
                   ? "bg-primary-gradient text-white shadow-lg shadow-primary"
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]"
               }`}
-              title={isCollapsed ? item.label : undefined}
+              title={!isOpen ? item.label : undefined}
             >
               <Icon className="w-5 h-5 shrink-0" />
-              {!isCollapsed && <span>{item.label}</span>}
+              <motion.span
+                className="whitespace-pre"
+                animate={{
+                  opacity: isOpen ? 1 : 0,
+                  width: isOpen ? "auto" : 0,
+                }}
+                transition={{
+                  duration: 0.2,
+                  ease: "easeInOut",
+                }}
+              >
+                {item.label}
+              </motion.span>
             </Link>
           );
         })}
@@ -127,33 +150,34 @@ export function Sidebar() {
       {/* Bottom section */}
       <div className="border-t px-2 py-3 space-y-1" style={{ borderColor: "var(--border-color)" }}>
         {/* Theme toggle */}
-        <button
-          onClick={toggleTheme}
-          className={`flex items-center gap-3 w-full rounded-xl transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] ${
-            isCollapsed ? "justify-center p-3" : "px-4 py-2.5"
+        <div
+          className={`flex items-center w-full rounded-xl ${
+            !isOpen ? "justify-center" : "gap-2 px-2"
           }`}
-          title={theme === "dark" ? t("lightTheme") : t("darkTheme")}
         >
-          {mounted ? (
-            theme === "dark" ? (
-              <Sun className="w-5 h-5 shrink-0" />
-            ) : (
-              <Moon className="w-5 h-5 shrink-0" />
-            )
-          ) : (
-            <Sun className="w-5 h-5 shrink-0" />
-          )}
-          {!isCollapsed && (
-            <span className="text-sm font-medium">
-              {mounted ? (theme === "dark" ? t("lightTheme") : t("darkTheme")) : t("theme")}
-            </span>
-          )}
-        </button>
+          <AnimatedThemeToggle
+            isDark={mounted ? theme === "dark" : true}
+            onToggle={toggleTheme}
+          />
+          <motion.span
+            className="text-sm font-medium whitespace-pre text-[var(--text-muted)]"
+            animate={{
+              opacity: isOpen ? 1 : 0,
+              width: isOpen ? "auto" : 0,
+            }}
+            transition={{
+              duration: 0.2,
+              ease: "easeInOut",
+            }}
+          >
+            {mounted ? (theme === "dark" ? t("lightTheme") : t("darkTheme")) : t("theme")}
+          </motion.span>
+        </div>
 
         {/* User info */}
         {session?.user && (
           <>
-            <div className={`flex items-center gap-3 px-2 py-2 ${isCollapsed ? "justify-center" : ""}`}>
+            <div className={`flex items-center py-2 ${!isOpen ? "justify-center px-0" : "gap-3 px-2"}`}>
               {userImage ? (
                 <img
                   src={userImage}
@@ -166,64 +190,78 @@ export function Sidebar() {
                   {userInitial}
                 </div>
               )}
-              {!isCollapsed && (
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-[var(--text-primary)] truncate">
-                    {userName}
-                  </p>
-                  <p className="text-[10px] text-[var(--text-dimmed)] truncate">
-                    {userEmail}
-                  </p>
-                </div>
-              )}
+              <motion.div
+                className="min-w-0 overflow-hidden"
+                animate={{
+                  opacity: isOpen ? 1 : 0,
+                  width: isOpen ? "auto" : 0,
+                }}
+                transition={{
+                  duration: 0.2,
+                  ease: "easeInOut",
+                }}
+              >
+                <p className="text-sm font-medium text-[var(--text-primary)] truncate whitespace-pre">
+                  {userName}
+                </p>
+                <p className="text-[10px] text-[var(--text-dimmed)] truncate whitespace-pre">
+                  {userEmail}
+                </p>
+              </motion.div>
             </div>
 
             {/* Minha Conta */}
             <button
               onClick={() => router.push("/conta")}
-              className={`flex items-center gap-3 w-full rounded-xl transition-all text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] ${
-                isCollapsed ? "justify-center p-3" : "px-4 py-2.5"
+              className={`flex items-center w-full rounded-xl transition-colors text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] ${
+                !isOpen ? "justify-center p-3" : "gap-3 px-4 py-2.5"
               }`}
-              title={isCollapsed ? t("myAccount") : undefined}
+              title={!isOpen ? t("myAccount") : undefined}
             >
               <User className="w-5 h-5 shrink-0" />
-              {!isCollapsed && <span className="text-sm font-medium">{t("myAccount")}</span>}
+              <motion.span
+                className="text-sm font-medium whitespace-pre"
+                animate={{
+                  opacity: isOpen ? 1 : 0,
+                  width: isOpen ? "auto" : 0,
+                }}
+                transition={{
+                  duration: 0.2,
+                  ease: "easeInOut",
+                }}
+              >
+                {t("myAccount")}
+              </motion.span>
             </button>
 
             {/* Logout */}
             <button
               onClick={handleLogout}
-              className={`flex items-center gap-3 w-full rounded-xl transition-all text-red-400 hover:bg-red-500/10 ${
-                isCollapsed ? "justify-center p-3" : "px-4 py-2.5"
+              className={`flex items-center w-full rounded-xl transition-colors text-red-400 hover:bg-red-500/10 ${
+                !isOpen ? "justify-center p-3" : "gap-3 px-4 py-2.5"
               }`}
-              title={isCollapsed ? t("logout") : undefined}
+              title={!isOpen ? t("logout") : undefined}
             >
               <LogOut className="w-5 h-5 shrink-0" />
-              {!isCollapsed && <span className="text-sm font-medium">{t("logout")}</span>}
+              <motion.span
+                className="text-sm font-medium whitespace-pre"
+                animate={{
+                  opacity: isOpen ? 1 : 0,
+                  width: isOpen ? "auto" : 0,
+                }}
+                transition={{
+                  duration: 0.2,
+                  ease: "easeInOut",
+                }}
+              >
+                {t("logout")}
+              </motion.span>
             </button>
           </>
         )}
 
-        {/* Collapse toggle */}
-        <button
-          onClick={toggleSidebar}
-          className={`flex items-center gap-3 w-full rounded-xl transition-all text-[var(--text-dimmed)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] ${
-            isCollapsed ? "justify-center p-3" : "px-4 py-2.5"
-          }`}
-          title={isCollapsed ? tc("expand") : tc("collapse")}
-        >
-          {isCollapsed ? (
-            <ChevronsRight className="w-5 h-5 shrink-0" />
-          ) : (
-            <>
-              <ChevronsLeft className="w-5 h-5 shrink-0" />
-              <span className="text-sm font-medium">{tc("collapse")}</span>
-            </>
-          )}
-        </button>
-
         {/* Social links */}
-        <div className={`flex items-center pt-2 border-t ${isCollapsed ? "justify-center gap-1" : "gap-3 px-2"}`} style={{ borderColor: "var(--border-color)" }}>
+        <div className={`flex items-center pt-2 border-t ${!isOpen ? "justify-center" : "gap-3 px-2"}`} style={{ borderColor: "var(--border-color)" }}>
           <a
             href="https://github.com/peandrade"
             target="_blank"
@@ -246,6 +284,6 @@ export function Sidebar() {
           </a>
         </div>
       </div>
-    </aside>
+    </motion.aside>
   );
 }

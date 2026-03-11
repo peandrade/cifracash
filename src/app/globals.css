@@ -35,6 +35,22 @@
   /* Summary Cards Gradient */
   --card-gradient-base: #1c1d1d;
   --card-text-value: #ffffff;
+
+  /* Chart Variables */
+  --chart-background: #121313;
+  --chart-foreground: #6b7280;
+  --chart-foreground-muted: #9ca3af;
+  --chart-line-primary: #8B5CF6;
+  --chart-line-secondary: #6366F1;
+  --chart-crosshair: rgba(255, 255, 255, 0.3);
+  --chart-grid: rgba(255, 255, 255, 0.1);
+  --chart-tooltip-background: rgba(28, 29, 29, 0.95);
+  --chart-tooltip-foreground: #ffffff;
+  --chart-tooltip-muted: #9ca3af;
+  --chart-marker-background: #1c1d1d;
+  --chart-marker-border: rgba(255, 255, 255, 0.2);
+  --chart-marker-foreground: #ffffff;
+  --chart-label: #6b7280;
 }
 
 /* ===== TEMA CLARO ===== */
@@ -61,6 +77,22 @@
   /* Summary Cards Gradient */
   --card-gradient-base: #ffffff;
   --card-text-value: #0f172a;
+
+  /* Chart Variables */
+  --chart-background: #ffffff;
+  --chart-foreground: #64748b;
+  --chart-foreground-muted: #94a3b8;
+  --chart-line-primary: #8B5CF6;
+  --chart-line-secondary: #6366F1;
+  --chart-crosshair: rgba(0, 0, 0, 0.2);
+  --chart-grid: rgba(0, 0, 0, 0.08);
+  --chart-tooltip-background: rgba(255, 255, 255, 0.95);
+  --chart-tooltip-foreground: #0f172a;
+  --chart-tooltip-muted: #64748b;
+  --chart-marker-background: #ffffff;
+  --chart-marker-border: rgba(0, 0, 0, 0.1);
+  --chart-marker-foreground: #0f172a;
+  --chart-label: #64748b;
 }
 
 /* Base styles */
@@ -178,6 +210,33 @@ select.appearance-none {
 /* Remove seta CSS para selects que usam icone manual */
 select.select-icon-manual {
   background-image: none;
+}
+
+/* Estilização das opções do select para funcionar em todos os sistemas */
+select option {
+  background-color: #1c1d1d;
+  color: #ffffff;
+  padding: 8px 12px;
+}
+
+select option:hover,
+select option:focus,
+select option:checked {
+  background-color: #2d2e2e;
+  color: #ffffff;
+}
+
+/* Tema claro - opções do select */
+.light select option {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+
+.light select option:hover,
+.light select option:focus,
+.light select option:checked {
+  background-color: #f1f5f9;
+  color: #0f172a;
 }
 
 

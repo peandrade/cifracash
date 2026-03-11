@@ -1,5 +1,6 @@
 import { ThemeProvider } from "@/contexts";
 import { LanguageSelector } from "@/components/auth/language-selector";
+import { BeamsBackground } from "@/components/ui/beams-background";
 
 export default function AuthLayout({
   children,
@@ -8,16 +9,13 @@ export default function AuthLayout({
 }) {
   return (
     <ThemeProvider>
-      <div
-        className="min-h-screen flex items-center justify-center p-4 relative"
-        style={{ backgroundColor: "var(--bg-primary)" }}
-      >
+      <BeamsBackground intensity="medium">
         {/* Global Language Selector for Auth Pages */}
         <div className="fixed top-4 right-4 z-50">
           <LanguageSelector size="sm" />
         </div>
         {children}
-      </div>
+      </BeamsBackground>
     </ThemeProvider>
   );
 }

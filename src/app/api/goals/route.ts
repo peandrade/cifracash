@@ -121,19 +121,21 @@ export async function POST(request: NextRequest) {
     const { name, description, type, targetValue, deadline, icon, color, currentValue } = validation.data;
 
     // Create goal using repository (handles encryption)
+    // Note: Start with currentValue: 0, the contribution will add the initial value
     const goal = await goalRepository.create({
       userId: session.user.id,
       name,
       description: description || undefined,
       category: type, // Schema uses 'type', DB uses 'category'
       targetValue,
-      currentValue: currentValue || 0,
+      currentValue: 0,
       targetDate: deadline ? new Date(deadline) : undefined,
       icon: icon || undefined,
       color: color || "#8B5CF6",
     });
 
     // Create initial contribution if there's a starting value
+    // This will update the goal's currentValue via addContribution
     if (currentValue && currentValue > 0) {
       await goalRepository.addContribution(goal.id, session.user.id, {
         value: currentValue,

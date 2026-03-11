@@ -1,7 +1,7 @@
 import { Suspense } from "react";
-import { LoginForm } from "@/components/auth/login-form";
+import { AuthCard } from "@/components/auth/auth-card";
 
-function LoginFormFallback() {
+function AuthCardFallback() {
   return (
     <div className="w-full max-w-md space-y-8">
       <div className="text-center">
@@ -14,8 +14,8 @@ function LoginFormFallback() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<LoginFormFallback />}>
-      <LoginForm />
+    <Suspense fallback={<AuthCardFallback />}>
+      <AuthCard initialMode="login" />
     </Suspense>
   );
 }

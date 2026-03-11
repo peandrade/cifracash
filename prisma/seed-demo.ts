@@ -815,38 +815,38 @@ async function main() {
       { date: 250, type: "buy", qty: 100, price: 32.80 },
       { date: 140, type: "buy", qty: 80, price: 35.50 },
       { date: 50, type: "sell", qty: 50, price: 42.00 },
-    ], currentPrice: 39.80 },
+    ], currentPrice: 44.50 },
     { name: "Vale", ticker: "VALE3", institution: "XP", ops: [
       { date: 320, type: "buy", qty: 80, price: 68.00 },
       { date: 180, type: "buy", qty: 60, price: 64.50 },
       { date: 70, type: "sell", qty: 30, price: 72.00 },
-    ], currentPrice: 65.20 },
+    ], currentPrice: 74.80 },
     { name: "Itaú Unibanco", ticker: "ITUB4", institution: "XP", ops: [
       { date: 350, type: "buy", qty: 200, price: 24.00 },
       { date: 220, type: "buy", qty: 150, price: 27.50 },
       { date: 100, type: "buy", qty: 100, price: 30.00 },
-    ], currentPrice: 34.50 },
+    ], currentPrice: 38.90 },
     { name: "Banco do Brasil", ticker: "BBAS3", institution: "XP", ops: [
       { date: 300, type: "buy", qty: 80, price: 42.00 },
       { date: 160, type: "buy", qty: 60, price: 48.50 },
       { date: 60, type: "buy", qty: 40, price: 53.00 },
-    ], currentPrice: 56.80 },
+    ], currentPrice: 62.50 },
     { name: "WEG", ticker: "WEGE3", institution: "BTG", ops: [
       { date: 280, type: "buy", qty: 60, price: 36.00 },
       { date: 130, type: "buy", qty: 40, price: 42.50 },
-    ], currentPrice: 48.20 },
+    ], currentPrice: 54.80 },
     { name: "Rede D'Or", ticker: "RDOR3", institution: "BTG", ops: [
       { date: 200, type: "buy", qty: 50, price: 24.00 },
       { date: 80, type: "buy", qty: 40, price: 28.00 },
-    ], currentPrice: 31.50 },
+    ], currentPrice: 35.90 },
     { name: "B3", ticker: "B3SA3", institution: "XP", ops: [
       { date: 240, type: "buy", qty: 120, price: 11.20 },
       { date: 100, type: "buy", qty: 80, price: 12.80 },
-    ], currentPrice: 14.20 },
+    ], currentPrice: 16.40 },
     { name: "Localiza", ticker: "RENT3", institution: "BTG", ops: [
       { date: 180, type: "buy", qty: 40, price: 48.00 },
       { date: 60, type: "buy", qty: 30, price: 52.50 },
-    ], currentPrice: 55.80 },
+    ], currentPrice: 62.30 },
   ];
 
   for (const stock of stocks) {
@@ -905,29 +905,29 @@ async function main() {
       { date: 320, type: "buy", qty: 25, price: 158.00 },
       { date: 200, type: "buy", qty: 20, price: 164.00 },
       { date: 80, type: "buy", qty: 15, price: 161.00 },
-    ], currentPrice: 166.50 },
+    ], currentPrice: 172.50 },
     { name: "XPLG11", ticker: "XPLG11", institution: "XP", ops: [
       { date: 280, type: "buy", qty: 40, price: 94.00 },
       { date: 150, type: "buy", qty: 35, price: 99.50 },
       { date: 50, type: "buy", qty: 25, price: 101.00 },
-    ], currentPrice: 104.20 },
+    ], currentPrice: 108.90 },
     { name: "MXRF11", ticker: "MXRF11", institution: "XP", ops: [
       { date: 260, type: "buy", qty: 150, price: 10.20 },
       { date: 140, type: "buy", qty: 120, price: 10.55 },
       { date: 40, type: "buy", qty: 100, price: 10.38 },
-    ], currentPrice: 10.62 },
+    ], currentPrice: 11.15 },
     { name: "KNRI11", ticker: "KNRI11", institution: "BTG", ops: [
       { date: 300, type: "buy", qty: 25, price: 134.00 },
       { date: 160, type: "buy", qty: 20, price: 139.50 },
-    ], currentPrice: 145.00 },
+    ], currentPrice: 152.00 },
     { name: "VISC11", ticker: "VISC11", institution: "BTG", ops: [
       { date: 240, type: "buy", qty: 35, price: 108.00 },
       { date: 100, type: "buy", qty: 30, price: 114.50 },
-    ], currentPrice: 120.80 },
+    ], currentPrice: 124.80 },
     { name: "BTLG11", ticker: "BTLG11", institution: "XP", ops: [
       { date: 180, type: "buy", qty: 30, price: 97.00 },
       { date: 60, type: "buy", qty: 25, price: 102.00 },
-    ], currentPrice: 107.50 },
+    ], currentPrice: 112.50 },
   ];
 
   for (const fii of fiis) {
@@ -1150,16 +1150,16 @@ async function main() {
       { date: 220, type: "buy", qty: 0.04, price: 190000 },
       { date: 100, type: "buy", qty: 0.025, price: 215000 },
       { date: 40, type: "sell", qty: 0.015, price: 230000 },
-    ], currentPrice: 210000 },
+    ], currentPrice: 245000 },
     { name: "Ethereum", ticker: "ETH", institution: "Binance", ops: [
       { date: 280, type: "buy", qty: 0.5, price: 11000 },
       { date: 160, type: "buy", qty: 0.6, price: 13000 },
       { date: 60, type: "buy", qty: 0.4, price: 15000 },
-    ], currentPrice: 14500 },
+    ], currentPrice: 17800 },
     { name: "Solana", ticker: "SOL", institution: "Binance", ops: [
       { date: 160, type: "buy", qty: 10, price: 140 },
       { date: 60, type: "buy", qty: 15, price: 175 },
-    ], currentPrice: 200 },
+    ], currentPrice: 228 },
   ];
 
   for (const crypto of cryptos) {

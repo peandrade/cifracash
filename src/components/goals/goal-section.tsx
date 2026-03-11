@@ -67,10 +67,10 @@ export function GoalSection({ onGoalUpdated, headerExtra }: GoalSectionProps) {
   const handleSave = async (goalData: {
     name: string;
     description?: string;
-    category: GoalCategoryType;
+    type: GoalCategoryType;
     targetValue: number;
     currentValue?: number;
-    targetDate?: string;
+    deadline?: string;
     color?: string;
   }) => {
     setIsSubmitting(true);
@@ -138,9 +138,9 @@ export function GoalSection({ onGoalUpdated, headerExtra }: GoalSectionProps) {
   const handleEdit = async (goalData: {
     name: string;
     description?: string;
-    category: GoalCategoryType;
+    type: GoalCategoryType;
     targetValue: number;
-    targetDate?: string;
+    deadline?: string;
     color?: string;
   }) => {
     if (!editGoalId) return;

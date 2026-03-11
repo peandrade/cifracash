@@ -1,18 +1,17 @@
 "use client";
 
-import { useId } from "react";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { useId, useMemo } from "react";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCurrency } from "@/contexts/currency-context";
 import { usePreferences } from "@/contexts";
+import {
+  AreaChart,
+  Area,
+  Grid,
+  XAxis,
+  ChartTooltip,
+} from "@/components/ui/area-chart";
 
 const HIDDEN = "•••••";
 import type { MonthlyEvolution, EvolutionPeriod } from "@/types";
@@ -31,57 +30,6 @@ const PERIOD_KEYS: { value: EvolutionPeriod; key: string }[] = [
   { value: "1y", key: "1y" },
 ];
 
-interface TooltipPayload {
-  value: number;
-  name: string;
-  color: string;
-}
-
-function ChartTooltip({
-  active,
-  payload,
-  label,
-  hideValues,
-  formatCurrency,
-  incomeLabel,
-  expensesLabel,
-}: {
-  active?: boolean;
-  payload?: TooltipPayload[];
-  label?: string;
-  hideValues?: boolean;
-  formatCurrency: (value: number) => string;
-  incomeLabel: string;
-  expensesLabel: string;
-}) {
-  if (active && payload && payload.length) {
-    return (
-      <div
-        className="rounded-lg p-3 shadow-xl"
-        style={{
-          backgroundColor: "var(--card-bg)",
-          borderWidth: "1px",
-          borderStyle: "solid",
-          borderColor: "var(--border-color)"
-        }}
-      >
-        <p className="text-sm mb-1" style={{ color: "var(--text-muted)" }}>{label}</p>
-        {payload.map((entry, index) => (
-          <p
-            key={index}
-            style={{ color: entry.color }}
-            className="text-sm font-medium"
-          >
-            {entry.name === "income" ? incomeLabel : expensesLabel}:{" "}
-            {hideValues ? HIDDEN : formatCurrency(entry.value)}
-          </p>
-        ))}
-      </div>
-    );
-  }
-  return null;
-}
-
 export function MonthlyChart({ data, period, onPeriodChange }: MonthlyChartProps) {
   const t = useTranslations("dashboard");
   const tp = useTranslations("periods");
@@ -94,6 +42,14 @@ export function MonthlyChart({ data, period, onPeriodChange }: MonthlyChartProps
   // Calculate totals for accessibility description
   const totalIncome = data.reduce((sum, d) => sum + d.income, 0);
   const totalExpense = data.reduce((sum, d) => sum + d.expense, 0);
+
+  // Transform data for the new chart format - add date property
+  const chartData = useMemo(() => {
+    return data.map((d, index) => ({
+      ...d,
+      date: new Date(Date.now() - (data.length - 1 - index) * 24 * 60 * 60 * 1000),
+    }));
+  }, [data]);
 
   return (
     <div
@@ -142,53 +98,55 @@ export function MonthlyChart({ data, period, onPeriodChange }: MonthlyChartProps
         {privacy.hideValues ? ` ${t("valuesHidden")}.` : ` ${t("totalIncome")} ${formatCurrency(totalIncome)}. ${t("totalExpenses")} ${formatCurrency(totalExpense)}.`}
       </p>
       <div className="h-48 sm:h-64" role="img" aria-describedby={descriptionId}>
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data}>
-            <defs>
-              <linearGradient id="colorReceitas" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#10B981" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
-              </linearGradient>
-              <linearGradient id="colorDespesas" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#6366F1" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#6366F1" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <XAxis
-              dataKey="month"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "#6B7280", fontSize: 12 }}
-            />
-            <YAxis
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "#6B7280", fontSize: 12 }}
-              tickFormatter={(value) =>
-                privacy.hideValues ? "•••" : `${(value / 1000).toFixed(0)}k`
-              }
-            />
-            <Tooltip content={<ChartTooltip hideValues={privacy.hideValues} formatCurrency={formatCurrency} incomeLabel={t("income")} expensesLabel={t("expenses")} />} />
+        {chartData.length > 0 ? (
+          <AreaChart
+            data={chartData}
+            xDataKey="date"
+            margin={{ top: 20, right: 20, bottom: 40, left: 20 }}
+            aspectRatio="auto"
+            className="h-full"
+          >
+            <Grid horizontal strokeDasharray="3,3" />
             <Area
-              type="monotone"
               dataKey="income"
-              name="income"
+              fill="#10B981"
+              fillOpacity={0.3}
               stroke="#10B981"
               strokeWidth={2}
-              fillOpacity={1}
-              fill="url(#colorReceitas)"
+              fadeEdges
             />
             <Area
-              type="monotone"
               dataKey="expense"
-              name="expense"
+              fill="#6366F1"
+              fillOpacity={0.3}
               stroke="#6366F1"
               strokeWidth={2}
-              fillOpacity={1}
-              fill="url(#colorDespesas)"
+              fadeEdges
+            />
+            <XAxis numTicks={5} />
+            <ChartTooltip
+              showDatePill
+              rows={(point) => [
+                {
+                  color: "#10B981",
+                  label: t("income"),
+                  value: privacy.hideValues ? HIDDEN : formatCurrency(point.income as number),
+                },
+                {
+                  color: "#6366F1",
+                  label: t("expenses"),
+                  value: privacy.hideValues ? HIDDEN : formatCurrency(point.expense as number),
+                },
+              ]}
             />
           </AreaChart>
-        </ResponsiveContainer>
+        ) : (
+          <div className="h-full flex items-center justify-center">
+            <p className="text-sm" style={{ color: "var(--text-dimmed)" }}>
+              {t("noDataToShow")}
+            </p>
+          </div>
+        )}
       </div>
       <div className="flex items-center justify-center gap-4 sm:gap-6 mt-3 sm:mt-4">
         <div className="flex items-center gap-1.5 sm:gap-2">

@@ -24,10 +24,10 @@ interface GoalModalProps {
   onSave: (data: {
     name: string;
     description?: string;
-    category: GoalCategoryType;
+    type: GoalCategoryType;
     targetValue: number;
     currentValue?: number;
-    targetDate?: string;
+    deadline?: string;
     color?: string;
   }) => Promise<void>;
   isSubmitting: boolean;
@@ -91,10 +91,10 @@ export function GoalModal({ isOpen, onClose, onSave, isSubmitting }: GoalModalPr
     await onSave({
       name,
       description: description || undefined,
-      category: category as GoalCategoryType,
+      type: category as GoalCategoryType,
       targetValue: convertToBRL(parseFloat(targetValue)),
       currentValue: currentValue ? convertToBRL(parseFloat(currentValue)) : undefined,
-      targetDate: targetDate || undefined,
+      deadline: targetDate || undefined,
       color: GOAL_CATEGORY_COLORS[category as GoalCategoryType],
     });
 

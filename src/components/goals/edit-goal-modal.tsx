@@ -19,9 +19,9 @@ interface EditGoalModalProps {
   onSave: (data: {
     name: string;
     description?: string;
-    category: GoalCategoryType;
+    type: GoalCategoryType;
     targetValue: number;
-    targetDate?: string;
+    deadline?: string;
     color?: string;
   }) => Promise<void>;
   isSubmitting: boolean;
@@ -74,9 +74,9 @@ export function EditGoalModal({ isOpen, onClose, onSave, isSubmitting, goal }: E
     await onSave({
       name,
       description: description || undefined,
-      category: category as GoalCategoryType,
+      type: category as GoalCategoryType,
       targetValue: convertToBRL(parseFloat(targetValue)),
-      targetDate: targetDate || undefined,
+      deadline: targetDate || undefined,
       color: GOAL_CATEGORY_COLORS[category as GoalCategoryType],
     });
   };

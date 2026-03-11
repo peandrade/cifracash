@@ -1,15 +1,6 @@
 "use client";
 
-import { useState, useId } from "react";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceLine,
-} from "recharts";
+import { useState, useId, useMemo } from "react";
 import { ChevronDown, TrendingDown, TrendingUp, RefreshCw, Eye, EyeOff, AlertTriangle, Calendar } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCurrency } from "@/contexts/currency-context";
@@ -17,6 +8,14 @@ import { usePreferences } from "@/contexts";
 import { useCashFlowForecast } from "@/hooks";
 import { SetupPinModal, VerifyPinModal } from "@/components/privacy";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  AreaChart,
+  Area,
+  Grid,
+  XAxis,
+  ChartTooltip,
+  type TooltipRow,
+} from "@/components/ui/area-chart";
 import type { CashFlowDataPoint, ForecastPeriod } from "@/types/api-responses";
 
 const HIDDEN = "•••••";
@@ -26,67 +25,6 @@ const PERIOD_OPTIONS: { value: ForecastPeriod; key: string }[] = [
   { value: 60, key: "forecastPeriod60" },
   { value: 90, key: "forecastPeriod90" },
 ];
-
-interface TooltipPayload {
-  value: number;
-  name: string;
-  color: string;
-  dataKey: string;
-  payload: CashFlowDataPoint;
-}
-
-function ChartTooltip({
-  active,
-  payload,
-  hideValues,
-  formatCurrency,
-  labels,
-}: {
-  active?: boolean;
-  payload?: TooltipPayload[];
-  label?: string;
-  hideValues?: boolean;
-  formatCurrency: (value: number) => string;
-  labels: { balance: string; income: string; expenses: string };
-}) {
-  if (active && payload && payload.length) {
-    const data = payload[0]?.payload as CashFlowDataPoint;
-    if (!data) return null;
-    const fmt = (v: number) => (hideValues ? HIDDEN : formatCurrency(v));
-
-    return (
-      <div
-        className="rounded-lg p-3 shadow-xl"
-        style={{
-          backgroundColor: "var(--card-bg)",
-          borderWidth: "1px",
-          borderStyle: "solid",
-          borderColor: "var(--border-color)",
-        }}
-      >
-        <p className="text-sm font-medium mb-2" style={{ color: "var(--text-primary)" }}>
-          {data.label}
-        </p>
-        <div className="space-y-1 text-xs">
-          <p style={{ color: data.isNegative ? "#EF4444" : "#10B981" }}>
-            {labels.balance}: <span className="font-medium">{fmt(data.balance)}</span>
-          </p>
-          {data.income > 0 && (
-            <p style={{ color: "#10B981" }}>
-              +{labels.income}: <span className="font-medium">{fmt(data.income)}</span>
-            </p>
-          )}
-          {data.expenses > 0 && (
-            <p style={{ color: "#EF4444" }}>
-              -{labels.expenses}: <span className="font-medium">{fmt(data.expenses)}</span>
-            </p>
-          )}
-        </div>
-      </div>
-    );
-  }
-  return null;
-}
 
 interface CashFlowForecastChartProps {
   refreshTrigger?: number;
@@ -139,6 +77,43 @@ export function CashFlowForecastChart({ refreshTrigger = 0 }: CashFlowForecastCh
   const alerts = data?.alerts || [];
   const hasNegativeProjection = summary.daysUntilNegative !== null;
   const isEndBalancePositive = summary.projectedEndBalance >= 0;
+
+  // Transform data for the new chart format - add date property
+  const chartData = useMemo(() => {
+    if (!data?.forecast) return [];
+    return data.forecast.map((d: CashFlowDataPoint, index: number) => ({
+      ...d,
+      date: new Date(Date.now() + index * 24 * 60 * 60 * 1000),
+    }));
+  }, [data?.forecast]);
+
+  const tooltipRowsGenerator = (point: Record<string, unknown>): TooltipRow[] => {
+    const rows: TooltipRow[] = [
+      {
+        color: (point.isNegative as boolean) ? "#EF4444" : "#10B981",
+        label: t("balance"),
+        value: privacy.hideValues ? HIDDEN : formatCurrency(point.balance as number),
+      },
+    ];
+
+    if ((point.income as number) > 0) {
+      rows.push({
+        color: "#10B981",
+        label: `+${t("income")}`,
+        value: privacy.hideValues ? HIDDEN : formatCurrency(point.income as number),
+      });
+    }
+
+    if ((point.expenses as number) > 0) {
+      rows.push({
+        color: "#EF4444",
+        label: `-${t("expenses")}`,
+        value: privacy.hideValues ? HIDDEN : formatCurrency(point.expenses as number),
+      });
+    }
+
+    return rows;
+  };
 
   return (
     <div
@@ -265,66 +240,29 @@ export function CashFlowForecastChart({ refreshTrigger = 0 }: CashFlowForecastCh
               ))}
             </div>
           </div>
-        ) : data && data.forecast.length > 0 ? (
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data.forecast}>
-              <defs>
-                <linearGradient id="colorCashFlowPositive" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10B981" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="colorCashFlowNegative" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#EF4444" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#EF4444" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis
-                dataKey="label"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "#6B7280", fontSize: 10 }}
-                interval="preserveStartEnd"
-              />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "#6B7280", fontSize: 10 }}
-                tickFormatter={(value) =>
-                  privacy.hideValues
-                    ? "•••"
-                    : value >= 1000
-                      ? `${(value / 1000).toFixed(0)}k`
-                      : value <= -1000
-                        ? `${(value / 1000).toFixed(0)}k`
-                        : value.toString()
-                }
-                width={40}
-              />
-              <Tooltip
-                content={
-                  <ChartTooltip
-                    hideValues={privacy.hideValues}
-                    formatCurrency={formatCurrency}
-                    labels={{
-                      balance: t("balance"),
-                      income: t("income"),
-                      expenses: t("expenses"),
-                    }}
-                  />
-                }
-              />
-              <ReferenceLine y={0} stroke="#EF4444" strokeWidth={2} strokeDasharray="5 5" />
-              <Area
-                type="monotone"
-                dataKey="balance"
-                name={t("balance")}
-                stroke="#10B981"
-                strokeWidth={2}
-                fillOpacity={1}
-                fill="url(#colorCashFlowPositive)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+        ) : chartData.length > 0 ? (
+          <AreaChart
+            data={chartData}
+            xDataKey="date"
+            margin={{ top: 20, right: 20, bottom: 40, left: 20 }}
+            aspectRatio="auto"
+            className="h-full"
+          >
+            <Grid horizontal strokeDasharray="3,3" />
+            <Area
+              dataKey="balance"
+              fill="#10B981"
+              fillOpacity={0.4}
+              stroke="#10B981"
+              strokeWidth={2}
+              fadeEdges
+            />
+            <XAxis numTicks={5} />
+            <ChartTooltip
+              showDatePill
+              rows={tooltipRowsGenerator}
+            />
+          </AreaChart>
         ) : (
           <div className="h-full flex flex-col items-center justify-center gap-2">
             <Calendar className="w-8 h-8 text-gray-400" />

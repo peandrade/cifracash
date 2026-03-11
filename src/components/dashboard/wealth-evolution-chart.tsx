@@ -1,15 +1,6 @@
 "use client";
 
-import { useState, useEffect, useId } from "react";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceLine,
-} from "recharts";
+import { useState, useEffect, useId, useMemo } from "react";
 import { ChevronDown, TrendingUp, TrendingDown, Wallet, RefreshCw, Eye, EyeOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCurrency } from "@/contexts/currency-context";
@@ -18,7 +9,15 @@ import { useWealthEvolution } from "@/hooks";
 import { SetupPinModal, VerifyPinModal } from "@/components/privacy";
 import type { WealthDataPoint } from "@/hooks";
 import type { EvolutionPeriod } from "@/types";
-import { Skeleton, SkeletonChart } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  AreaChart,
+  Area,
+  Grid,
+  XAxis,
+  ChartTooltip,
+  type TooltipRow,
+} from "@/components/ui/area-chart";
 
 const HIDDEN = "•••••";
 
@@ -40,73 +39,6 @@ const PERIOD_KEYS: { value: EvolutionPeriod; key: string }[] = [
   { value: "6m", key: "6m" },
   { value: "1y", key: "1y" },
 ];
-
-interface TooltipPayload {
-  value: number;
-  name: string;
-  color: string;
-  dataKey: string;
-  payload: WealthDataPoint;
-}
-
-function ChartTooltip({
-  active,
-  payload,
-  hideValues,
-  formatCurrency,
-  labels,
-}: {
-  active?: boolean;
-  payload?: TooltipPayload[];
-  label?: string;
-  hideValues?: boolean;
-  formatCurrency: (value: number) => string;
-  labels: { patrimony: string; balance: string; invested: string; goals: string; debt: string };
-}) {
-  if (active && payload && payload.length) {
-    const data = payload[0]?.payload as WealthDataPoint;
-    if (!data) return null;
-    const fmt = (v: number) => (hideValues ? HIDDEN : formatCurrency(v));
-
-    return (
-      <div
-        className="rounded-lg p-3 shadow-xl"
-        style={{
-          backgroundColor: "var(--card-bg)",
-          borderWidth: "1px",
-          borderStyle: "solid",
-          borderColor: "var(--border-color)",
-        }}
-      >
-        <p className="text-sm font-medium mb-2" style={{ color: "var(--text-primary)" }}>
-          {data.label}
-        </p>
-        <div className="space-y-1 text-xs">
-          <p style={{ color: "#8B5CF6" }}>
-            {labels.patrimony} <span className="font-medium">{fmt(data.totalWealth)}</span>
-          </p>
-          <p style={{ color: "#10B981" }}>
-            {labels.balance}: <span className="font-medium">{fmt(data.transactionBalance)}</span>
-          </p>
-          <p style={{ color: "#3B82F6" }}>
-            {labels.invested}: <span className="font-medium">{fmt(data.investmentValue)}</span>
-          </p>
-          {data.goalsSaved > 0 && (
-            <p style={{ color: "#F59E0B" }}>
-              {labels.goals}: <span className="font-medium">{fmt(data.goalsSaved)}</span>
-            </p>
-          )}
-          {data.cardDebt > 0 && (
-            <p style={{ color: "#EF4444" }}>
-              {labels.debt}: <span className="font-medium">-{fmt(data.cardDebt)}</span>
-            </p>
-          )}
-        </div>
-      </div>
-    );
-  }
-  return null;
-}
 
 interface WealthEvolutionChartProps {
   refreshTrigger?: number;
@@ -165,6 +97,53 @@ export function WealthEvolutionChart({ refreshTrigger = 0 }: WealthEvolutionChar
   };
 
   const isPositiveChange = summary.wealthChange >= 0;
+
+  // Transform data for the new chart format - add date property
+  const chartData = useMemo(() => {
+    if (!data?.evolution) return [];
+    return data.evolution.map((d: WealthDataPoint, index: number) => ({
+      ...d,
+      date: new Date(Date.now() - (data.evolution.length - 1 - index) * 24 * 60 * 60 * 1000),
+    }));
+  }, [data?.evolution]);
+
+  const tooltipRowsGenerator = (point: Record<string, unknown>): TooltipRow[] => {
+    const rows: TooltipRow[] = [
+      {
+        color: "#8B5CF6",
+        label: t("patrimony").replace(":", ""),
+        value: privacy.hideValues ? HIDDEN : formatCurrency(point.totalWealth as number),
+      },
+      {
+        color: "#10B981",
+        label: t("balance"),
+        value: privacy.hideValues ? HIDDEN : formatCurrency(point.transactionBalance as number),
+      },
+      {
+        color: "#3B82F6",
+        label: t("invested"),
+        value: privacy.hideValues ? HIDDEN : formatCurrency(point.investmentValue as number),
+      },
+    ];
+
+    if ((point.goalsSaved as number) > 0) {
+      rows.push({
+        color: "#F59E0B",
+        label: t("goals"),
+        value: privacy.hideValues ? HIDDEN : formatCurrency(point.goalsSaved as number),
+      });
+    }
+
+    if ((point.cardDebt as number) > 0) {
+      rows.push({
+        color: "#EF4444",
+        label: t("debt"),
+        value: privacy.hideValues ? HIDDEN : `-${formatCurrency(point.cardDebt as number)}`,
+      });
+    }
+
+    return rows;
+  };
 
   return (
     <div
@@ -296,98 +275,61 @@ export function WealthEvolutionChart({ refreshTrigger = 0 }: WealthEvolutionChar
               ))}
             </div>
           </div>
-        ) : data && data.evolution.length > 0 ? (
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data.evolution}>
-              <defs>
-                <linearGradient id="colorWealth" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10B981" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="colorInvestment" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="colorGoals" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#F59E0B" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="colorDebt" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#EF4444" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#EF4444" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis
-                dataKey="label"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "#6B7280", fontSize: 10 }}
-                interval="preserveStartEnd"
-              />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "#6B7280", fontSize: 10 }}
-                tickFormatter={(value) =>
-                  privacy.hideValues
-                    ? "•••"
-                    : value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value.toString()
-                }
-                width={35}
-              />
-              <Tooltip content={<ChartTooltip hideValues={privacy.hideValues} formatCurrency={formatCurrency} labels={{ patrimony: t("patrimony"), balance: t("balance"), invested: t("invested"), goals: t("goals"), debt: t("debt") }} />} />
-              <ReferenceLine y={0} stroke="#6B7280" strokeDasharray="3 3" />
-              <Area
-                type="monotone"
-                dataKey="transactionBalance"
-                name={t("balance")}
-                stroke="#10B981"
-                strokeWidth={1.5}
-                fillOpacity={1}
-                fill="url(#colorBalance)"
-              />
-              <Area
-                type="monotone"
-                dataKey="investmentValue"
-                name={t("invested")}
-                stroke="#3B82F6"
-                strokeWidth={1.5}
-                fillOpacity={1}
-                fill="url(#colorInvestment)"
-              />
-              <Area
-                type="monotone"
-                dataKey="goalsSaved"
-                name={t("goals")}
-                stroke="#F59E0B"
-                strokeWidth={1.5}
-                fillOpacity={1}
-                fill="url(#colorGoals)"
-              />
-              <Area
-                type="monotone"
-                dataKey="cardDebt"
-                name={t("debt")}
-                stroke="#EF4444"
-                strokeWidth={1.5}
-                fillOpacity={1}
-                fill="url(#colorDebt)"
-              />
-              <Area
-                type="monotone"
-                dataKey="totalWealth"
-                name={t("patrimony").replace(":", "")}
-                stroke="#8B5CF6"
-                strokeWidth={2}
-                fillOpacity={1}
-                fill="url(#colorWealth)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+        ) : chartData.length > 0 ? (
+          <AreaChart
+            data={chartData}
+            xDataKey="date"
+            margin={{ top: 20, right: 20, bottom: 40, left: 20 }}
+            aspectRatio="auto"
+            className="h-full"
+          >
+            <Grid horizontal strokeDasharray="3,3" />
+            <Area
+              dataKey="transactionBalance"
+              fill="#10B981"
+              fillOpacity={0.2}
+              stroke="#10B981"
+              strokeWidth={1.5}
+              fadeEdges
+            />
+            <Area
+              dataKey="investmentValue"
+              fill="#3B82F6"
+              fillOpacity={0.2}
+              stroke="#3B82F6"
+              strokeWidth={1.5}
+              fadeEdges
+            />
+            <Area
+              dataKey="goalsSaved"
+              fill="#F59E0B"
+              fillOpacity={0.2}
+              stroke="#F59E0B"
+              strokeWidth={1.5}
+              fadeEdges
+            />
+            <Area
+              dataKey="cardDebt"
+              fill="#EF4444"
+              fillOpacity={0.2}
+              stroke="#EF4444"
+              strokeWidth={1.5}
+              fadeEdges
+            />
+            <Area
+              dataKey="totalWealth"
+              fill="#8B5CF6"
+              fillOpacity={0.4}
+              stroke="#8B5CF6"
+              strokeWidth={2}
+              fadeEdges
+            />
+            <XAxis numTicks={5} />
+            <ChartTooltip
+              showDatePill
+              rows={tooltipRowsGenerator}
+            />
+          </AreaChart>
         ) : (
           <div className="h-full flex items-center justify-center">
             <p className="text-sm" style={{ color: "var(--text-dimmed)" }}>

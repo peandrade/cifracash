@@ -243,10 +243,10 @@ function parseTransactionsSheet(sheet: ExcelJS.Worksheet): SheetResult<ParsedTra
     const value = parseBRNumber(raw.valor);
     if (value === null) errors.push(`Valor inválido: "${raw.valor}"`);
 
-    // Category
+    // Category - aceita qualquer categoria (usuário pode ter categorias personalizadas)
     const category = strVal(raw.categoria);
-    if (category && !allCategories.includes(category)) {
-      errors.push(`Categoria desconhecida: "${category}"`);
+    if (!category) {
+      errors.push("Categoria é obrigatória");
     }
 
     // Date
@@ -370,9 +370,10 @@ function parseBudgetsSheet(sheet: ExcelJS.Worksheet): SheetResult<ParsedBudget> 
 
     const errors: string[] = [];
 
+    // Category - aceita qualquer categoria (usuário pode ter categorias personalizadas)
     const category = strVal(raw.categoria);
-    if (category && !(EXPENSE_CATEGORIES as readonly string[]).includes(category)) {
-      errors.push(`Categoria desconhecida: "${category}"`);
+    if (!category) {
+      errors.push("Categoria é obrigatória");
     }
 
     const limit = parseBRNumber(raw.limite);
@@ -490,9 +491,10 @@ function parseRecurringExpensesSheet(sheet: ExcelJS.Worksheet): SheetResult<Pars
     const value = parseBRNumber(raw.valor);
     if (value === null) errors.push(`Valor inválido: "${raw.valor}"`);
 
+    // Category - aceita qualquer categoria (usuário pode ter categorias personalizadas)
     const category = strVal(raw.categoria);
-    if (category && !(EXPENSE_CATEGORIES as readonly string[]).includes(category)) {
-      errors.push(`Categoria desconhecida: "${category}"`);
+    if (!category) {
+      errors.push("Categoria é obrigatória");
     }
 
     const dueDay = parseBRNumber(raw.diaVencimento);

@@ -12,6 +12,7 @@ import { FeedbackButton } from "@/components/feedback";
 import { NotificationButton } from "@/components/notifications";
 import { Logo } from "@/components/ui/logo";
 import { RouteTransition } from "@/components/ui/motion";
+import { motion } from "framer-motion";
 
 const authRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
 
@@ -96,7 +97,7 @@ function MobileHeader() {
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { isCollapsed } = useSidebar();
+  const { isOpen } = useSidebar();
 
   const isAuthPage = authRoutes.includes(pathname);
 
@@ -108,16 +109,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <>
       <div className="flex min-h-screen overflow-x-hidden w-full max-w-full">
         <Sidebar />
-        <div
-          className={`flex-1 flex flex-col min-h-screen transition-all duration-300 overflow-x-hidden min-w-0 ${
-            isCollapsed ? "md:ml-16" : "md:ml-60"
-          }`}
+        <motion.div
+          className="flex-1 flex flex-col min-h-screen overflow-x-hidden min-w-0 max-md:!ml-0"
+          animate={{
+            marginLeft: isOpen ? "240px" : "64px",
+          }}
+          transition={{
+            duration: 0.3,
+            ease: "easeInOut",
+          }}
         >
           <MobileHeader />
           <main className="flex-1 pb-20 md:pb-0 overflow-x-hidden w-full">
             <RouteTransition>{children}</RouteTransition>
           </main>
-        </div>
+        </motion.div>
       </div>
       <BottomTabs />
       <FeedbackButton />

@@ -160,7 +160,7 @@ export function RegisterForm() {
             className="block text-sm font-medium mb-2"
             style={{ color: "var(--text-primary)" }}
           >
-            {t("nameOptional")}
+            {t("name")}
           </label>
           <div className="relative">
             <User

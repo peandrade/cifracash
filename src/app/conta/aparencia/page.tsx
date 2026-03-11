@@ -9,14 +9,11 @@ import {
   Type,
   RotateCcw,
   Check,
-  Sun,
-  Moon,
   Tags,
   Plus,
 } from "lucide-react";
 import {
   useAppearance,
-  useTheme,
   colorPalettes,
   fontWeights,
   fontSizes,
@@ -33,7 +30,6 @@ export default function AparenciaPage() {
   const t = useTranslations("settings");
   const tc = useTranslations("common");
   const { settings, updateSettings, resetSettings } = useAppearance();
-  const { theme, toggleTheme } = useTheme();
 
   // Category state
   const [categoryTab, setCategoryTab] = useState<"expense" | "income">("expense");
@@ -141,59 +137,6 @@ export default function AparenciaPage() {
         </div>
 
         <div className="space-y-6">
-          {}
-          <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)] p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div
-                className="p-3 rounded-xl transition-colors duration-300"
-                style={{ backgroundColor: `${colorPalettes[settings.colorPalette].primary}1A` }}
-              >
-                {theme === "dark" ? (
-                  <Moon className="w-5 h-5" style={{ color: colorPalettes[settings.colorPalette].primary }} />
-                ) : (
-                  <Sun className="w-5 h-5" style={{ color: colorPalettes[settings.colorPalette].primary }} />
-                )}
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold text-[var(--text-primary)]">{t("theme")}</h2>
-                <p className="text-sm text-[var(--text-dimmed)]">{t("themeDesc")}</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => theme === "dark" && toggleTheme()}
-                className={`p-4 rounded-xl border-2 transition-all flex items-center justify-center gap-3 ${
-                  theme === "light"
-                    ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10"
-                    : "border-[var(--border-color)] hover:border-[var(--border-color-strong)]"
-                }`}
-                style={theme === "light" ? { borderColor: colorPalettes[settings.colorPalette].primary } : undefined}
-              >
-                <Sun className="w-5 h-5" />
-                <span className="font-medium">{t("light")}</span>
-                {theme === "light" && (
-                  <Check className="w-4 h-4" style={{ color: colorPalettes[settings.colorPalette].primary }} />
-                )}
-              </button>
-              <button
-                onClick={() => theme === "light" && toggleTheme()}
-                className={`p-4 rounded-xl border-2 transition-all flex items-center justify-center gap-3 ${
-                  theme === "dark"
-                    ? "border-[var(--color-primary)] bg-[var(--color-primary)]/10"
-                    : "border-[var(--border-color)] hover:border-[var(--border-color-strong)]"
-                }`}
-                style={theme === "dark" ? { borderColor: colorPalettes[settings.colorPalette].primary } : undefined}
-              >
-                <Moon className="w-5 h-5" />
-                <span className="font-medium">{t("dark")}</span>
-                {theme === "dark" && (
-                  <Check className="w-4 h-4" style={{ color: colorPalettes[settings.colorPalette].primary }} />
-                )}
-              </button>
-            </div>
-          </div>
-
           {}
           <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-color)] p-6">
             <div className="flex items-center gap-3 mb-4">

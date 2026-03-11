@@ -26,7 +26,7 @@ export function Sidebar() {
   const { theme, toggleTheme, mounted } = useTheme();
   const { data: session } = useSession();
   const { profile } = useUser();
-  const { setIsHovered, isOpen } = useSidebar();
+  const { setIsHovered, isOpen, mounted: sidebarMounted } = useSidebar();
   const t = useTranslations("nav");
   const tc = useTranslations("common");
 
@@ -66,13 +66,19 @@ export function Sidebar() {
     signOut({ callbackUrl: "/login" });
   };
 
+  // Antes de montar, sidebar fica colapsada sem transição
+  // Depois de montar, transição funciona normalmente
+  const sidebarWidth = !sidebarMounted ? "64px" : isOpen ? "240px" : "64px";
+
   return (
     <aside
-      className="fixed left-0 top-0 h-screen z-40 backdrop-blur-xl border-r hidden md:flex flex-col transition-[width] duration-300 ease-in-out"
+      className={`fixed left-0 top-0 h-screen z-40 backdrop-blur-xl border-r hidden md:flex flex-col ${
+        sidebarMounted ? "transition-[width] duration-300 ease-in-out" : ""
+      }`}
       style={{
         backgroundColor: "var(--navbar-bg)",
         borderColor: "var(--border-color)",
-        width: isOpen ? "240px" : "64px",
+        width: sidebarWidth,
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

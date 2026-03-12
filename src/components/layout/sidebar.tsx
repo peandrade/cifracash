@@ -17,6 +17,7 @@ import { useTheme, useUser, useSidebar } from "@/contexts";
 import { useTranslations } from "next-intl";
 import { Logo } from "@/components/ui/logo";
 import { AnimatedThemeToggle } from "@/components/ui/animated-theme-toggle";
+import { motion } from "framer-motion";
 
 const authRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
 
@@ -26,7 +27,7 @@ export function Sidebar() {
   const { theme, toggleTheme, mounted } = useTheme();
   const { data: session } = useSession();
   const { profile } = useUser();
-  const { setIsHovered, isOpen, mounted: sidebarMounted } = useSidebar();
+  const { setIsHovered, isOpen } = useSidebar();
   const t = useTranslations("nav");
   const tc = useTranslations("common");
 
@@ -67,45 +68,51 @@ export function Sidebar() {
   };
 
   return (
-    <aside
-      className={`
-        fixed left-0 top-0 h-screen z-40 backdrop-blur-xl border-r hidden md:flex flex-col
-        transition-all duration-300 ease-in-out
-        ${isOpen ? "w-60" : "w-16"}
-      `}
+    <motion.aside
+      className="fixed left-0 top-0 h-screen z-40 backdrop-blur-xl border-r hidden md:flex flex-col"
       style={{
         backgroundColor: "var(--navbar-bg)",
         borderColor: "var(--border-color)",
+      }}
+      initial={false}
+      animate={{
+        width: isOpen ? 240 : 64,
+      }}
+      transition={{
+        duration: 0.3,
+        ease: "easeInOut",
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Logo */}
-      <div
-        className={`flex items-center h-16 border-b transition-all duration-300 ${isOpen ? "px-4" : "justify-center"}`}
-        style={{ borderColor: "var(--border-color)" }}
-      >
+      <div className={`flex items-center h-16 border-b ${!isOpen ? "justify-center" : "px-4"}`} style={{ borderColor: "var(--border-color)" }}>
         <Link href="/" className={`flex items-center ${isOpen ? "gap-3" : ""}`}>
           <Logo size="md" />
-          <span
-            className={`
-              text-xl font-bold bg-clip-text text-transparent whitespace-nowrap
-              transition-all duration-300 ease-in-out
-              ${isOpen ? "opacity-100 max-w-[150px]" : "opacity-0 max-w-0 overflow-hidden"}
-            `}
+          <motion.span
+            className="text-xl font-bold bg-clip-text text-transparent whitespace-pre"
             style={{
               backgroundImage: !mounted || theme === "dark"
                 ? "linear-gradient(to right, #ffffff, #9ca3af)"
                 : "linear-gradient(to right, #0f172a, #475569)",
             }}
+            initial={false}
+            animate={{
+              opacity: isOpen ? 1 : 0,
+              width: isOpen ? "auto" : 0,
+            }}
+            transition={{
+              duration: 0.2,
+              ease: "easeInOut",
+            }}
           >
             CifraCash
-          </span>
+          </motion.span>
         </Link>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto overflow-x-hidden">
+      <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
@@ -114,53 +121,67 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`
-                flex items-center rounded-xl font-medium transition-all duration-300
-                ${isOpen ? "gap-3 px-4 py-2.5" : "justify-center p-3"}
-                ${isActive
+              className={`flex items-center rounded-xl font-medium transition-colors ${
+                !isOpen ? "justify-center p-3" : "gap-3 px-4 py-2.5"
+              } ${
+                isActive
                   ? "bg-primary-gradient text-white shadow-lg shadow-primary"
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]"
-                }
-              `}
+              }`}
               title={!isOpen ? item.label : undefined}
             >
               <Icon className="w-5 h-5 shrink-0" />
-              <span
-                className={`
-                  whitespace-nowrap transition-all duration-300 ease-in-out
-                  ${isOpen ? "opacity-100 max-w-[150px]" : "opacity-0 max-w-0 overflow-hidden"}
-                `}
+              <motion.span
+                className="whitespace-pre"
+                initial={false}
+                animate={{
+                  opacity: isOpen ? 1 : 0,
+                  width: isOpen ? "auto" : 0,
+                }}
+                transition={{
+                  duration: 0.2,
+                  ease: "easeInOut",
+                }}
               >
                 {item.label}
-              </span>
+              </motion.span>
             </Link>
           );
         })}
       </nav>
 
       {/* Bottom section */}
-      <div className="border-t px-2 py-3 space-y-1 overflow-x-hidden" style={{ borderColor: "var(--border-color)" }}>
+      <div className="border-t px-2 py-3 space-y-1" style={{ borderColor: "var(--border-color)" }}>
         {/* Theme toggle */}
-        <div className={`flex items-center w-full rounded-xl transition-all duration-300 ${isOpen ? "gap-2 px-2" : "justify-center"}`}>
+        <div
+          className={`flex items-center w-full rounded-xl ${
+            !isOpen ? "justify-center" : "gap-2 px-2"
+          }`}
+        >
           <AnimatedThemeToggle
             isDark={mounted ? theme === "dark" : true}
             onToggle={toggleTheme}
           />
-          <span
-            className={`
-              text-sm font-medium whitespace-nowrap text-[var(--text-muted)]
-              transition-all duration-300 ease-in-out
-              ${isOpen ? "opacity-100 max-w-[150px]" : "opacity-0 max-w-0 overflow-hidden"}
-            `}
+          <motion.span
+            className="text-sm font-medium whitespace-pre text-[var(--text-muted)]"
+            initial={false}
+            animate={{
+              opacity: isOpen ? 1 : 0,
+              width: isOpen ? "auto" : 0,
+            }}
+            transition={{
+              duration: 0.2,
+              ease: "easeInOut",
+            }}
           >
             {mounted ? (theme === "dark" ? t("lightTheme") : t("darkTheme")) : t("theme")}
-          </span>
+          </motion.span>
         </div>
 
         {/* User info */}
         {session?.user && (
           <>
-            <div className={`flex items-center py-2 transition-all duration-300 ${isOpen ? "gap-3 px-2" : "justify-center px-0"}`}>
+            <div className={`flex items-center py-2 ${!isOpen ? "justify-center px-0" : "gap-3 px-2"}`}>
               {userImage ? (
                 <img
                   src={userImage}
@@ -173,72 +194,81 @@ export function Sidebar() {
                   {userInitial}
                 </div>
               )}
-              <div
-                className={`
-                  min-w-0 transition-all duration-300 ease-in-out
-                  ${isOpen ? "opacity-100 max-w-[150px]" : "opacity-0 max-w-0 overflow-hidden"}
-                `}
+              <motion.div
+                className="min-w-0 overflow-hidden"
+                initial={false}
+                animate={{
+                  opacity: isOpen ? 1 : 0,
+                  width: isOpen ? "auto" : 0,
+                }}
+                transition={{
+                  duration: 0.2,
+                  ease: "easeInOut",
+                }}
               >
-                <p className="text-sm font-medium text-[var(--text-primary)] truncate whitespace-nowrap">
+                <p className="text-sm font-medium text-[var(--text-primary)] truncate whitespace-pre">
                   {userName}
                 </p>
-                <p className="text-[10px] text-[var(--text-dimmed)] truncate whitespace-nowrap">
+                <p className="text-[10px] text-[var(--text-dimmed)] truncate whitespace-pre">
                   {userEmail}
                 </p>
-              </div>
+              </motion.div>
             </div>
 
             {/* Minha Conta */}
             <button
               onClick={() => router.push("/conta")}
-              className={`
-                flex items-center w-full rounded-xl transition-all duration-300
-                text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)]
-                ${isOpen ? "gap-3 px-4 py-2.5" : "justify-center p-3"}
-              `}
+              className={`flex items-center w-full rounded-xl transition-colors text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] ${
+                !isOpen ? "justify-center p-3" : "gap-3 px-4 py-2.5"
+              }`}
               title={!isOpen ? t("myAccount") : undefined}
             >
               <User className="w-5 h-5 shrink-0" />
-              <span
-                className={`
-                  text-sm font-medium whitespace-nowrap
-                  transition-all duration-300 ease-in-out
-                  ${isOpen ? "opacity-100 max-w-[150px]" : "opacity-0 max-w-0 overflow-hidden"}
-                `}
+              <motion.span
+                className="text-sm font-medium whitespace-pre"
+                initial={false}
+                animate={{
+                  opacity: isOpen ? 1 : 0,
+                  width: isOpen ? "auto" : 0,
+                }}
+                transition={{
+                  duration: 0.2,
+                  ease: "easeInOut",
+                }}
               >
                 {t("myAccount")}
-              </span>
+              </motion.span>
             </button>
 
             {/* Logout */}
             <button
               onClick={handleLogout}
-              className={`
-                flex items-center w-full rounded-xl transition-all duration-300
-                text-red-400 hover:bg-red-500/10
-                ${isOpen ? "gap-3 px-4 py-2.5" : "justify-center p-3"}
-              `}
+              className={`flex items-center w-full rounded-xl transition-colors text-red-400 hover:bg-red-500/10 ${
+                !isOpen ? "justify-center p-3" : "gap-3 px-4 py-2.5"
+              }`}
               title={!isOpen ? t("logout") : undefined}
             >
               <LogOut className="w-5 h-5 shrink-0" />
-              <span
-                className={`
-                  text-sm font-medium whitespace-nowrap
-                  transition-all duration-300 ease-in-out
-                  ${isOpen ? "opacity-100 max-w-[150px]" : "opacity-0 max-w-0 overflow-hidden"}
-                `}
+              <motion.span
+                className="text-sm font-medium whitespace-pre"
+                initial={false}
+                animate={{
+                  opacity: isOpen ? 1 : 0,
+                  width: isOpen ? "auto" : 0,
+                }}
+                transition={{
+                  duration: 0.2,
+                  ease: "easeInOut",
+                }}
               >
                 {t("logout")}
-              </span>
+              </motion.span>
             </button>
           </>
         )}
 
         {/* Social links */}
-        <div
-          className={`flex items-center pt-2 border-t transition-all duration-300 ${isOpen ? "gap-3 px-2" : "justify-center"}`}
-          style={{ borderColor: "var(--border-color)" }}
-        >
+        <div className={`flex items-center pt-2 border-t ${!isOpen ? "justify-center" : "gap-3 px-2"}`} style={{ borderColor: "var(--border-color)" }}>
           <a
             href="https://github.com/peandrade"
             target="_blank"
@@ -261,6 +291,6 @@ export function Sidebar() {
           </a>
         </div>
       </div>
-    </aside>
+    </motion.aside>
   );
 }

@@ -21,16 +21,14 @@ const SidebarContext = createContext<SidebarContextType>({
 });
 
 export function SidebarProvider({ children }: { children: React.ReactNode }) {
-  // Começa colapsada para evitar flash de conteúdo
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("cifracash-sidebar-collapsed");
-    // Só expande se localStorage explicitamente disser "false"
-    if (saved === "false") {
-      setIsCollapsed(false);
+    if (saved === "true") {
+      setIsCollapsed(true);
     }
     setMounted(true);
   }, []);
